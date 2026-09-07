@@ -27,8 +27,10 @@
                         ></i>
                     </div>
                     <div>
-                        <h2 class="fw-bold text-white mb-0">testing git</h2>
-                        <p class="text-muted mb-0">ข้อมูลเกี่ยวกับระบบและผู้พัฒนาโปรเจกต์นี้</p>
+                        <h2 class="fw-bold text-white mb-0">บ่เทสด้อก</h2>
+                        <p class="text-muted mb-0">
+                            ข้อมูลเกี่ยวกับระบบและผู้พัฒนาโปรเจกต์นี้
+                        </p>
                     </div>
                 </div>
 
