@@ -43,7 +43,12 @@ class WebhookController extends Controller
         }
 
         // 3. Check Branch (Deploy on 'main' branch)
-        $ref = $request->input('ref');
+        $payload = $request->all();
+        if ($request->has('payload') && is_string($request->input('payload'))) {
+            $payload = json_decode($request->input('payload'), true) ?: $payload;
+        }
+
+        $ref = $payload['ref'] ?? $request->input('ref');
         $targetBranch = 'refs/heads/main';
         
         if ($ref !== $targetBranch) {
@@ -57,26 +62,41 @@ class WebhookController extends Controller
         $basePath = base_path();
         Log::info("[GitHub Webhook] Starting Auto-Deployment for commit: " . $request->input('after'));
 
+        // Locate binaries robustly on Windows / Linux
+        $gitBinary = is_file('C:\\Program Files\\Git\\cmd\\git.exe') ? '"C:\\Program Files\\Git\\cmd\\git.exe"' : 'git';
+        $phpBinary = defined('PHP_BINARY') && is_file(PHP_BINARY) ? '"' . PHP_BINARY . '"' : (is_file('C:\\php\\php.exe') ? '"C:\\php\\php.exe"' : 'php');
+
+        $env = array_merge($_SERVER, $_ENV, [
+            'PATH' => 'C:\\php;C:\\Program Files\\Git\\cmd;' . (getenv('PATH') ?: '') . ';' . (isset($_SERVER['PATH']) ? $_SERVER['PATH'] : ''),
+            'SYSTEMROOT' => getenv('SYSTEMROOT') ?: 'C:\\Windows',
+            'USERPROFILE' => getenv('USERPROFILE') ?: 'C:\\Users\\HP',
+            'HOMEDRIVE' => getenv('HOMEDRIVE') ?: 'C:',
+            'HOMEPATH' => getenv('HOMEPATH') ?: '\\Users\\HP',
+            'LOCALAPPDATA' => getenv('LOCALAPPDATA') ?: 'C:\\Users\\HP\\AppData\\Local',
+            'APPDATA' => getenv('APPDATA') ?: 'C:\\Users\\HP\\AppData\\Roaming',
+            'GIT_TERMINAL_PROMPT' => '0',
+        ]);
+
         $outputLog = [];
 
         try {
             // Command 1: git pull origin main
-            $gitProcess = Process::fromShellCommandline('git pull origin main', $basePath);
+            $gitProcess = Process::fromShellCommandline("{$gitBinary} pull origin main", $basePath, $env);
             $gitProcess->setTimeout(120);
             $gitProcess->run();
-            $outputLog['git_pull'] = $gitProcess->getOutput() . $gitProcess->getErrorOutput();
+            $outputLog['git_pull'] = trim($gitProcess->getOutput() . $gitProcess->getErrorOutput());
 
             // Command 2: php artisan migrate --force
-            $migrateProcess = Process::fromShellCommandline('php artisan migrate --force', $basePath);
+            $migrateProcess = Process::fromShellCommandline("{$phpBinary} artisan migrate --force", $basePath, $env);
             $migrateProcess->setTimeout(60);
             $migrateProcess->run();
-            $outputLog['migrate'] = $migrateProcess->getOutput() . $migrateProcess->getErrorOutput();
+            $outputLog['migrate'] = trim($migrateProcess->getOutput() . $migrateProcess->getErrorOutput());
 
             // Command 3: php artisan optimize:clear
-            $optimizeProcess = Process::fromShellCommandline('php artisan optimize:clear', $basePath);
+            $optimizeProcess = Process::fromShellCommandline("{$phpBinary} artisan optimize:clear", $basePath, $env);
             $optimizeProcess->setTimeout(30);
             $optimizeProcess->run();
-            $outputLog['optimize_clear'] = $optimizeProcess->getOutput() . $optimizeProcess->getErrorOutput();
+            $outputLog['optimize_clear'] = trim($optimizeProcess->getOutput() . $optimizeProcess->getErrorOutput());
 
             Log::info('[GitHub Webhook] Deployment finished.', $outputLog);
 
