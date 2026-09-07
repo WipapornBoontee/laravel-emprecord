@@ -4,7 +4,7 @@
         <div class="row align-items-center justify-content-between g-3">
             <div class="col-md-6 text-center text-md-start">
                 <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-2 mb-1">
-                    <span class="footer-brand-text fw-bold">WB Employee Management</span>
+                    <span class="footer-brand-text fw-bold">Employee Management</span>
                     <span class="badge bg-secondary-subtle text-secondary" style="font-size: 0.7rem;">v1.0</span>
                 </div>
                 <p class="text-muted small mb-0">

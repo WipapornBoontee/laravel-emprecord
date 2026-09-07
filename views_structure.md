@@ -1,27 +1,25 @@
 # โครงสร้างโฟลเดอร์ Views (Views Directory Structure)
 
-เอกสารอธิบายการจัดหมวดหมู่และโครงสร้างโฟลเดอร์ใน `resources/views/` เพื่อรองรับระบบตาม **[database_schema.md](file:///d:/xampp/htdocs/laravel-emprecord/database_schema.md)**
+เอกสารอธิบายการจัดหมวดหมู่และโครงสร้างโฟลเดอร์ใน `resources/views/` เพื่อรองรับระบบบริหารจัดการข้อมูลพนักงาน วันลา และบันทึกเวลาทำงาน ตาม **[database_schema.md](file:///d:/xampp/htdocs/laravel-emprecord/database_schema.md)**
 
 ---
 
-## 📁 โครงสร้างโฟลเดอร์ทั้งหมด
+## 📁 โครงสร้างโฟลเดอร์และไฟล์ปัจจุบัน (Current Structure)
 
 ```text
 resources/views/
 │
-├── layouts/                       # 1. โครงสร้างและ Template หลักของเว็บ
-│   ├── app.blade.php              #    - Layout หลักสำหรับหน้าที่เข้าสู่ระบบแล้ว (Navbar, Footer, Container)
-│   ├── guest.blade.php            #    - Layout สำหรับหน้าที่ยังไม่เข้าสู่ระบบ (เช่น หน้า Login)
-│   └── partials/                  #    - ชิ้นส่วนย่อย (Component/Partial) ที่ใช้ร่วมกัน
-│       ├── navbar.blade.php       #      * แถบเมนูด้านบน (แสดงสิทธิ์และข้อมูลผู้ใช้)
-│       ├── sidebar.blade.php      #      * แถบเมนูด้านข้าง (ตาม Role)
-│       └── alerts.blade.php       #      * กล่องข้อความแจ้งเตือนสถานะ (Success / Error / Warning)
+├── layouts/                       # 1. โครงสร้างและ Template หลักของเว็บ (รองรับ Light / Dark Mode)
+│   ├── app.blade.php              #    - Layout หลักสำหรับหน้าที่เข้าสู่ระบบแล้ว (Design Tokens + Anti-flicker Theme Script)
+│   └── partials/                  #    - ชิ้นส่วนย่อย (Reusable UI Components)
+│       ├── header.blade.php       #      * Navbar ด้านบน (Logo, เมนูตาม Role, ปุ่ม Toggle Theme, Profile & Logout)
+│       └── footer.blade.php       #      * Footer แสดงชื่อระบบ, เวอร์ชัน, และลิขสิทธิ์
 │
 ├── auth/                          # 2. ระบบยืนยันตัวตน (Authentication)
-│   └── login.blade.php            #    - หน้าเข้าสู่ระบบ (Username/EMP Code และ Password)
+│   └── login.blade.php            #    - หน้าเข้าสู่ระบบ (Username/EMP Code และ Password + Theme Switcher)
 │
 ├── dashboard/                     # 3. หน้าแดชบอร์ดหลัก (Dashboard Overview)
-│   └── index.blade.php            #    - สรุปข้อมูลภาพรวม, การเข้างานวันนี้, สิทธิ์วันลาคงเหลือ
+│   └── home.blade.php             #    - แดชบอร์ดภาพรวม (Hero Banner, Live Clock, KPI Stat Cards, Quick Actions)
 │
 ├── employees/                     # 4. ระบบจัดการข้อมูลพนักงาน (ตาราง users) [Admin / HR]
 │   ├── index.blade.php            #    - ตารางรายชื่อพนักงานทั้งหมด + ตัวกรองค้นหา
@@ -49,12 +47,25 @@ resources/views/
 
 ---
 
+## 🎨 มาตรฐานระบบธีม (Theme Guidelines: Light & Dark Mode)
+
+- ทุกหน้าจะต้องสืบทอดจาก **`@extends('layouts.app')`**
+- ใช้ตัวแปรสี **CSS Variables** ในการแต่งหน้าตาเสมอ เพื่อรองรับการสลับโหมดอัตโนมัติ:
+  - `var(--bg-color)` : สีพื้นหลังหลักของหน้าเว็บ
+  - `var(--surface-bg)` : สีพื้นหลังของการ์ด (Card / Modal)
+  - `var(--surface-border)` : สีเส้นขอบการ์ด/กล่อง
+  - `var(--text-main)` : สีข้อความหลัก
+  - `var(--text-muted)` : สีข้อความรอง/คำอธิบาย
+  - `var(--primary-gradient)` : สี Gradient สำหรับปุ่มหลักและจุดเด่น
+
+---
+
 ## 👥 ตารางการเข้าถึงตามสิทธิ์ (Access Control Matrix)
 
 | โฟลเดอร์ / เมนู | ความสัมพันธ์ตารางใน Database | สิทธิ์ที่เข้าถึงได้ | คำอธิบาย |
 | :--- | :--- | :--- | :--- |
-| `auth/` | `users` | Guest (ทุกคน) | เข้าสู่ระบบ |
-| `dashboard/` | รวมทุกตาราง | `admin`, `hr`, `employee` | หน้าแรกแสดงข้อมูลสรุปส่วนตัว |
+| `auth/login` | `users` | Guest (ทุกคน) | เข้าสู่ระบบ |
+| `dashboard/home` | รวมทุกตาราง | `admin`, `hr`, `employee` | หน้าแรกแสดงข้อมูลสรุปส่วนตัว และเวลา Realtime |
 | `employees/` | `users`, `departments`, `positions` | `admin`, `hr` | จัดการข้อมูลพนักงานในองค์กร |
 | `departments/` | `departments`, `positions` | `admin`, `hr` | จัดการโครงสร้างองค์กร |
 | `leaves/` (ยื่นลา/ดูยอด) | `leave_requests`, `leave_balances` | `admin`, `hr`, `employee` | การจัดการการลาของตนเอง |
