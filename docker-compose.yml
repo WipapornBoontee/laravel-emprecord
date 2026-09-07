@@ -34,6 +34,7 @@ services:
       DB_DATABASE: ${DB_DATABASE:-laravel_emp}
       DB_USERNAME: ${DB_USERNAME:-root}
       DB_PASSWORD: ${DB_PASSWORD:-wibo2909}
+      PHP_CLI_SERVER_WORKERS: 4
     depends_on:
       mysql:
         condition: service_healthy
