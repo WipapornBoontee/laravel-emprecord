@@ -93,7 +93,7 @@
     <!-- Main Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark custom-navbar sticky-top">
         <div class="container">
-            <a class="navbar-brand navbar-brand-custom" href="{{ route('home') }}">
+            <a class="navbar-brand navbar-brand-custom" href="{{ route('home', [], false) }}">
                 <i class="bi bi-rocket-takeoff-fill me-2"></i>WB-SYSTEM
             </a>
 
@@ -116,16 +116,16 @@
                             </span>
                         </div>
                     </div>
-                    <a href="{{ route('logout') }}" class="btn btn-outline-danger btn-sm px-3"
+                    <a href="{{ route('logout', [], false) }}" class="btn btn-outline-danger btn-sm px-3"
                         style="border-radius: 8px"
                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         <i class="bi bi-box-arrow-right me-1"></i> ออกจากระบบ
                     </a>
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                    <form id="logout-form" action="{{ route('logout', [], false) }}" method="POST" class="d-none">
                         @csrf
                     </form>
                 @else
-                    <a href="{{ route('login') }}" class="btn btn-primary btn-sm px-3"
+                    <a href="{{ route('login', [], false) }}" class="btn btn-primary btn-sm px-3"
                         style="background: var(--primary-gradient); border: none; border-radius: 8px;">
                         <i class="bi bi-box-arrow-in-right me-1"></i> เข้าสู่ระบบ
                     </a>

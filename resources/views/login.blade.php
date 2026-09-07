@@ -128,7 +128,7 @@
             </div>
         @endif
 
-        <form action="{{ route('login.process') }}" method="POST">
+        <form action="{{ route('login.process', [], false) }}" method="POST">
 
             @csrf
 
