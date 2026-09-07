@@ -93,7 +93,7 @@
     <!-- Main Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark custom-navbar sticky-top">
         <div class="container">
-            <a class="navbar-brand navbar-brand-custom" href="{{ route('home', [], false) }}">
+            <a class="navbar-brand navbar-brand-custom" href="{{ route('dashboard', [], false) }}">
                 <i class="bi bi-rocket-takeoff-fill me-2"></i>WB-SYSTEM
             </a>
 

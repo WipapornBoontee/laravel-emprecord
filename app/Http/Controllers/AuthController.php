@@ -15,10 +15,10 @@ class AuthController extends Controller
     public function showLoginForm()
     {
         if (Auth::check()) {
-            return redirect()->route('home');
+            return redirect()->route('dashboard');
         }
 
-        return view('login');
+        return view('auth.login');
     }
 
     /**
@@ -60,8 +60,8 @@ class AuthController extends Controller
             Auth::login($user, $remember);
             $request->session()->regenerate();
 
-            // ส่งตรงไปยังหน้า home เสมอ (ไม่ใช้ intended ป้องกัน 404 จาก URL เก่า)
-            return redirect()->route('home')->with('success', 'เข้าสู่ระบบสำเร็จ ยินดีต้อนรับ ' . $user->name);
+            // ส่งตรงไปยังหน้า dashboard / home เสมอ
+            return redirect()->route('dashboard')->with('success', 'เข้าสู่ระบบสำเร็จ ยินดีต้อนรับ ' . $user->name);
         }
 
         return back()
