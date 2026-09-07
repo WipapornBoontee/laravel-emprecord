@@ -6,7 +6,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -16,7 +15,7 @@ class AuthController extends Controller
     public function showLoginForm()
     {
         if (Auth::check()) {
-            return redirect()->route('home')->with('success', 'เข้าสู่ระบบสำเร็จ ยินดีต้อนรับ ' . $user->name);
+            return redirect()->route('home');
         }
 
         return view('login');
@@ -61,7 +60,8 @@ class AuthController extends Controller
             Auth::login($user, $remember);
             $request->session()->regenerate();
 
-            return redirect()->intended(route('home'))->with('success', 'เข้าสู่ระบบสำเร็จ ยินดีต้อนรับ ' . $user->name);
+            // ส่งตรงไปยังหน้า home เสมอ (ไม่ใช้ intended ป้องกัน 404 จาก URL เก่า)
+            return redirect()->route('home')->with('success', 'เข้าสู่ระบบสำเร็จ ยินดีต้อนรับ ' . $user->name);
         }
 
         return back()
