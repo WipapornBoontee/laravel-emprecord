@@ -1,5 +1,5 @@
 <!-- Header / Navigation Bar -->
-<nav class="navbar navbar-expand-lg navbar-dark custom-navbar sticky-top">
+<nav class="navbar navbar-expand-lg custom-navbar sticky-top">
     <div class="container">
         <a class="navbar-brand navbar-brand-custom d-flex align-items-center gap-2" href="{{ route('dashboard', [], false) }}">
             <div class="brand-icon d-flex align-items-center justify-content-center">
@@ -8,9 +8,9 @@
             <span>WB-EMS</span>
         </a>
 
-        <button class="navbar-toggler border-0 shadow-none text-white" type="button" data-bs-toggle="collapse"
+        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse"
             data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="bi bi-list fs-2"></span>
+            <span class="bi bi-list fs-2 text-theme"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarContent">
@@ -29,10 +29,10 @@
                             <a class="nav-link nav-link-custom dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-people-fill me-1"></i> จัดการพนักงาน
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-dark border-0 shadow-lg" style="background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(12px); border-radius: 14px;">
+                            <ul class="dropdown-menu custom-dropdown-menu border-0 shadow-lg">
                                 <li><a class="dropdown-item py-2" href="#"><i class="bi bi-list-ul me-2 text-primary"></i> รายชื่อพนักงานทั้งหมด</a></li>
                                 <li><a class="dropdown-item py-2" href="#"><i class="bi bi-person-plus-fill me-2 text-success"></i> เพิ่มพนักงานใหม่</a></li>
-                                <li><hr class="dropdown-divider border-secondary opacity-25"></li>
+                                <li><hr class="dropdown-divider opacity-25"></li>
                                 <li><a class="dropdown-item py-2" href="#"><i class="bi bi-diagram-3-fill me-2 text-warning"></i> จัดการแผนกและตำแหน่ง</a></li>
                             </ul>
                         </li>
@@ -43,12 +43,12 @@
                         <a class="nav-link nav-link-custom dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-calendar2-check-fill me-1"></i> การลา
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-dark border-0 shadow-lg" style="background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(12px); border-radius: 14px;">
+                        <ul class="dropdown-menu custom-dropdown-menu border-0 shadow-lg">
                             <li><a class="dropdown-item py-2" href="#"><i class="bi bi-file-earmark-plus me-2 text-info"></i> ยื่นใบลา</a></li>
                             <li><a class="dropdown-item py-2" href="#"><i class="bi bi-clock-history me-2 text-primary"></i> ประวัติการลาของฉัน</a></li>
                             <li><a class="dropdown-item py-2" href="#"><i class="bi bi-pie-chart-fill me-2 text-success"></i> สิทธิ์วันลาคงเหลือ</a></li>
                             @if(Auth::user()->isAdmin() || Auth::user()->isHr())
-                                <li><hr class="dropdown-divider border-secondary opacity-25"></li>
+                                <li><hr class="dropdown-divider opacity-25"></li>
                                 <li><a class="dropdown-item py-2" href="#"><i class="bi bi-check2-square me-2 text-warning"></i> อนุมัติคำขอลา (HR/Admin)</a></li>
                             @endif
                         </ul>
@@ -63,19 +63,24 @@
                 @endauth
             </ul>
 
-            <!-- ส่วนข้อมูลผู้ใช้ & เข้า/ออกจากระบบ -->
-            <div class="d-flex align-items-center gap-3">
+            <!-- ส่วนข้อมูลผู้ใช้, สลับโหมด Light/Dark & ออกจากระบบ -->
+            <div class="d-flex align-items-center gap-2 gap-lg-3 mt-3 mt-lg-0">
+                <!-- Theme Toggle Button -->
+                <button type="button" class="btn btn-theme-toggle" id="themeToggleBtn" title="สลับโหมดสว่าง/มืด" aria-label="Toggle Theme">
+                    <i class="bi bi-sun-fill theme-icon-light"></i>
+                    <i class="bi bi-moon-stars-fill theme-icon-dark"></i>
+                </button>
+
                 @auth
-                    <div class="user-profile-badge d-flex align-items-center gap-2 p-1 pe-3 rounded-pill" 
-                         style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
+                    <div class="user-profile-badge d-flex align-items-center gap-2 p-1 pe-3 rounded-pill">
                         <div class="avatar-circle">
                             <i class="bi bi-person-fill"></i>
                         </div>
                         <div class="d-flex flex-column text-start">
-                            <span class="fw-semibold text-white small leading-none">{{ Auth::user()->name }}</span>
+                            <span class="fw-semibold user-name-text small leading-none">{{ Auth::user()->name }}</span>
                             <div class="d-flex align-items-center gap-1" style="font-size: 0.72rem;">
                                 <span class="text-muted">{{ Auth::user()->emp_code ?? '-' }}</span>
-                                <span class="text-white-50">•</span>
+                                <span class="text-muted opacity-50">•</span>
                                 @if(Auth::user()->role === 'admin')
                                     <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-1 py-0">Admin</span>
                                 @elseif(Auth::user()->role === 'hr')

@@ -22,13 +22,13 @@
                 ยินดีต้อนรับเข้าสู่ระบบจัดการข้อมูลพนักงาน (Employee Management System)
             </p>
 
-            <div class="d-flex justify-content-center gap-3">
-                <div class="p-3 px-4 rounded-4 text-start" style="background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255, 255, 255, 0.08);">
+            <div class="d-flex flex-wrap justify-content-center gap-3">
+                <div class="p-3 px-4 rounded-4 text-start" style="background: var(--user-badge-bg); border: 1px solid var(--card-border);">
                     <div class="text-muted small">รหัสพนักงาน:</div>
-                    <div class="text-info fw-semibold">{{ Auth::user()->emp_code ?? '-' }}</div>
+                    <div class="text-primary fw-semibold">{{ Auth::user()->emp_code ?? '-' }}</div>
                 </div>
 
-                <div class="p-3 px-4 rounded-4 text-start" style="background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255, 255, 255, 0.08);">
+                <div class="p-3 px-4 rounded-4 text-start" style="background: var(--user-badge-bg); border: 1px solid var(--card-border);">
                     <div class="text-muted small">บทบาท (Role):</div>
                     <div>
                         @if(Auth::user()?->role === 'admin')
@@ -41,8 +41,8 @@
                     </div>
                 </div>
 
-                <div class="p-3 px-4 rounded-4 text-start" style="background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255, 255, 255, 0.08);">
-                    <div class="text-muted small">สถานะ:</div>
+                <div class="p-3 px-4 rounded-4 text-start" style="background: var(--user-badge-bg); border: 1px solid var(--card-border);">
+                    <div class="text-muted small">สถานะการทำงาน:</div>
                     <div class="text-success fw-semibold"><i class="bi bi-circle-fill fs-6 me-1" style="font-size: 0.6rem !important;"></i> Active</div>
                 </div>
             </div>
