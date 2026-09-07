@@ -1,8 +1,6 @@
-@extends('layout')
+@extends('layouts.app')
 
-@section('title')
-    บทความ
-@endsection
+@section('title', 'บทความ')
 
 @section('content')
     <div class="row justify-content-center">

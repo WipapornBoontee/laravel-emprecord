@@ -1,6 +1,6 @@
-@extends('layout')
+@extends('layouts.app')
 
-@section('title', 'ส่งข้อมูลแจ้งเคลมสินค้าชำรุด (Product Claim Form)')
+@section('title', 'ส่งข้อมูลแจ้งเคลมสินค้าชำรุด')
 
 @section('content')
 <div class="row justify-content-center">

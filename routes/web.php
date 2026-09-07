@@ -4,14 +4,16 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClaimController;
 use App\Http\Controllers\WebhookController;
 
 // connect database
 use Illuminate\Support\Facades\DB;
 
+// หน้าแรก - หากล็อกอินอยู่แล้วให้ไปที่ home หากยังไม่ได้ล็อกอินให้ไปที่หน้า login เสมอ
 Route::get('/', function () {
-    return view('index');
+    return redirect()->route('home');
 })->name('index');
 
 // Authentication Routes
