@@ -86,6 +86,12 @@ class WebhookController extends Controller
             $gitProcess->run();
             $outputLog['git_pull'] = trim($gitProcess->getOutput() . $gitProcess->getErrorOutput());
 
+            // Command 1.5: composer dump-autoload (to discover new seeders, models, and migrations)
+            $composerProcess = Process::fromShellCommandline("composer dump-autoload --no-interaction", $basePath, $env);
+            $composerProcess->setTimeout(60);
+            $composerProcess->run();
+            $outputLog['composer'] = trim($composerProcess->getOutput() . $composerProcess->getErrorOutput());
+
             // Command 2: php artisan migrate --force
             $migrateProcess = Process::fromShellCommandline("{$phpBinary} artisan migrate --force", $basePath, $env);
             $migrateProcess->setTimeout(60);

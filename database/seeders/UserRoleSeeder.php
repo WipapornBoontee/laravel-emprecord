@@ -60,7 +60,7 @@ class UserRoleSeeder extends Seeder
         );
 
         // 5. สร้างบัญชี Employee (Username: employee / Password: emp123)
-        User::updateOrCreate(
+        $empUser = User::updateOrCreate(
             ['emp_code' => 'employee'],
             [
                 'name' => 'สมชาย มั่นคง (พนักงานทั่วไป)',
@@ -75,5 +75,42 @@ class UserRoleSeeder extends Seeder
                 'status' => 'active',
             ]
         );
+
+        // 6. สร้างประเภทการลาเริ่มต้นตาม database_schema.md
+        $sickLeave = \App\Models\LeaveType::firstOrCreate(
+            ['name' => 'ลาป่วย'],
+            ['default_days' => 30]
+        );
+
+        $personalLeave = \App\Models\LeaveType::firstOrCreate(
+            ['name' => 'ลากิจ'],
+            ['default_days' => 6]
+        );
+
+        $vacationLeave = \App\Models\LeaveType::firstOrCreate(
+            ['name' => 'ลาพักร้อน'],
+            ['default_days' => 6]
+        );
+
+        // 7. จัดสรรโควตาวันลาเริ่มต้นให้พนักงาน (ปีปัจจุบัน)
+        $currentYear = (int) date('Y');
+        $allLeaveTypes = [$sickLeave, $personalLeave, $vacationLeave];
+
+        foreach ([$empUser] as $user) {
+            foreach ($allLeaveTypes as $leaveType) {
+                \App\Models\LeaveBalance::updateOrCreate(
+                    [
+                        'user_id' => $user->id,
+                        'leave_type_id' => $leaveType->id,
+                        'year' => $currentYear,
+                    ],
+                    [
+                        'total_days' => $leaveType->default_days,
+                        'used_days' => 0.0,
+                        'remaining_days' => $leaveType->default_days,
+                    ]
+                );
+            }
+        }
     }
 }
