@@ -4,8 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\WebhookController;
 
-// GitHub Auto-Deploy Webhook
+// *** GitHub Auto-Deploy Webhook *** //
 Route::post('/api/github-webhook', [WebhookController::class, 'handle'])->name('github.webhook');
+// ********************************* */
 
 // หน้าแรก - หากล็อกอินแล้วจะไป dashboard หากยังไม่ล็อกอินจะถูกส่งไปที่ login อัตโนมัติ
 Route::get('/', function () {
