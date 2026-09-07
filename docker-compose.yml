@@ -70,8 +70,15 @@ services:
       NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
     networks:
       - laravel_emp_net
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: laravel_emp_cf
+    restart: unless-stopped
+    command: tunnel --no-autoupdate --url http://app:8005
     depends_on:
-      - phpmyadmin
+      - app
+    networks:
+      - laravel_emp_net
 
 volumes:
   mysql_data:
