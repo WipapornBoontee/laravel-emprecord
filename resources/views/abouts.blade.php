@@ -14,7 +14,7 @@
                         <i class="bi bi-info-circle-fill text-primary fs-3" style="color: #818cf8 !important;"></i>
                     </div>
                     <div>
-                        <h2 class="fw-bold text-white mb-0">เกี่ยวกับเราจร้าหหหหหหหหหหหหหหหหหห</h2>
+                        <h2 class="fw-bold text-white mb-0">555555555555555555</h2>
                         <p class="text-muted mb-0">ข้อมูลเกี่ยวกับระบบและผู้พัฒนาโปรเจกต์นี้</p>
                     </div>
                 </div>
