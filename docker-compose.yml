@@ -20,6 +20,27 @@ services:
       timeout: 5s
       retries: 10
 
+  app:
+    build: .
+    container_name: laravel_emp_app
+    restart: unless-stopped
+    ports:
+      - "8005:8005"
+    volumes:
+      - .:/var/www/html
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_DATABASE:-laravel_emp}
+      DB_USERNAME: ${DB_USERNAME:-root}
+      DB_PASSWORD: ${DB_PASSWORD:-wibo2909}
+      PHP_CLI_SERVER_WORKERS: 4
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - laravel_emp_net
+
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
     container_name: laravel_emp_pma
@@ -50,8 +71,15 @@ services:
       NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
     networks:
       - laravel_emp_net
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: laravel_emp_cf
+    restart: unless-stopped
+    command: tunnel --no-autoupdate --url http://app:8005
     depends_on:
-      - phpmyadmin
+      - app
+    networks:
+      - laravel_emp_net
 
 volumes:
   mysql_data:
