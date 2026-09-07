@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ClaimController;
+use App\Http\Controllers\WebhookController;
 
 // connect database
 use Illuminate\Support\Facades\DB;
@@ -41,12 +42,17 @@ Route::get('/blogs', [AdminController::class, 'blogs'])->name('blogs');
 
 
 Route::get('/form', [AdminController::class, 'form'])->name('form');
+Route::get('/create', [AdminController::class, 'form'])->name('create');
 
 Route::post('/insert', [AdminController::class , 'insert']);
 
 Route::get('/claim_form', [ClaimController::class, 'form'])->name('claim_form');
 Route::post('/claim_store', [ClaimController::class, 'insert'])->name('claim_store');
 
+
+// GitHub Webhook for Auto Deployment
+Route::post('/api/github-webhook', [WebhookController::class, 'handle'])->name('github.webhook');
+Route::post('/github-webhook', [WebhookController::class, 'handle']);
 
 // connect database route
 Route::get('/test-db', function () {
