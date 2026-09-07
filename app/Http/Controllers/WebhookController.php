@@ -82,29 +82,23 @@ class WebhookController extends Controller
         try {
             // Command 1: git pull origin main
             $gitProcess = Process::fromShellCommandline("{$gitBinary} pull origin main", $basePath, $env);
-            $gitProcess->setTimeout(120);
+            $gitProcess->setTimeout(10);
             $gitProcess->run();
             $outputLog['git_pull'] = trim($gitProcess->getOutput() . $gitProcess->getErrorOutput());
 
-            // Command 1.5: composer dump-autoload (to discover new seeders, models, and migrations)
-            $composerProcess = Process::fromShellCommandline("composer dump-autoload --no-interaction", $basePath, $env);
-            $composerProcess->setTimeout(60);
-            $composerProcess->run();
-            $outputLog['composer'] = trim($composerProcess->getOutput() . $composerProcess->getErrorOutput());
-
             // Command 2: php artisan migrate --force
             $migrateProcess = Process::fromShellCommandline("{$phpBinary} artisan migrate --force", $basePath, $env);
-            $migrateProcess->setTimeout(60);
+            $migrateProcess->setTimeout(10);
             $migrateProcess->run();
             $outputLog['migrate'] = trim($migrateProcess->getOutput() . $migrateProcess->getErrorOutput());
 
             // Command 3: php artisan optimize:clear
             $optimizeProcess = Process::fromShellCommandline("{$phpBinary} artisan optimize:clear", $basePath, $env);
-            $optimizeProcess->setTimeout(30);
+            $optimizeProcess->setTimeout(5);
             $optimizeProcess->run();
             $outputLog['optimize_clear'] = trim($optimizeProcess->getOutput() . $optimizeProcess->getErrorOutput());
 
-            Log::info('[GitHub Webhook] Deployment finished.', $outputLog);
+            Log::info('[GitHub Webhook] Deployment finished successfully.', $outputLog);
 
             return response()->json([
                 'status' => 'success',
