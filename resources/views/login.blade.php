@@ -107,26 +107,40 @@
             <p class="text-muted small">ยินดีต้อนรับกลับมา โปรดกรอกข้อมูลเพื่อลงชื่อเข้าใช้งาน</p>
         </div>
 
-        @if (request()->has('error'))
+        @if (session('error'))
             <div class="alert alert-danger border-0 text-center shadow-sm py-2 mb-4"
                 style="background: rgba(239, 68, 68, 0.15); color: #f87171; border-radius: 10px;" role="alert">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ request()->query('error') }}
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ session('error') }}
             </div>
         @endif
 
-        <form action="{{ url('/login-process') }}" method="POST">
+        @if (session('success'))
+            <div class="alert alert-success border-0 text-center shadow-sm py-2 mb-4"
+                style="background: rgba(16, 185, 129, 0.15); color: #34d399; border-radius: 10px;" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="alert alert-danger border-0 text-center shadow-sm py-2 mb-4"
+                style="background: rgba(239, 68, 68, 0.15); color: #f87171; border-radius: 10px;" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ $errors->first() }}
+            </div>
+        @endif
+
+        <form action="{{ route('login.process') }}" method="POST">
 
             @csrf
 
             <div class="mb-3">
-                <label for="username" class="form-label text-muted small fw-semibold">ชื่อผู้ใช้ หรือ อีเมล</label>
+                <label for="username" class="form-label text-muted small fw-semibold">ชื่อผู้ใช้ หรือ รหัสพนักงาน</label>
                 <div class="input-group">
                     <span class="input-group-text border-0"
                         style="background: rgba(15, 23, 42, 0.5); color: var(--text-muted); border-radius: 12px 0 0 12px;"><i
                             class="bi bi-person"></i></span>
-                    <input type="text" class="form-control form-control-custom"
+                    <input type="text" class="form-control form-control-custom @error('username') is-invalid @enderror"
                         style="border-radius: 0 12px 12px 0 !important;" id="username" name="username"
-                        placeholder="กรอกชื่อผู้ใช้ของคุณ" required autocomplete="username">
+                        value="{{ old('username') }}" placeholder="admin, hr, หรือ employee" required autocomplete="username">
                 </div>
             </div>
 
@@ -136,15 +150,15 @@
                     <span class="input-group-text border-0"
                         style="background: rgba(15, 23, 42, 0.5); color: var(--text-muted); border-radius: 12px 0 0 12px;"><i
                             class="bi bi-shield-lock"></i></span>
-                    <input type="password" class="form-control form-control-custom"
+                    <input type="password" class="form-control form-control-custom @error('password') is-invalid @enderror"
                         style="border-radius: 0 12px 12px 0 !important;" id="password" name="password"
-                        placeholder="กรอกรหัสผ่าน" required autocomplete="current-password">
+                        placeholder="กรอกรหัสผ่านของคุณ" required autocomplete="current-password">
                 </div>
             </div>
 
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="remember" name="remember"
+                    <input type="checkbox" class="form-check-input" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}
                         style="background-color: rgba(15, 23, 42, 0.5); border-color: rgba(255,255,255,0.1);">
                     <label class="form-check-label text-muted small" for="remember">จดจำฉันไว้</label>
                 </div>
@@ -160,9 +174,17 @@
 
         </form>
 
-        <div class="text-center mt-4">
-            <p class="mb-0 text-muted small">ยังไม่มีบัญชีผู้ใช้? <a href="#"
-                    class="text-decoration-none fw-semibold" style="color: #818cf8;">สมัครสมาชิก</a></p>
+        <!-- บัญชีทดสอบสำหรับเข้าสู่ระบบ -->
+        <div class="mt-4 p-3 rounded-3" style="background: rgba(15, 23, 42, 0.4); border: 1px dashed rgba(255, 255, 255, 0.15);">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="small fw-semibold text-white"><i class="bi bi-info-circle me-1 text-primary"></i> บัญชีทดสอบเข้าระบบ</span>
+                <span class="badge bg-primary-subtle text-primary" style="font-size: 0.7rem;">3 Roles</span>
+            </div>
+            <div class="d-flex flex-column gap-1 small text-muted" style="font-size: 0.8rem;">
+                <div><span class="badge bg-danger-subtle text-danger px-1">Admin</span> User: <code class="text-info">admin</code> / Pass: <code class="text-warning">admin123</code></div>
+                <div><span class="badge bg-warning-subtle text-warning px-1">HR</span> User: <code class="text-info">hr</code> / Pass: <code class="text-warning">hr123</code></div>
+                <div><span class="badge bg-success-subtle text-success px-1">Employee</span> User: <code class="text-info">employee</code> / Pass: <code class="text-warning">emp123</code></div>
+            </div>
         </div>
     </div>
 

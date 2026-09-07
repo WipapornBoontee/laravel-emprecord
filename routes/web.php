@@ -14,40 +14,34 @@ Route::get('/', function () {
     return view('index');
 })->name('index');
 
-Route::get('/login', function () {
-    return view('login');
-})->name('login');
+// Authentication Routes
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.process');
+Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::post('/login-process', function (Request $request) {
-    $username = $request->input('username');  
-    return redirect()->route('home')->with('user_logged_in', $username);
+// Protected Routes (ต้องเข้าสู่ระบบก่อน)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/home', function () {
+        return view('home');
+    })->name('home');
+
+    // Route ที่อนุญาตให้ Admin และ HR เท่านั้น
+    Route::middleware(['role:admin,hr'])->group(function () {
+        Route::get('/add', function () {
+            return view('add'); 
+        })->name('add');
+
+        Route::get('/form', [AdminController::class, 'form'])->name('form');
+        Route::get('/create', [AdminController::class, 'form'])->name('create');
+        Route::post('/insert', [AdminController::class , 'insert']);
+    });
+
+    // ทั่วไปสำหรับผู้ใช้ที่ล็อกอินแล้ว
+    Route::get('/abouts', [AdminController::class, 'abouts'])->name('abouts');
+    Route::get('/blogs', [AdminController::class, 'blogs'])->name('blogs');
+    Route::get('/claim_form', [ClaimController::class, 'form'])->name('claim_form');
+    Route::post('/claim_store', [ClaimController::class, 'insert'])->name('claim_store');
 });
-
-Route::get('/home', function () {
-    return view('home');
-})->name('home');
-
-Route::get('/logout', function () {
-    return redirect()->route('login');
-})->name('logout');
-
-Route::get('/add', function () {
-    return view('add'); 
-})->name('add');
-
-
-Route::get('/abouts', [AdminController::class, 'abouts'])->name('abouts');
-
-Route::get('/blogs', [AdminController::class, 'blogs'])->name('blogs');
-
-
-Route::get('/form', [AdminController::class, 'form'])->name('form');
-Route::get('/create', [AdminController::class, 'form'])->name('create');
-
-Route::post('/insert', [AdminController::class , 'insert']);
-
-Route::get('/claim_form', [ClaimController::class, 'form'])->name('claim_form');
-Route::post('/claim_store', [ClaimController::class, 'insert'])->name('claim_store');
 
 
 // GitHub Webhook for Auto Deployment

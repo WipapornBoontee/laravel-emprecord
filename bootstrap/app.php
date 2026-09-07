@@ -15,6 +15,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'api/github-webhook',
             'github-webhook',
         ]);
+
+        $middleware->alias([
+            'role' => \App\Http\Middleware\CheckRole::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

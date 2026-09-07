@@ -279,17 +279,33 @@
                     id="navbarNav"
                 >
                     <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
-                        <span class="text-white small">
-                            <i class="bi bi-person-circle me-1 text-muted"></i>
-                            สวัสดีวันจันทร์, {{ session("user_logged_in") }}
-                        </span>
+                        <div class="d-flex align-items-center gap-2 text-white small">
+                            <i class="bi bi-person-circle fs-5 text-indigo" style="color: #818cf8;"></i>
+                            <div class="d-flex flex-column text-start">
+                                <span class="fw-semibold">{{ Auth::user()->name ?? 'ผู้ใช้งาน' }}</span>
+                                <span class="text-muted" style="font-size: 0.75rem;">
+                                    รหัส: <strong class="text-info">{{ Auth::user()->emp_code ?? '-' }}</strong> | 
+                                    @if(Auth::user()?->role === 'admin')
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-1">Admin</span>
+                                    @elseif(Auth::user()?->role === 'hr')
+                                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-1">HR</span>
+                                    @else
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle px-1">Employee</span>
+                                    @endif
+                                </span>
+                            </div>
+                        </div>
                         <a
                             href="{{ route('logout') }}"
                             class="btn btn-outline-danger btn-sm px-3"
                             style="border-radius: 8px"
+                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
                         >
-                            ออกจากระบบ
+                            <i class="bi bi-box-arrow-right me-1"></i> ออกจากระบบ
                         </a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                            @csrf
+                        </form>
                     </div>
                 </div>
             </div>

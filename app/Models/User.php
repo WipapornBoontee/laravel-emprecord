@@ -86,4 +86,40 @@ class User extends Authenticatable
     {
         return $this->hasMany(Attendance::class);
     }
+
+    /**
+     * Check if user is admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Check if user is HR
+     */
+    public function isHr(): bool
+    {
+        return $this->role === 'hr';
+    }
+
+    /**
+     * Check if user is Employee
+     */
+    public function isEmployee(): bool
+    {
+        return $this->role === 'employee';
+    }
+
+    /**
+     * Check if user has any of the given roles
+     */
+    public function hasRole(string|array $roles): bool
+    {
+        if (is_string($roles)) {
+            $roles = explode(',', $roles);
+        }
+
+        return in_array($this->role, array_map('trim', $roles), true);
+    }
 }
