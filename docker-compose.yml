@@ -1,0 +1,62 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: laravel_emp_mysql
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-wibo2909}
+      MYSQL_DATABASE: ${DB_DATABASE:-laravel_emp}
+      MYSQL_USER: ${DB_USERNAME:-root}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-wibo2909}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - laravel_emp_net
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD:-wibo2909}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: laravel_emp_pma
+    restart: unless-stopped
+    ports:
+      - "8090:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 0
+      UPLOAD_LIMIT: 300M
+    depends_on:
+      - mysql
+    networks:
+      - laravel_emp_net
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: laravel_emp_ngrok
+    restart: unless-stopped
+    ports:
+      - "4040:4040"
+    command:
+      - "http"
+      - "--url=hatchet-improving-creed.ngrok-free.dev"
+      - "phpmyadmin:80"
+    environment:
+      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
+    networks:
+      - laravel_emp_net
+    depends_on:
+      - phpmyadmin
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  laravel_emp_net:
+    driver: bridge

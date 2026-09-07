@@ -11,12 +11,31 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::create('departments', function (Blueprint $table) {
+            $table->id();
+            $table->string('name', 100);
+            $table->timestamps();
+        });
+
+        Schema::create('positions', function (Blueprint $table) {
+            $table->id();
+            $table->string('name', 100);
+            $table->timestamps();
+        });
+
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('emp_code', 20)->unique();
+            $table->string('name', 100);
+            $table->string('email', 100)->unique();
+            $table->string('password', 255);
+            $table->string('phone', 20)->nullable();
+            $table->text('address')->nullable();
+            $table->enum('role', ['admin', 'hr', 'employee'])->default('employee');
+            $table->foreignId('department_id')->nullable()->constrained('departments')->nullOnDelete();
+            $table->foreignId('position_id')->nullable()->constrained('positions')->nullOnDelete();
+            $table->date('start_date')->nullable();
+            $table->enum('status', ['active', 'resigned'])->default('active');
             $table->rememberToken();
             $table->timestamps();
         });
@@ -42,8 +61,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('users');
+        Schema::dropIfExists('positions');
+        Schema::dropIfExists('departments');
     }
 };
