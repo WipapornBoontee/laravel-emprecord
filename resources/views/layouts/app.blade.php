@@ -16,7 +16,11 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <!-- Anti-flicker Theme Script -->
+    <!-- ============================================================================== -->
+    <!-- [IMPORTANT / สำคัญมาก: ห้ามลบ]                                                    -->
+    <!-- 1. Anti-flicker Theme Script: โหลดค่า Theme จาก LocalStorage ก่อน Render DOM      -->
+    <!--    เพื่อป้องกันหน้าเว็บกะพริบ (Flicker) เมื่อเปลี่ยนหน้าหรือรีเฟรช                      -->
+    <!-- ============================================================================== -->
     <script>
         (function () {
             const savedTheme = localStorage.getItem('wb_theme') || 'dark';
@@ -25,7 +29,14 @@
     </script>
 
     <style>
-        /* === Color Palette & CSS Variables === */
+        /* ==========================================================================
+           [IMPORTANT / ห้ามลบ]: THEME DESIGN TOKENS (LIGHT & DARK MODE)
+           ส่วนกำหนดชุดสีกลางของทั้งระบบ หากเพิ่มหน้าหรือ Component ใหม่ ให้ใช้ CSS Variables
+           เหล่านี้เสมอ (เช่น var(--bg-color), var(--text-main), var(--surface-bg))
+           เพื่อให้ระบบสามารถสลับ Dark/Light Mode ได้อัตโนมัติทั้งเว็บไซต์
+        ========================================================================== */
+
+        /* --- Dark Mode (โหมดมืด) --- */
         :root[data-bs-theme="dark"] {
             --primary-gradient: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
             --accent-color: #6366f1;
@@ -46,6 +57,7 @@
             --icon-purple: rgba(168, 85, 247, 0.2);
         }
 
+        /* --- Light Mode (โหมดสว่าง) --- */
         :root[data-bs-theme="light"] {
             --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
             --accent-color: #4f46e5;
@@ -65,6 +77,7 @@
             --icon-amber: rgba(245, 158, 11, 0.12);
             --icon-purple: rgba(168, 85, 247, 0.12);
         }
+        /* ========================================================================== */
 
         * {
             box-sizing: border-box;
@@ -369,7 +382,10 @@
     <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Theme Switcher JavaScript -->
+    <!-- ============================================================================== -->
+    <!-- [IMPORTANT / สำคัญมาก: ห้ามลบ]                                                    -->
+    <!-- 2. Theme Switcher JavaScript: จัดการ Event กดปุ่มสลับธีมและบันทึกค่าลง LocalStorage    -->
+    <!-- ============================================================================== -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const themeToggleBtn = document.getElementById('themeToggleBtn');
@@ -393,6 +409,7 @@
             }
         });
     </script>
+    <!-- ============================================================================== -->
     @stack('scripts')
 </body>
 
