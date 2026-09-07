@@ -6,16 +6,16 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: wibo2909
-      MYSQL_DATABASE: laravel_emp
-      MYSQL_USER: laravel
-      MYSQL_PASSWORD: wibo2909
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-wibo2909}
+      MYSQL_DATABASE: ${DB_DATABASE:-laravel_emp}
+      MYSQL_USER: ${DB_USERNAME:-root}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-wibo2909}
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
       - laravel_emp_net
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pwibo2909" ]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD:-wibo2909}" ]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -45,7 +45,7 @@ services:
       - "--url=hatchet-improving-creed.ngrok-free.dev"
       - "host.docker.internal:8005"
     environment:
-      NGROK_AUTHTOKEN: 3IeB7lyTKqOa8YDTxBb1nZTXwMa_2FXS5PTocUEaQz5j7NQAc
+      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
