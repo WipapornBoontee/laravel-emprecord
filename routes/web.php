@@ -2,11 +2,15 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\WebhookController;
 
 // หน้าแรก - หากล็อกอินอยู่แล้วให้ไปที่ home หากยังไม่ได้ล็อกอินให้ไปที่หน้า login เสมอ
 Route::get('/', function () {
     return redirect()->route('home');
 })->name('index');
+
+// GitHub Auto-Deploy Webhook
+Route::post('/api/github-webhook', [WebhookController::class, 'handle']);
 
 // Authentication Routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
