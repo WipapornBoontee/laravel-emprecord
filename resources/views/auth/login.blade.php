@@ -101,10 +101,10 @@
     <div class="login-card p-4 p-md-5">
         <div class="text-center mb-4">
             <div class="mb-2">
-                <span class="login-logo"><i class="bi bi-rocket-takeoff-fill me-2"></i>WB</span>
+                {{-- <span class="login-logo"><i class="bi bi-rocket-takeoff-fill me-2"></i></span> --}}
             </div>
             <h3 class="fw-bold text-white mb-1">เข้าสู่ระบบ</h3>
-            <p class="text-muted small">ยินดีต้อนรับกลับมา โปรดกรอกข้อมูลเพื่อลงชื่อเข้าใช้งาน</p>
+            {{-- <p class="text-muted small">ยินดีต้อนรับกลับมา โปรดกรอกข้อมูลเพื่อลงชื่อเข้าใช้งาน</p> --}}
         </div>
 
         @if (session('error'))
@@ -136,7 +136,7 @@
                 <label for="username" class="form-label text-muted small fw-semibold">ชื่อผู้ใช้ หรือ รหัสพนักงาน</label>
                 <div class="input-group">
                     <span class="input-group-text border-0"
-                        style="background: rgba(15, 23, 42, 0.5); color: var(--text-muted); border-radius: 12px 0 0 12px;"><i
+                        style="background: rgba(253, 253, 253, 0.5); color: var(--text-muted); border-radius: 12px 0 0 12px;"><i
                             class="bi bi-person"></i></span>
                     <input type="text" class="form-control form-control-custom @error('username') is-invalid @enderror"
                         style="border-radius: 0 12px 12px 0 !important;" id="username" name="username"
@@ -148,7 +148,7 @@
                 <label for="password" class="form-label text-muted small fw-semibold">รหัสผ่าน</label>
                 <div class="input-group">
                     <span class="input-group-text border-0"
-                        style="background: rgba(15, 23, 42, 0.5); color: var(--text-muted); border-radius: 12px 0 0 12px;"><i
+                        style="background: rgba(253, 253, 253, 0.5); color: var(--text-muted); border-radius: 12px 0 0 12px;"><i
                             class="bi bi-shield-lock"></i></span>
                     <input type="password" class="form-control form-control-custom @error('password') is-invalid @enderror"
                         style="border-radius: 0 12px 12px 0 !important;" id="password" name="password"
