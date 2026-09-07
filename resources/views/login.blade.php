@@ -173,19 +173,6 @@
             </div>
 
         </form>
-
-        <!-- บัญชีทดสอบสำหรับเข้าสู่ระบบ -->
-        <div class="mt-4 p-3 rounded-3" style="background: rgba(15, 23, 42, 0.4); border: 1px dashed rgba(255, 255, 255, 0.15);">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="small fw-semibold text-white"><i class="bi bi-info-circle me-1 text-primary"></i> บัญชีทดสอบเข้าระบบ</span>
-                <span class="badge bg-primary-subtle text-primary" style="font-size: 0.7rem;">3 Roles</span>
-            </div>
-            <div class="d-flex flex-column gap-1 small text-muted" style="font-size: 0.8rem;">
-                <div><span class="badge bg-danger-subtle text-danger px-1">Admin</span> User: <code class="text-info">admin</code> / Pass: <code class="text-warning">admin123</code></div>
-                <div><span class="badge bg-warning-subtle text-warning px-1">HR</span> User: <code class="text-info">hr</code> / Pass: <code class="text-warning">hr123</code></div>
-                <div><span class="badge bg-success-subtle text-success px-1">Employee</span> User: <code class="text-info">employee</code> / Pass: <code class="text-warning">emp123</code></div>
-            </div>
-        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

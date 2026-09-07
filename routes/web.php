@@ -1,15 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
-
-use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ClaimController;
-use App\Http\Controllers\WebhookController;
-
-// connect database
-use Illuminate\Support\Facades\DB;
 
 // หน้าแรก - หากล็อกอินอยู่แล้วให้ไปที่ home หากยังไม่ได้ล็อกอินให้ไปที่หน้า login เสมอ
 Route::get('/', function () {
@@ -21,41 +13,9 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.process');
 Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Protected Routes (ต้องเข้าสู่ระบบก่อน)
+// Protected Routes (ต้องเข้าสู่ระบบก่อนเสมอ)
 Route::middleware(['auth'])->group(function () {
     Route::get('/home', function () {
         return view('home');
     })->name('home');
-
-    // Route ที่อนุญาตให้ Admin และ HR เท่านั้น
-    Route::middleware(['role:admin,hr'])->group(function () {
-        Route::get('/add', function () {
-            return view('add'); 
-        })->name('add');
-
-        Route::get('/form', [AdminController::class, 'form'])->name('form');
-        Route::get('/create', [AdminController::class, 'form'])->name('create');
-        Route::post('/insert', [AdminController::class , 'insert']);
-    });
-
-    // ทั่วไปสำหรับผู้ใช้ที่ล็อกอินแล้ว
-    Route::get('/abouts', [AdminController::class, 'abouts'])->name('abouts');
-    Route::get('/blogs', [AdminController::class, 'blogs'])->name('blogs');
-    Route::get('/claim_form', [ClaimController::class, 'form'])->name('claim_form');
-    Route::post('/claim_store', [ClaimController::class, 'insert'])->name('claim_store');
-});
-
-
-// GitHub Webhook for Auto Deployment
-Route::post('/api/github-webhook', [WebhookController::class, 'handle'])->name('github.webhook');
-Route::post('/github-webhook', [WebhookController::class, 'handle']);
-
-// connect database route
-Route::get('/test-db', function () {
-    try {
-        DB::connection()->getPdo();
-        return "เชื่อมต่อฐานข้อมูลสำเร็จ! Database name: " . DB::connection()->getDatabaseName();
-    } catch (\Exception $e) {
-        return "ไม่สามารถเชื่อมต่อฐานข้อมูลได้: " . $e->getMessage();
-    }
 });
