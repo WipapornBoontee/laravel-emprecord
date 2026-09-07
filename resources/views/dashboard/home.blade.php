@@ -3,6 +3,7 @@
 @section('title', 'แดชบอร์ดภาพรวม')
 
 @section('content')
+{{-- อันนี้ตรงมี ห้ามลบ --}}
 <div class="row g-4 justify-content-center">
     <!-- 1. Hero Welcome Banner -->
     <div class="col-12">
