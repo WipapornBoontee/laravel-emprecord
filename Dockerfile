@@ -1,6 +1,6 @@
-FROM php:8.3-fpm-alpine
+FROM php:8.3-cli-alpine
 
-# Install system dependencies
+# Install system dependencies and PHP extensions for Laravel & MySQL
 RUN apk add --no-cache \
     git \
     curl \
@@ -8,33 +8,15 @@ RUN apk add --no-cache \
     libxml2-dev \
     zip \
     unzip \
-    libzip-dev \
-    icu-dev \
-    oniguruma-dev \
-    linux-headers
+    linux-headers \
+    $PHPIZE_DEPS \
+    && docker-php-ext-install pdo pdo_mysql bcmath
 
-# Install PHP extensions
-RUN docker-php-ext-install \
-    pdo \
-    pdo_mysql \
-    mbstring \
-    exif \
-    pcntl \
-    bcmath \
-    gd \
-    zip \
-    intl \
-    opcache
-
-# Copy custom PHP & OPcache configs for performance boost
-COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
-COPY docker/php/custom.ini /usr/local/etc/php/conf.d/custom.ini
-
-# Get latest Composer
+# Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set working directory
 WORKDIR /var/www/html
 
-EXPOSE 9000
-CMD ["php-fpm"]
+EXPOSE 8005
+
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8005"]
