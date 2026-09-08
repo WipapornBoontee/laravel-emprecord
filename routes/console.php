@@ -15,7 +15,7 @@ Artisan::command('tunnel:sync', function () {
         $target = $matches[1];
         $this->line("    Active Tunnel: <info>{$target}</info>");
         try {
-            $response = \Illuminate\Support\Facades\Http::withoutVerifying()->timeout(5)->post('https://round-mode-5c41.wibo00101.workers.dev/__sync_tunnel', [
+            $response = \Illuminate\Support\Facades\Http::withoutVerifying()->asJson()->timeout(5)->post('https://round-mode-5c41.wibo00101.workers.dev/__sync_tunnel', [
                 'key' => 'wibo_secret_key_2026',
                 'target' => $target,
             ]);
