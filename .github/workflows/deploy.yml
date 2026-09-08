@@ -1,0 +1,27 @@
+name: Auto Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to Local Server
+    runs-on: self-hosted
+
+    steps:
+      - name: Update Code & Run Migrations
+        shell: powershell
+        run: |
+          Set-Location "c:\Users\HP\Documents\GitHub\laravel-emprecord"
+          Write-Host "[*] Pulling latest code from GitHub..."
+          git pull origin main
+
+          Write-Host "[*] Running Database Migrations..."
+          C:\php\php.exe artisan migrate --force
+
+          Write-Host "[*] Clearing Cache..."
+          C:\php\php.exe artisan optimize:clear
+
+          Write-Host "[OK] Deployment Finished Successfully!"
