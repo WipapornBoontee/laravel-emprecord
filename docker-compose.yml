@@ -22,6 +22,33 @@ services:
     networks:
       - laravel_emp_net
 
+  auto_deploy:
+    image: alpine/git:latest
+    container_name: laravel_emp_deploy
+    restart: unless-stopped
+    volumes:
+      - .:/repo
+    working_dir: /repo
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        echo "[Auto-Deploy] Live Synchronization Active. Monitoring GitHub..."
+        git config --global --add safe.directory /repo
+        while true; do
+          git fetch origin main 2>/dev/null
+          LOCAL=$$(git rev-parse HEAD 2>/dev/null)
+          REMOTE=$$(git rev-parse origin/main 2>/dev/null)
+          if [ "$$LOCAL" != "$$REMOTE" ] && [ -n "$$REMOTE" ]; then
+            echo "[Auto-Deploy] New commit detected! Pulling changes..."
+            git pull origin main
+            echo "[Auto-Deploy] Successfully updated to latest commit!"
+          fi
+          sleep 3
+        done
+    networks:
+      - laravel_emp_net
+
   mysql:
     image: mysql:8.0
     container_name: laravel_emp_mysql
