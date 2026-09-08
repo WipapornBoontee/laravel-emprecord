@@ -18,7 +18,7 @@ jobs:
           echo [*] Pulling latest code from GitHub...
           git pull origin main
           echo [*] Running Database Migrations...
-          C:\php\php.exe artisan migrate --force
+          docker compose exec -T app php artisan migrate --force
           echo [*] Clearing Cache...
-          C:\php\php.exe artisan optimize:clear
+          docker compose exec -T app php artisan optimize:clear
           echo [OK] Deployment Finished Successfully!
