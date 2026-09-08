@@ -12,16 +12,13 @@ jobs:
 
     steps:
       - name: Update Code & Run Migrations
-        shell: powershell
+        shell: cmd
         run: |
-          Set-Location "c:\Users\HP\Documents\GitHub\laravel-emprecord"
-          Write-Host "[*] Pulling latest code from GitHub..."
+          cd /d "c:\Users\HP\Documents\GitHub\laravel-emprecord"
+          echo [*] Pulling latest code from GitHub...
           git pull origin main
-
-          Write-Host "[*] Running Database Migrations..."
+          echo [*] Running Database Migrations...
           C:\php\php.exe artisan migrate --force
-
-          Write-Host "[*] Clearing Cache..."
+          echo [*] Clearing Cache...
           C:\php\php.exe artisan optimize:clear
-
-          Write-Host "[OK] Deployment Finished Successfully!"
+          echo [OK] Deployment Finished Successfully!
