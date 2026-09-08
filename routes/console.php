@@ -31,3 +31,52 @@ Artisan::command('tunnel:sync', function () {
         $this->warn('    [!] No active trycloudflare.com URL found in container logs.');
     }
 })->purpose('Sync dynamic Cloudflare tunnel domain to worker');
+
+Artisan::command('deploy:run {commit=latest}', function ($commit) {
+    $this->info("[*] Starting deployment for commit: {$commit}");
+    Log::info("[Auto-Deploy] Starting background deployment for commit: {$commit}");
+    $basePath = base_path();
+    $gitBinary = is_file('C:\\Program Files\\Git\\cmd\\git.exe') ? '"C:\\Program Files\\Git\\cmd\\git.exe"' : 'git';
+    $phpBinary = defined('PHP_BINARY') && is_file(PHP_BINARY) ? '"' . PHP_BINARY . '"' : (is_file('C:\\php\\php.exe') ? '"C:\\php\\php.exe"' : 'php');
+
+    $env = array_merge($_SERVER, $_ENV, [
+        'PATH' => 'C:\\php;C:\\Program Files\\Git\\cmd;' . (getenv('PATH') ?: '') . ';' . (isset($_SERVER['PATH']) ? $_SERVER['PATH'] : ''),
+        'SYSTEMROOT' => getenv('SYSTEMROOT') ?: 'C:\\Windows',
+        'USERPROFILE' => getenv('USERPROFILE') ?: 'C:\\Users\\HP',
+        'HOMEDRIVE' => getenv('HOMEDRIVE') ?: 'C:',
+        'HOMEPATH' => getenv('HOMEPATH') ?: '\\Users\\HP',
+        'LOCALAPPDATA' => getenv('LOCALAPPDATA') ?: 'C:\\Users\\HP\\AppData\\Local',
+        'APPDATA' => getenv('APPDATA') ?: 'C:\\Users\\HP\\AppData\\Roaming',
+        'GIT_TERMINAL_PROMPT' => '0',
+        'GCM_INTERACTIVE' => 'never',
+    ]);
+
+    $outputLog = [];
+    try {
+        $githubToken = env('GITHUB_TOKEN');
+        $pullTarget = $githubToken 
+            ? "https://{$githubToken}@github.com/WipapornBoontee/laravel-emprecord.git main" 
+            : "origin main";
+
+        $gitProcess = Symfony\Component\Process\Process::fromShellCommandline("{$gitBinary} pull {$pullTarget}", $basePath, $env);
+        $gitProcess->setTimeout(60);
+        $gitProcess->run();
+        $outputLog['git_pull'] = trim($gitProcess->getOutput() . $gitProcess->getErrorOutput());
+
+        $migrateProcess = Symfony\Component\Process\Process::fromShellCommandline("{$phpBinary} artisan migrate --force", $basePath, $env);
+        $migrateProcess->setTimeout(60);
+        $migrateProcess->run();
+        $outputLog['migrate'] = trim($migrateProcess->getOutput() . $migrateProcess->getErrorOutput());
+
+        $optimizeProcess = Symfony\Component\Process\Process::fromShellCommandline("{$phpBinary} artisan optimize:clear", $basePath, $env);
+        $optimizeProcess->setTimeout(30);
+        $optimizeProcess->run();
+        $outputLog['optimize_clear'] = trim($optimizeProcess->getOutput() . $optimizeProcess->getErrorOutput());
+
+        Log::info('[Auto-Deploy] Deployment finished successfully.', $outputLog);
+        $this->info('[OK] Deployment finished successfully.');
+    } catch (\Throwable $e) {
+        Log::error('[Auto-Deploy] Deployment error: ' . $e->getMessage());
+        $this->error('[!] Deployment error: ' . $e->getMessage());
+    }
+})->purpose('Run git pull, migration, and cache clear in background');

@@ -72,71 +72,25 @@ class WebhookController extends Controller
             ], 200);
         }
 
-        // 4. Execute Deployment Commands
+        // 4. Trigger Deployment in Background (Instant 200 OK Response)
         $basePath = base_path();
         $commitHash = $payload['after'] ?? $request->input('after') ?? 'unknown';
-        Log::info("[GitHub Webhook] Starting Auto-Deployment for commit: {$commitHash}");
+        $pusherName = $payload['pusher']['name'] ?? $request->input('pusher.name') ?? 'unknown';
+        Log::info("[GitHub Webhook] Push event verified for commit {$commitHash} by {$pusherName}. Launching background deployment.");
 
-        // Locate binaries robustly on Windows / Linux
-        $gitBinary = is_file('C:\\Program Files\\Git\\cmd\\git.exe') ? '"C:\\Program Files\\Git\\cmd\\git.exe"' : 'git';
-        $phpBinary = defined('PHP_BINARY') && is_file(PHP_BINARY) ? '"' . PHP_BINARY . '"' : (is_file('C:\\php\\php.exe') ? '"C:\\php\\php.exe"' : 'php');
-
-        $env = array_merge($_SERVER, $_ENV, [
-            'PATH' => 'C:\\php;C:\\Program Files\\Git\\cmd;' . (getenv('PATH') ?: '') . ';' . (isset($_SERVER['PATH']) ? $_SERVER['PATH'] : ''),
-            'SYSTEMROOT' => getenv('SYSTEMROOT') ?: 'C:\\Windows',
-            'USERPROFILE' => getenv('USERPROFILE') ?: 'C:\\Users\\HP',
-            'HOMEDRIVE' => getenv('HOMEDRIVE') ?: 'C:',
-            'HOMEPATH' => getenv('HOMEPATH') ?: '\\Users\\HP',
-            'LOCALAPPDATA' => getenv('LOCALAPPDATA') ?: 'C:\\Users\\HP\\AppData\\Local',
-            'APPDATA' => getenv('APPDATA') ?: 'C:\\Users\\HP\\AppData\\Roaming',
-            'GIT_TERMINAL_PROMPT' => '0',
-            'GCM_INTERACTIVE' => 'never',
-        ]);
-
-        $outputLog = [];
-
-        try {
-            // Command 1: git pull origin main (support GITHUB_TOKEN for private repos)
-            $githubToken = env('GITHUB_TOKEN');
-            $pullTarget = $githubToken 
-                ? "https://{$githubToken}@github.com/WipapornBoontee/laravel-emprecord.git main" 
-                : "origin main";
-
-            $gitProcess = Process::fromShellCommandline("{$gitBinary} pull {$pullTarget}", $basePath, $env);
-            $gitProcess->setTimeout(30);
-            $gitProcess->run();
-            $outputLog['git_pull'] = trim($gitProcess->getOutput() . $gitProcess->getErrorOutput());
-
-            // Command 2: php artisan migrate --force
-            $migrateProcess = Process::fromShellCommandline("{$phpBinary} artisan migrate --force", $basePath, $env);
-            $migrateProcess->setTimeout(30);
-            $migrateProcess->run();
-            $outputLog['migrate'] = trim($migrateProcess->getOutput() . $migrateProcess->getErrorOutput());
-
-            // Command 3: php artisan optimize:clear
-            $optimizeProcess = Process::fromShellCommandline("{$phpBinary} artisan optimize:clear", $basePath, $env);
-            $optimizeProcess->setTimeout(10);
-            $optimizeProcess->run();
-            $outputLog['optimize_clear'] = trim($optimizeProcess->getOutput() . $optimizeProcess->getErrorOutput());
-
-            Log::info('[GitHub Webhook] Deployment finished successfully.', $outputLog);
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Auto-deployed successfully!',
-                'commit' => $request->input('after'),
-                'pusher' => $request->input('pusher.name'),
-                'output' => $outputLog,
-            ], 200);
-
-        } catch (\Exception $e) {
-            Log::error('[GitHub Webhook] Deployment error: ' . $e->getMessage());
-
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Deployment failed: ' . $e->getMessage(),
-                'output' => $outputLog,
-            ], 500);
+        // Asynchronous detached background execution (resumes in 5ms without hanging GitHub)
+        $phpBinary = is_file('C:\\php\\php.exe') ? 'C:\\php\\php.exe' : 'php';
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            pclose(popen("start /B {$phpBinary} \"{$basePath}\\artisan\" deploy:run \"{$commitHash}\" > NUL 2>&1", "r"));
+        } else {
+            exec("{$phpBinary} \"{$basePath}/artisan\" deploy:run \"{$commitHash}\" > /dev/null 2>&1 &");
         }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Deployment queued and executing in background.',
+            'commit' => $commitHash,
+            'pusher' => $pusherName,
+        ], 200);
     }
 }
