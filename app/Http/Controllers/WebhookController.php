@@ -14,6 +14,14 @@ class WebhookController extends Controller
      */
     public function handle(Request $request): JsonResponse
     {
+        // Handle GET requests (Health check / status)
+        if ($request->isMethod('get')) {
+            return response()->json([
+                'status' => 'active',
+                'message' => 'GitHub Webhook endpoint is online and listening for events.',
+            ], 200);
+        }
+
         $secret = config('app.github_webhook_secret', env('GITHUB_WEBHOOK_SECRET'));
         
         // 1. Verify GitHub Signature (if secret is configured)
