@@ -1,9 +1,10 @@
 FROM php:8.3-cli-alpine
 
-# Install system dependencies and PHP extensions for Laravel & MySQL
+# Install system dependencies, PHP extensions, and docker-cli for container management
 RUN apk add --no-cache \
     git \
     curl \
+    docker-cli \
     libpng-dev \
     libxml2-dev \
     zip \
@@ -24,4 +25,7 @@ WORKDIR /var/www/html
 
 EXPOSE 8005
 
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8005"]
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

@@ -43,12 +43,18 @@ class WebhookController extends Controller
         }
 
         // 3. Check Branch (Deploy on 'main' branch)
-        $payload = $request->all();
-        if ($request->has('payload') && is_string($request->input('payload'))) {
-            $payload = json_decode($request->input('payload'), true) ?: $payload;
+        $rawContent = $request->getContent();
+        $payload = json_decode($rawContent, true) ?: [];
+        if (empty($payload)) {
+            $rawPayload = $request->input('payload');
+            if (is_string($rawPayload)) {
+                $payload = json_decode($rawPayload, true) ?: [];
+            } else {
+                $payload = $request->all();
+            }
         }
 
-        $ref = $payload['ref'] ?? $request->input('ref');
+        $ref = $payload['ref'] ?? $request->input('ref') ?? $request->json('ref');
         $targetBranch = 'refs/heads/main';
         
         if ($ref !== $targetBranch) {
@@ -60,7 +66,8 @@ class WebhookController extends Controller
 
         // 4. Execute Deployment Commands
         $basePath = base_path();
-        Log::info("[GitHub Webhook] Starting Auto-Deployment for commit: " . $request->input('after'));
+        $commitHash = $payload['after'] ?? $request->input('after') ?? 'unknown';
+        Log::info("[GitHub Webhook] Starting Auto-Deployment for commit: {$commitHash}");
 
         // Locate binaries robustly on Windows / Linux
         $gitBinary = is_file('C:\\Program Files\\Git\\cmd\\git.exe') ? '"C:\\Program Files\\Git\\cmd\\git.exe"' : 'git';
@@ -75,26 +82,32 @@ class WebhookController extends Controller
             'LOCALAPPDATA' => getenv('LOCALAPPDATA') ?: 'C:\\Users\\HP\\AppData\\Local',
             'APPDATA' => getenv('APPDATA') ?: 'C:\\Users\\HP\\AppData\\Roaming',
             'GIT_TERMINAL_PROMPT' => '0',
+            'GCM_INTERACTIVE' => 'never',
         ]);
 
         $outputLog = [];
 
         try {
-            // Command 1: git pull origin main
-            $gitProcess = Process::fromShellCommandline("{$gitBinary} pull origin main", $basePath, $env);
-            $gitProcess->setTimeout(10);
+            // Command 1: git pull origin main (support GITHUB_TOKEN for private repos)
+            $githubToken = env('GITHUB_TOKEN');
+            $pullTarget = $githubToken 
+                ? "https://{$githubToken}@github.com/WipapornBoontee/laravel-emprecord.git main" 
+                : "origin main";
+
+            $gitProcess = Process::fromShellCommandline("{$gitBinary} pull {$pullTarget}", $basePath, $env);
+            $gitProcess->setTimeout(30);
             $gitProcess->run();
             $outputLog['git_pull'] = trim($gitProcess->getOutput() . $gitProcess->getErrorOutput());
 
             // Command 2: php artisan migrate --force
             $migrateProcess = Process::fromShellCommandline("{$phpBinary} artisan migrate --force", $basePath, $env);
-            $migrateProcess->setTimeout(10);
+            $migrateProcess->setTimeout(30);
             $migrateProcess->run();
             $outputLog['migrate'] = trim($migrateProcess->getOutput() . $migrateProcess->getErrorOutput());
 
             // Command 3: php artisan optimize:clear
             $optimizeProcess = Process::fromShellCommandline("{$phpBinary} artisan optimize:clear", $basePath, $env);
-            $optimizeProcess->setTimeout(5);
+            $optimizeProcess->setTimeout(10);
             $optimizeProcess->run();
             $outputLog['optimize_clear'] = trim($optimizeProcess->getOutput() . $optimizeProcess->getErrorOutput());
 
