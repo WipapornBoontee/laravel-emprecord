@@ -14,11 +14,22 @@ export default {
         method: request.method,
         headers: newHeaders,
         body: ["GET", "HEAD"].includes(request.method) ? null : request.body,
-        redirect: "follow",
+        redirect: "manual",
       });
 
       const response = await fetch(modifiedRequest);
-      return response;
+
+      const responseHeaders = new Headers(response.headers);
+      const location = responseHeaders.get("Location");
+      if (location) {
+        responseHeaders.set("Location", location.replace(NGROK_URL, url.origin));
+      }
+
+      return new Response(response.body, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: responseHeaders,
+      });
     } catch (err) {
       return new Response("Proxy Error: " + err.message, { status: 502 });
     }
