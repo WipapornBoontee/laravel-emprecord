@@ -1,13 +1,12 @@
 export default {
   async fetch(request, env, ctx) {
-    // กำหนด URL ของ ngrok (สามารถตั้งค่าใน Cloudflare Dashboard หรือแก้ไขที่นี่ได้)
-    const NGROK_URL = env.NGROK_URL || "https://hatchet-improving-creed.ngrok-free.dev";
+    const NGROK_URL = env.NGROK_URL || "https://garter-refusal-improve.ngrok-free.dev";
 
     try {
       const url = new URL(request.url);
       const targetUrl = new URL(url.pathname + url.search, NGROK_URL);
 
-      // Clone headers เดิม และเพิ่ม Header เพื่อข้ามหน้า Browser Warning ของ ngrok
+      // Clone headers และแนบ Header เพื่อข้ามหน้า Browser Warning ของ ngrok
       const newHeaders = new Headers(request.headers);
       newHeaders.set("ngrok-skip-browser-warning", "true");
       newHeaders.set("Host", targetUrl.host);
