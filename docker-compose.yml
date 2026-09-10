@@ -74,13 +74,18 @@ services:
     networks:
       - laravel_emp_net
 
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    container_name: laravel_emp_cf
+  ngrok_app:
+    image: ngrok/ngrok:latest
+    container_name: laravel_emp_ngrok_app
     restart: unless-stopped
-    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
-    depends_on:
-      - app
+    ports:
+      - "4041:4040"
+    command:
+      - "http"
+      - "--url=wad-attic-catwalk.ngrok-free.dev"
+      - "app:80"
+    environment:
+      NGROK_AUTHTOKEN: ${NGROK_APP_AUTHTOKEN}
     networks:
       - laravel_emp_net
 
