@@ -82,7 +82,7 @@ services:
       - "4041:4040"
     command:
       - "http"
-      - "--url=garter-refusal-improve.ngrok-free.dev"
+      - "--url=wad-attic-catwalk.ngrok-free.dev"
       - "app:80"
     environment:
       NGROK_AUTHTOKEN: ${NGROK_APP_AUTHTOKEN}
