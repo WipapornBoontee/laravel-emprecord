@@ -1,6 +1,6 @@
 export default {
   async fetch(request, env, ctx) {
-    const NGROK_URL = env.NGROK_URL || "https://wad-attic-catwalk.ngrok-free.dev";
+    const NGROK_URL = env.NGROK_URL || "https://garter-refusal-improve.ngrok-free.dev";
 
     try {
       const url = new URL(request.url);
