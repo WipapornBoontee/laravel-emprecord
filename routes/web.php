@@ -25,13 +25,9 @@ Route::middleware(['auth'])->group(function () {
         return redirect()->route('dashboard');
     })->name('home');
     
-    // Leave Management Routes
+    // Leave Management Routes การยืนใบลา
     Route::get('/apply-leave/create', [\App\Http\Controllers\LeaveController::class, 'create'])->name('apply-leave.create');
     Route::post('/apply-leave', [\App\Http\Controllers\LeaveController::class, 'store'])->name('apply-leave.store');
-    // Route::get('/apply-leave', [\App\Http\Controllers\LeaveController::class, 'index'])->name('apply-leave.index');
-    // Route::get('/apply-leave/{id}/edit', [\App\Http\Controllers\LeaveController::class, 'edit'])->name('apply-leave.edit');
-    // Route::put('/apply-leave/{id}', [\App\Http\Controllers\LeaveController::class, 'update'])->name('apply-leave.update');
-    // Route::delete('/apply-leave/{id}', [\App\Http\Controllers\LeaveController::class, 'destroy'])->name('apply-leave.destroy');
 
 
 });
