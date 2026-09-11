@@ -34,6 +34,7 @@
                                 <li><a class="dropdown-item py-2" href="#"><i class="bi bi-person-plus-fill me-2 text-success"></i> เพิ่มพนักงานใหม่</a></li>
                                 <li><hr class="dropdown-divider opacity-25"></li>
                                 <li><a class="dropdown-item py-2" href="#"><i class="bi bi-diagram-3-fill me-2 text-warning"></i> จัดการแผนกและตำแหน่ง</a></li>
+                                <li><a class="dropdown-item py-2" href="#"><i class="bi bi-cash-stack me-2 text-success"></i> การจัดการเงินเดือนและค่าจ้าง</a></li>
                             </ul>
                         </li>
                     @endif
