@@ -27,6 +27,14 @@ export default {
         responseHeaders.set("Location", location.replace(NGROK_URL, url.origin).replace(targetUrl.host, url.host));
       }
 
+      // Preserve multiple Set-Cookie headers (session, XSRF, remember_web, remember_username)
+      if (typeof response.headers.getSetCookie === "function") {
+        responseHeaders.delete("set-cookie");
+        for (const cookie of response.headers.getSetCookie()) {
+          responseHeaders.append("set-cookie", cookie);
+        }
+      }
+
       const contentType = responseHeaders.get("content-type") || "";
       if (contentType.includes("text/html") || contentType.includes("application/json")) {
         let text = await response.text();
