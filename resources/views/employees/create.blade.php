@@ -105,7 +105,7 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('employees.store') }}">
+            <form method="POST" action="{{ route('employees.store', [], false) }}">
                 @csrf
 
                 <h5 class="fw-bold mb-3 text-primary d-flex align-items-center gap-2">
@@ -236,9 +236,8 @@
                         placeholder="ระบุที่อยู่ติดต่อได้...">{{ old('address') }}</textarea>
                 </div>
 
-                <!-- Action Buttons -->
                 <div class="d-flex align-items-center justify-content-between pt-4" style="border-top: 1px dashed var(--surface-border);">
-                    <a href="{{ route('employees.index') }}" class="btn btn-cancel-custom d-flex align-items-center gap-2">
+                    <a href="{{ route('employees.index', [], false) }}" class="btn btn-cancel-custom d-flex align-items-center gap-2">
                         <i class="bi bi-x-lg"></i> ยกเลิก
                     </a>
                     <button type="submit" class="btn btn-submit-custom d-flex align-items-center gap-2">

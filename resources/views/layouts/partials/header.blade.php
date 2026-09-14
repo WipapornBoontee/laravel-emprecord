@@ -30,10 +30,10 @@
                                 <i class="bi bi-people-fill me-1"></i> จัดการพนักงาน
                             </a>
                             <ul class="dropdown-menu custom-dropdown-menu border-0 shadow-lg">
-                                <li><a class="dropdown-item py-2" href="{{ route('employees.index') }}"><i class="bi bi-list-ul me-2 text-primary"></i> รายชื่อพนักงานทั้งหมด</a></li>
-                                <li><a class="dropdown-item py-2" href="{{ route('employees.create') }}"><i class="bi bi-person-plus-fill me-2 text-success"></i> เพิ่มพนักงานใหม่</a></li>
+                                <li><a class="dropdown-item py-2" href="{{ route('employees.index', [], false) }}"><i class="bi bi-list-ul me-2 text-primary"></i> รายชื่อพนักงานทั้งหมด</a></li>
+                                <li><a class="dropdown-item py-2" href="{{ route('employees.create', [], false) }}"><i class="bi bi-person-plus-fill me-2 text-success"></i> เพิ่มพนักงานใหม่</a></li>
                                 <li><hr class="dropdown-divider opacity-25"></li>
-                                <li><a class="dropdown-item py-2" href="{{ route('departments.index') }}"><i class="bi bi-diagram-3-fill me-2 text-warning"></i> จัดการแผนกและตำแหน่ง</a></li>
+                                <li><a class="dropdown-item py-2" href="{{ route('departments.index', [], false) }}"><i class="bi bi-diagram-3-fill me-2 text-warning"></i> จัดการแผนกและตำแหน่ง</a></li>
                             </ul>
                         </li>
                     @endif
@@ -44,7 +44,7 @@
                             <i class="bi bi-calendar2-check-fill me-1"></i> การลา
                         </a>
                         <ul class="dropdown-menu custom-dropdown-menu border-0 shadow-lg">
-                            <li><a class="dropdown-item py-2" href="{{ route('apply-leave.create') }}"><i class="bi bi-file-earmark-plus me-2 text-info"></i> ยื่นใบลา</a></li>
+                            <li><a class="dropdown-item py-2" href="{{ route('apply-leave.create', [], false) }}"><i class="bi bi-file-earmark-plus me-2 text-info"></i> ยื่นใบลา</a></li>
                             <li><a class="dropdown-item py-2" href="#"><i class="bi bi-clock-history me-2 text-primary"></i> ประวัติการลาของฉัน</a></li>
                             <li><a class="dropdown-item py-2" href="#"><i class="bi bi-pie-chart-fill me-2 text-success"></i> สิทธิ์วันลาคงเหลือ</a></li>
                             @if(Auth::user()->isAdmin() || Auth::user()->isHr())
@@ -72,7 +72,7 @@
                 </button>
 
                 @auth
-                    <a href="{{ route('profile') }}" class="user-profile-badge d-flex align-items-center gap-2 p-1 pe-3 rounded-pill text-decoration-none" title="ดูโปรไฟล์ส่วนตัว">
+                    <a href="{{ route('profile', [], false) }}" class="user-profile-badge d-flex align-items-center gap-2 p-1 pe-3 rounded-pill text-decoration-none" title="ดูโปรไฟล์ส่วนตัว">
                         <div class="avatar-circle">
                             <i class="bi bi-person-fill"></i>
                         </div>

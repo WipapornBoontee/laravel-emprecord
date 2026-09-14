@@ -73,12 +73,12 @@
                 <!-- Nav Switcher -->
                 <ul class="nav nav-pills nav-pills-custom bg-body-tertiary p-1 rounded-3">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('departments.index') }}">
+                        <a class="nav-link" href="{{ route('departments.index', [], false) }}">
                             <i class="bi bi-building me-1"></i> แผนกงาน (Departments)
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{ route('departments.positions') }}">
+                        <a class="nav-link active" href="{{ route('departments.positions', [], false) }}">
                             <i class="bi bi-briefcase me-1"></i> ตำแหน่งงาน (Positions)
                         </a>
                     </li>
@@ -104,7 +104,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('departments.positions.store') }}" method="POST">
+            <form action="{{ route('departments.positions.store', [], false) }}" method="POST">
                 @csrf
                 <div class="mb-3">
                     <label for="name" class="form-label fw-semibold small text-theme">ชื่อตำแหน่งงาน <span class="text-danger">*</span></label>
@@ -149,7 +149,7 @@
                                 </td>
                                 <td class="text-end">
                                     @if($pos->users_count === 0)
-                                        <form action="{{ route('departments.positions.destroy', $pos) }}" method="POST" class="d-inline"
+                                        <form action="{{ route('departments.positions.destroy', $pos, false) }}" method="POST" class="d-inline"
                                             onsubmit="return confirm('ยืนยันลบตำแหน่ง {{ $pos->name }}?');">
                                             @csrf
                                             @method('DELETE')

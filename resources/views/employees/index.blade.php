@@ -120,7 +120,7 @@
                     </div>
                 </div>
                 <div>
-                    <a href="{{ route('employees.create') }}" class="btn btn-create-emp d-flex align-items-center gap-2 text-decoration-none">
+                    <a href="{{ route('employees.create', [], false) }}" class="btn btn-create-emp d-flex align-items-center gap-2 text-decoration-none">
                         <i class="bi bi-person-plus-fill fs-5"></i>
                         <span>เพิ่มพนักงานใหม่</span>
                     </a>
@@ -167,7 +167,7 @@
     <!-- Filter & Search Card -->
     <div class="col-12">
         <div class="emp-card p-4">
-            <form method="GET" action="{{ route('employees.index') }}" class="row g-3">
+            <form method="GET" action="{{ route('employees.index', [], false) }}" class="row g-3">
                 <div class="col-lg-4 col-md-6">
                     <div class="input-group">
                         <span class="input-group-text filter-input border-end-0 text-muted">
@@ -207,7 +207,7 @@
                         <i class="bi bi-funnel-fill"></i>
                     </button>
                     @if(request()->hasAny(['search', 'department_id', 'role', 'status']))
-                        <a href="{{ route('employees.index') }}" class="btn btn-outline-secondary rounded-3 d-flex align-items-center justify-content-center" title="ล้างตัวกรอง">
+                        <a href="{{ route('employees.index', [], false) }}" class="btn btn-outline-secondary rounded-3 d-flex align-items-center justify-content-center" title="ล้างตัวกรอง">
                             <i class="bi bi-arrow-clockwise"></i>
                         </a>
                     @endif
@@ -246,7 +246,7 @@
                                             {{ mb_substr($emp->name, 0, 1) }}
                                         </div>
                                         <div>
-                                            <a href="{{ route('employees.show', $emp) }}" class="fw-bold text-decoration-none text-theme d-block">
+                                            <a href="{{ route('employees.show', $emp, false) }}" class="fw-bold text-decoration-none text-theme d-block">
                                                 {{ $emp->name }}
                                             </a>
                                             <span class="text-muted small"><i class="bi bi-envelope me-1"></i>{{ $emp->email }}</span>
@@ -291,13 +291,13 @@
                                 <td class="text-end">
                                     <div class="d-inline-flex align-items-center gap-1">
                                         <!-- ดูโปรไฟล์ (ทุกคนดูได้) -->
-                                        <a href="{{ route('employees.show', $emp) }}" class="action-btn bg-info-subtle text-info" title="ดูโปรไฟล์">
+                                        <a href="{{ route('employees.show', $emp, false) }}" class="action-btn bg-info-subtle text-info" title="ดูโปรไฟล์">
                                             <i class="bi bi-eye-fill"></i>
                                         </a>
 
                                         <!-- แก้ไข (Admin แก้ไขได้ทุกคน, HR แก้ไข Admin ไม่ได้) -->
                                         @if(Auth::user()->isAdmin() || (Auth::user()->isHr() && !$emp->isAdmin()))
-                                            <a href="{{ route('employees.edit', $emp) }}" class="action-btn bg-warning-subtle text-warning" title="แก้ไข">
+                                            <a href="{{ route('employees.edit', $emp, false) }}" class="action-btn bg-warning-subtle text-warning" title="แก้ไข">
                                                 <i class="bi bi-pencil-square"></i>
                                             </a>
                                         @else
@@ -308,7 +308,7 @@
 
                                         <!-- ลบ (Admin ลบได้ทุกคนยกเว้นตัวเอง, HR ลบ Admin ไม่ได้) -->
                                         @if(Auth::user()->id !== $emp->id && (Auth::user()->isAdmin() || (Auth::user()->isHr() && !$emp->isAdmin())))
-                                            <form action="{{ route('employees.destroy', $emp) }}" method="POST" class="d-inline"
+                                            <form action="{{ route('employees.destroy', $emp, false) }}" method="POST" class="d-inline"
                                                 onsubmit="return confirm('คุณแน่ใจหรือไม่ว่าต้องการลบพนักงาน {{ $emp->name }}?');">
                                                 @csrf
                                                 @method('DELETE')

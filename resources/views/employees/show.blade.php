@@ -131,17 +131,17 @@
                 <!-- Action Button for Admin & HR (Only if authorized) -->
                 <div class="d-flex align-items-center gap-2">
                     @if(Auth::user()->isAdmin() || (Auth::user()->isHr() && !$employee->isAdmin()))
-                        <a href="{{ route('employees.edit', $employee) }}" class="btn btn-warning rounded-3 px-4 py-2 d-flex align-items-center gap-2 fw-semibold">
+                        <a href="{{ route('employees.edit', $employee, false) }}" class="btn btn-warning rounded-3 px-4 py-2 d-flex align-items-center gap-2 fw-semibold">
                             <i class="bi bi-pencil-square"></i> แก้ไขข้อมูล
                         </a>
                     @endif
 
                     @if(Auth::user()->isAdmin() || Auth::user()->isHr())
-                        <a href="{{ route('employees.index') }}" class="btn btn-outline-secondary rounded-3 px-3 py-2">
+                        <a href="{{ route('employees.index', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2">
                             <i class="bi bi-arrow-left me-1"></i> กลับหน้ารายการ
                         </a>
                     @else
-                        <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary rounded-3 px-3 py-2">
+                        <a href="{{ route('dashboard', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2">
                             <i class="bi bi-house me-1"></i> กลับหน้าหลัก
                         </a>
                     @endif

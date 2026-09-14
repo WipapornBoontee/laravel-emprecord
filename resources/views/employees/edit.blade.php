@@ -90,7 +90,7 @@
                     </div>
                 </div>
                 <div>
-                    <a href="{{ route('employees.show', $employee) }}" class="btn btn-outline-secondary btn-sm rounded-3">
+                    <a href="{{ route('employees.show', $employee, false) }}" class="btn btn-outline-secondary btn-sm rounded-3">
                         <i class="bi bi-eye me-1"></i> ดูโปรไฟล์
                     </a>
                 </div>
@@ -112,7 +112,7 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('employees.update', $employee) }}">
+            <form method="POST" action="{{ route('employees.update', $employee, false) }}">
                 @csrf
                 @method('PUT')
 
@@ -244,9 +244,8 @@
                         placeholder="ระบุที่อยู่ติดต่อได้...">{{ old('address', $employee->address) }}</textarea>
                 </div>
 
-                <!-- Action Buttons -->
                 <div class="d-flex align-items-center justify-content-between pt-4" style="border-top: 1px dashed var(--surface-border);">
-                    <a href="{{ route('employees.index') }}" class="btn btn-cancel-custom d-flex align-items-center gap-2">
+                    <a href="{{ route('employees.index', [], false) }}" class="btn btn-cancel-custom d-flex align-items-center gap-2">
                         <i class="bi bi-x-lg"></i> ยกเลิก
                     </a>
                     <button type="submit" class="btn btn-submit-custom d-flex align-items-center gap-2">
