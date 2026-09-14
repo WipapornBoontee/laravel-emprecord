@@ -2,8 +2,9 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,6 +21,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Paginator::useBootstrapFive();
+
         $forwardedProto = request()->header('x-forwarded-proto') ?? request()->server('HTTP_X_FORWARDED_PROTO');
         if ($forwardedProto === 'https' || str_contains(request()->header('cf-visitor', ''), 'https')) {
             URL::forceScheme('https');
