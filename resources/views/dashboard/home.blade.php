@@ -101,7 +101,7 @@
             </h5>
             <div class="row g-3">
                 <div class="col-md-4">
-                    <a href="#" class="quick-action-btn p-3 d-flex align-items-center gap-3 text-decoration-none">
+                    <a href="{{ route('apply-leave.create') }}" class="quick-action-btn p-3 d-flex align-items-center gap-3 text-decoration-none">
                         <div class="action-icon icon-indigo">
                             <i class="bi bi-calendar2-plus-fill"></i>
                         </div>
@@ -124,7 +124,7 @@
                 </div>
                 @if(Auth::user()->isAdmin() || Auth::user()->isHr())
                     <div class="col-md-4">
-                        <a href="#" class="quick-action-btn p-3 d-flex align-items-center gap-3 text-decoration-none">
+                        <a href="{{ route('employees.index') }}" class="quick-action-btn p-3 d-flex align-items-center gap-3 text-decoration-none">
                             <div class="action-icon icon-purple">
                                 <i class="bi bi-people-fill"></i>
                             </div>
@@ -136,13 +136,13 @@
                     </div>
                 @else
                     <div class="col-md-4">
-                        <a href="#" class="quick-action-btn p-3 d-flex align-items-center gap-3 text-decoration-none">
+                        <a href="{{ route('profile') }}" class="quick-action-btn p-3 d-flex align-items-center gap-3 text-decoration-none">
                             <div class="action-icon icon-amber">
                                 <i class="bi bi-person-lines-fill"></i>
                             </div>
                             <div>
                                 <span class="d-block fw-bold action-title">ประวัติส่วนตัว</span>
-                                <span class="text-muted small">ตรวจสอบข้อมูลของฉัน</span>
+                                <span class="text-muted small">ตรวจสอบข้อมูลของฉัน (Read-only)</span>
                             </div>
                         </a>
                     </div>

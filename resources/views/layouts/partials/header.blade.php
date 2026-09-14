@@ -26,15 +26,14 @@
                     {{-- เมนูสำหรับ Admin และ HR เท่านั้น --}}
                     @if(Auth::user()->isAdmin() || Auth::user()->isHr())
                         <li class="nav-item dropdown">
-                            <a class="nav-link nav-link-custom dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link nav-link-custom dropdown-toggle {{ Request::is('employees*') || Request::is('departments*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-people-fill me-1"></i> จัดการพนักงาน
                             </a>
                             <ul class="dropdown-menu custom-dropdown-menu border-0 shadow-lg">
-                                <li><a class="dropdown-item py-2" href="#"><i class="bi bi-list-ul me-2 text-primary"></i> รายชื่อพนักงานทั้งหมด</a></li>
-                                <li><a class="dropdown-item py-2" href="#"><i class="bi bi-person-plus-fill me-2 text-success"></i> เพิ่มพนักงานใหม่</a></li>
+                                <li><a class="dropdown-item py-2" href="{{ route('employees.index') }}"><i class="bi bi-list-ul me-2 text-primary"></i> รายชื่อพนักงานทั้งหมด</a></li>
+                                <li><a class="dropdown-item py-2" href="{{ route('employees.create') }}"><i class="bi bi-person-plus-fill me-2 text-success"></i> เพิ่มพนักงานใหม่</a></li>
                                 <li><hr class="dropdown-divider opacity-25"></li>
-                                <li><a class="dropdown-item py-2" href="#"><i class="bi bi-diagram-3-fill me-2 text-warning"></i> จัดการแผนกและตำแหน่ง</a></li>
-                                <li><a class="dropdown-item py-2" href="#"><i class="bi bi-cash-stack me-2 text-success"></i> จัดการเงินเดือน (OT)</a></li>
+                                <li><a class="dropdown-item py-2" href="{{ route('departments.index') }}"><i class="bi bi-diagram-3-fill me-2 text-warning"></i> จัดการแผนกและตำแหน่ง</a></li>
                             </ul>
                         </li>
                     @endif
@@ -73,7 +72,7 @@
                 </button>
 
                 @auth
-                    <div class="user-profile-badge d-flex align-items-center gap-2 p-1 pe-3 rounded-pill">
+                    <a href="{{ route('profile') }}" class="user-profile-badge d-flex align-items-center gap-2 p-1 pe-3 rounded-pill text-decoration-none" title="ดูโปรไฟล์ส่วนตัว">
                         <div class="avatar-circle">
                             <i class="bi bi-person-fill"></i>
                         </div>
@@ -91,7 +90,7 @@
                                 @endif
                             </div>
                         </div>
-                    </div>
+                    </a>
 
                     <a href="{{ route('logout', [], false) }}" class="btn btn-outline-danger btn-sm px-3 rounded-3 d-flex align-items-center gap-1"
                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
