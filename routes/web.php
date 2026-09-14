@@ -36,6 +36,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/apply-leave/create', [\App\Http\Controllers\LeaveController::class, 'create'])->name('apply-leave.create');
     Route::post('/apply-leave', [\App\Http\Controllers\LeaveController::class, 'store'])->name('apply-leave.store');
 
+    // Time Attendance Routes (ระบบบันทึกเวลาทำงาน)
+    Route::get('/attendance', function () {
+        return redirect()->route('attendances.checkin', [], false);
+    });
+    Route::get('/attendance/checkin', [\App\Http\Controllers\AttendanceController::class, 'checkinView'])->name('attendances.checkin');
+    Route::post('/attendance/checkin', [\App\Http\Controllers\AttendanceController::class, 'checkIn'])->name('attendances.checkin.process');
+    Route::post('/attendance/checkout', [\App\Http\Controllers\AttendanceController::class, 'checkOut'])->name('attendances.checkout.process');
+    Route::get('/attendance/my-history', [\App\Http\Controllers\AttendanceController::class, 'myHistory'])->name('attendances.my-history');
+
     // Profile (Read-only สำหรับพนักงานทั่วไป, Admin/HR ดูของตนเองได้)
     Route::get('/profile', [\App\Http\Controllers\EmployeeController::class, 'profile'])->name('profile');
     Route::get('/employees/{employee}', [\App\Http\Controllers\EmployeeController::class, 'show'])->name('employees.show');
@@ -68,5 +77,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/leaves-types', [\App\Http\Controllers\LeaveTypeController::class, 'store'])->name('leaves.types.store');
         Route::put('/leaves-types/{type}', [\App\Http\Controllers\LeaveTypeController::class, 'update'])->name('leaves.types.update');
         Route::delete('/leaves-types/{type}', [\App\Http\Controllers\LeaveTypeController::class, 'destroy'])->name('leaves.types.destroy');
+
+        // สรุปรายงานเวลาทำงานองค์กร (Organization Attendance Report)
+        Route::get('/attendance/report', [\App\Http\Controllers\AttendanceController::class, 'report'])->name('attendances.report');
     });
 });

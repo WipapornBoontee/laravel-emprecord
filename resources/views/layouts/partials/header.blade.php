@@ -55,11 +55,19 @@
                         </ul>
                     </li>
 
-                    <!-- เมนูระบบลงเวลา -->
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-custom" href="#">
+                    <!-- เมนูระบบลงเวลา (Time Attendance) -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link nav-link-custom dropdown-toggle {{ Request::is('attendance*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-stopwatch-fill me-1"></i> บันทึกเวลา
                         </a>
+                        <ul class="dropdown-menu custom-dropdown-menu border-0 shadow-lg">
+                            <li><a class="dropdown-item py-2" href="{{ route('attendances.checkin', [], false) }}"><i class="bi bi-fingerprint me-2 text-primary"></i> ลงเวลาเข้า-ออกงาน</a></li>
+                            <li><a class="dropdown-item py-2" href="{{ route('attendances.my-history', [], false) }}"><i class="bi bi-calendar3-week me-2 text-info"></i> ประวัติการลงเวลาของฉัน</a></li>
+                            @if(Auth::user()->isAdmin() || Auth::user()->isHr())
+                                <li><hr class="dropdown-divider opacity-25"></li>
+                                <li><a class="dropdown-item py-2" href="{{ route('attendances.report', [], false) }}"><i class="bi bi-file-earmark-bar-graph me-2 text-warning"></i> สรุปรายงานเวลาทำงาน (HR/Admin)</a></li>
+                            @endif
+                        </ul>
                     </li>
                 @endauth
             </ul>
