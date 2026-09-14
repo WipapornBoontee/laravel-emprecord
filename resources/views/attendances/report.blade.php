@@ -131,7 +131,7 @@
                 <div class="d-flex align-items-center gap-2">
                     <a href="{{ route('attendances.report.print', ['date' => $date, 'department_id' => $departmentId, 'status' => $status], false) }}" target="_blank" class="btn btn-primary rounded-3 px-3 py-2 d-flex align-items-center gap-2 shadow-sm" title="เปิดหน้าพิมพ์รายงาน PDF รูปแบบมาตรฐานบริษัท">
                         <i class="bi bi-file-earmark-pdf-fill fs-5"></i>
-                        <span class="fw-bold">พิมพ์รายงาน PDF (รูปแบบทางการ)</span>
+                        <span class="fw-bold">พิมพ์รายงาน PDF</span>
                     </a>
                     <a href="{{ route('attendances.checkin', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2 d-flex align-items-center gap-2">
                         <i class="bi bi-stopwatch"></i>
