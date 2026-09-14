@@ -148,7 +148,7 @@ class LeaveController extends Controller
             'status' => 'pending',
         ]);
 
-        return redirect()->route('leaves.index', [], false)->with('success', 'ส่งคำขอลาสำเร็จ กรุณารอการพิจารณาอนุมัติจากผู้บังคับบัญชาหรือฝ่ายบุคคล');
+        return redirect()->to(route('leaves.index', [], false))->with('success', 'ส่งคำขอลาสำเร็จ กรุณารอการพิจารณาอนุมัติจากผู้บังคับบัญชาหรือฝ่ายบุคคล');
     }
 
     /**
@@ -165,12 +165,12 @@ class LeaveController extends Controller
 
         // ยกเลิกได้เฉพาะคำขอที่ยัง pending เท่านั้น
         if ($leaveRequest->status !== 'pending') {
-            return redirect()->route('leaves.index', [], false)->with('error', 'ไม่สามารถยกเลิกคำขอนี้ได้เนื่องจากได้รับการพิจารณาไปแล้ว');
+            return redirect()->to(route('leaves.index', [], false))->with('error', 'ไม่สามารถยกเลิกคำขอนี้ได้เนื่องจากได้รับการพิจารณาไปแล้ว');
         }
 
         $leaveRequest->delete();
 
-        return redirect()->route('leaves.index', [], false)->with('success', 'ยกเลิกคำขอลาเรียบร้อยแล้ว');
+        return redirect()->to(route('leaves.index', [], false))->with('success', 'ยกเลิกคำขอลาเรียบร้อยแล้ว');
     }
 
     /**

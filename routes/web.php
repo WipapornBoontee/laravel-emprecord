@@ -38,7 +38,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Time Attendance Routes (ระบบบันทึกเวลาทำงาน)
     Route::get('/attendance', function () {
-        return redirect()->route('attendances.checkin', [], false);
+        return redirect()->to(route('attendances.checkin', [], false));
     });
     Route::get('/attendance/checkin', [\App\Http\Controllers\AttendanceController::class, 'checkinView'])->name('attendances.checkin');
     Route::post('/attendance/checkin', [\App\Http\Controllers\AttendanceController::class, 'checkIn'])->name('attendances.checkin.process');

@@ -38,7 +38,7 @@ class LeaveTypeController extends Controller
 
         LeaveType::create($validated);
 
-        return redirect()->route('leaves.types.index', [], false)->with('success', 'เพิ่มประเภทการลาใหม่สำเร็จ');
+        return redirect()->to(route('leaves.types.index', [], false))->with('success', 'เพิ่มประเภทการลาใหม่สำเร็จ');
     }
 
     /**
@@ -57,7 +57,7 @@ class LeaveTypeController extends Controller
 
         $type->update($validated);
 
-        return redirect()->route('leaves.types.index', [], false)->with('success', 'อัปเดตประเภทการลาสำเร็จ');
+        return redirect()->to(route('leaves.types.index', [], false))->with('success', 'อัปเดตประเภทการลาสำเร็จ');
     }
 
     /**
@@ -66,11 +66,11 @@ class LeaveTypeController extends Controller
     public function destroy(LeaveType $type)
     {
         if ($type->leaveRequests()->count() > 0) {
-            return redirect()->route('leaves.types.index', [], false)->with('error', 'ไม่สามารถลบประเภทการลานี้ได้ เนื่องจากมีประวัติคำขอลาอ้างอิงอยู่');
+            return redirect()->to(route('leaves.types.index', [], false))->with('error', 'ไม่สามารถลบประเภทการลานี้ได้ เนื่องจากมีประวัติคำขอลาอ้างอิงอยู่');
         }
 
         $type->delete();
 
-        return redirect()->route('leaves.types.index', [], false)->with('success', 'ลบประเภทการลาสำเร็จ');
+        return redirect()->to(route('leaves.types.index', [], false))->with('success', 'ลบประเภทการลาสำเร็จ');
     }
 }
