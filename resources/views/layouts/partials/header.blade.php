@@ -40,16 +40,17 @@
 
                     <!-- เมนูระบบการลา -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link nav-link-custom dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link nav-link-custom dropdown-toggle {{ Request::is('leaves*') || Request::is('apply-leave*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-calendar2-check-fill me-1"></i> การลา
                         </a>
                         <ul class="dropdown-menu custom-dropdown-menu border-0 shadow-lg">
-                            <li><a class="dropdown-item py-2" href="{{ route('apply-leave.create', [], false) }}"><i class="bi bi-file-earmark-plus me-2 text-info"></i> ยื่นใบลา</a></li>
-                            <li><a class="dropdown-item py-2" href="#"><i class="bi bi-clock-history me-2 text-primary"></i> ประวัติการลาของฉัน</a></li>
-                            <li><a class="dropdown-item py-2" href="#"><i class="bi bi-pie-chart-fill me-2 text-success"></i> สิทธิ์วันลาคงเหลือ</a></li>
+                            <li><a class="dropdown-item py-2" href="{{ route('leaves.create', [], false) }}"><i class="bi bi-file-earmark-plus me-2 text-info"></i> ยื่นใบลา</a></li>
+                            <li><a class="dropdown-item py-2" href="{{ route('leaves.index', [], false) }}"><i class="bi bi-clock-history me-2 text-primary"></i> ประวัติการลาของฉัน</a></li>
+                            <li><a class="dropdown-item py-2" href="{{ route('leaves.balances', [], false) }}"><i class="bi bi-pie-chart-fill me-2 text-success"></i> สิทธิ์วันลาคงเหลือ</a></li>
                             @if(Auth::user()->isAdmin() || Auth::user()->isHr())
                                 <li><hr class="dropdown-divider opacity-25"></li>
-                                <li><a class="dropdown-item py-2" href="#"><i class="bi bi-check2-square me-2 text-warning"></i> อนุมัติคำขอลา (HR/Admin)</a></li>
+                                <li><a class="dropdown-item py-2" href="{{ route('leaves.approvals', [], false) }}"><i class="bi bi-check2-square me-2 text-warning"></i> อนุมัติคำขอลา (HR/Admin)</a></li>
+                                <li><a class="dropdown-item py-2" href="{{ route('leaves.types.index', [], false) }}"><i class="bi bi-gear-fill me-2 text-secondary"></i> จัดการประเภทวันลา</a></li>
                             @endif
                         </ul>
                     </li>

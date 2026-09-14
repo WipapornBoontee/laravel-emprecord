@@ -25,7 +25,14 @@ Route::middleware(['auth'])->group(function () {
         return redirect()->route('dashboard');
     })->name('home');
     
-    // Leave Management Routes การยื่นใบลา
+    // Leave Management Routes (ระบบจัดการการลาสำหรับพนักงานทุกคน)
+    Route::get('/leaves', [\App\Http\Controllers\LeaveController::class, 'index'])->name('leaves.index');
+    Route::get('/leaves/create', [\App\Http\Controllers\LeaveController::class, 'create'])->name('leaves.create');
+    Route::post('/leaves', [\App\Http\Controllers\LeaveController::class, 'store'])->name('leaves.store');
+    Route::delete('/leaves/{leaveRequest}/cancel', [\App\Http\Controllers\LeaveController::class, 'cancel'])->name('leaves.cancel');
+    Route::get('/leaves/balances', [\App\Http\Controllers\LeaveController::class, 'balances'])->name('leaves.balances');
+
+    // Route alias สำหรับ /apply-leave
     Route::get('/apply-leave/create', [\App\Http\Controllers\LeaveController::class, 'create'])->name('apply-leave.create');
     Route::post('/apply-leave', [\App\Http\Controllers\LeaveController::class, 'store'])->name('apply-leave.store');
 
@@ -50,5 +57,16 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/departments/positions', [\App\Http\Controllers\DepartmentController::class, 'positions'])->name('departments.positions');
         Route::post('/departments/positions', [\App\Http\Controllers\DepartmentController::class, 'storePosition'])->name('departments.positions.store');
         Route::delete('/departments/positions/{position}', [\App\Http\Controllers\DepartmentController::class, 'destroyPosition'])->name('departments.positions.destroy');
+
+        // ศูนย์อนุมัติคำขอลา (Leave Approvals & Quota Management)
+        Route::get('/leaves-approvals', [\App\Http\Controllers\LeaveApprovalController::class, 'index'])->name('leaves.approvals');
+        Route::post('/leaves-approvals/{leaveRequest}/approve', [\App\Http\Controllers\LeaveApprovalController::class, 'approve'])->name('leaves.approvals.approve');
+        Route::post('/leaves-approvals/{leaveRequest}/reject', [\App\Http\Controllers\LeaveApprovalController::class, 'reject'])->name('leaves.approvals.reject');
+
+        // จัดการประเภทการลาและโควตาเริ่มต้น
+        Route::get('/leaves-types', [\App\Http\Controllers\LeaveTypeController::class, 'index'])->name('leaves.types.index');
+        Route::post('/leaves-types', [\App\Http\Controllers\LeaveTypeController::class, 'store'])->name('leaves.types.store');
+        Route::put('/leaves-types/{type}', [\App\Http\Controllers\LeaveTypeController::class, 'update'])->name('leaves.types.update');
+        Route::delete('/leaves-types/{type}', [\App\Http\Controllers\LeaveTypeController::class, 'destroy'])->name('leaves.types.destroy');
     });
 });

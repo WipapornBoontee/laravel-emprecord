@@ -55,16 +55,21 @@
     </div>
 
     <div class="col-sm-6 col-xl-3">
-        <div class="stat-card p-4">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-                <span class="stat-label">สิทธิ์วันลาคงเหลือ</span>
-                <div class="stat-icon-wrapper icon-indigo">
-                    <i class="bi bi-calendar-heart-fill"></i>
+        <a href="{{ route('leaves.balances', [], false) }}" class="text-decoration-none">
+            <div class="stat-card p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <span class="stat-label">สิทธิ์วันลาคงเหลือ</span>
+                    <div class="stat-icon-wrapper icon-indigo">
+                        <i class="bi bi-calendar-heart-fill"></i>
+                    </div>
                 </div>
+                @php
+                    $myRemainingDays = Auth::user()->leaveBalances()->where('year', date('Y'))->sum('remaining_days');
+                @endphp
+                <h3 class="stat-value text-primary mb-1">{{ $myRemainingDays ?? 0 }} <span class="fs-6 fw-normal text-muted">วัน</span></h3>
+                <p class="stat-desc mb-0"><i class="bi bi-arrow-up-right me-1"></i> โควตาประจำปี {{ date('Y') }}</p>
             </div>
-            <h3 class="stat-value text-primary mb-1">30 <span class="fs-6 fw-normal text-muted">วัน/ปี</span></h3>
-            <p class="stat-desc mb-0"><i class="bi bi-arrow-up-right me-1"></i> โควตาประจำปี {{ date('Y') }}</p>
-        </div>
+        </a>
     </div>
 
     <div class="col-sm-6 col-xl-3">
@@ -101,7 +106,7 @@
             </h5>
             <div class="row g-3">
                 <div class="col-md-4">
-                    <a href="{{ route('apply-leave.create', [], false) }}" class="quick-action-btn p-3 d-flex align-items-center gap-3 text-decoration-none">
+                    <a href="{{ route('leaves.create', [], false) }}" class="quick-action-btn p-3 d-flex align-items-center gap-3 text-decoration-none">
                         <div class="action-icon icon-indigo">
                             <i class="bi bi-calendar2-plus-fill"></i>
                         </div>
