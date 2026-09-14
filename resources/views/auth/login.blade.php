@@ -301,13 +301,13 @@
                     </div>
                 </div>
 
-                <div class="form-check mb-4">
+                {{-- <div class="form-check mb-4">
                     <input type="checkbox" class="form-check-input" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}
                         style="background-color: var(--input-bg); border-color: var(--input-border);">
                     <label class="form-check-label small" for="remember" style="color: var(--text-muted); cursor: pointer;">
                         จดจำการเข้าสู่ระบบ
                     </label>
-                </div>
+                </div> --}}
 
                 <div class="d-grid">
                     <button type="submit" class="btn-auth-submit d-flex align-items-center justify-content-center gap-2">
