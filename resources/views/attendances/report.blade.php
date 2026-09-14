@@ -4,9 +4,6 @@
 
 @push('styles')
 <style>
-    /* -------------------------------------------------------------
-       Screen Display UI Styles (แสดงผลบนหน้าจอเว็บ)
-       ------------------------------------------------------------- */
     .report-card {
         background: var(--surface-bg);
         border: 1px solid var(--surface-border);
@@ -34,265 +31,81 @@
         color: var(--text-main);
     }
 
-    .formal-document-container {
-        background: var(--surface-bg);
-        border: 1px solid var(--surface-border);
-        border-radius: 20px;
-        box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08);
+    .table-custom {
+        color: var(--text-main);
+        vertical-align: middle;
     }
-
-    .doc-header-border {
-        border-bottom: 2px solid var(--surface-border);
-    }
-
-    .signature-card {
-        border: 1px dashed var(--surface-border);
-        border-radius: 12px;
-        padding: 18px;
+    .table-custom th {
         background: var(--badge-bg);
-        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid var(--surface-border);
+        padding: 14px 18px;
+    }
+    .table-custom td {
+        background: transparent;
+        color: var(--text-main);
+        border-bottom: 1px solid var(--surface-border);
+        padding: 14px 18px;
+        font-size: 0.92rem;
     }
 
-    /* -------------------------------------------------------------
-       Corporate Print & PDF Export Styles (@media print)
-       มาตรฐานเอกสารรายงานทางการของบริษัท จัดพอดี 1 หน้ากระดาษ A4 Landscape
-       ------------------------------------------------------------- */
+    /* Print / PDF Styles */
+    .print-only {
+        display: none !important;
+    }
+
     @media print {
         @page {
             size: A4 landscape;
-            margin: 6mm 10mm 6mm 10mm;
+            margin: 10mm 12mm;
         }
 
-        /* ซ่อนส่วนที่ไม่เกี่ยวข้องกับเอกสารรายงานทั้งหมด */
-        .custom-navbar,
-        .custom-footer,
-        .hero-welcome-card,
-        .filter-section,
-        .screen-only,
-        .btn,
-        #themeToggleBtn,
-        .alert {
+        header, .sidebar, .screen-only, .btn, .filter-section, nav {
             display: none !important;
         }
 
-        html, body {
+        body, .main-content {
             background: #ffffff !important;
             color: #0f172a !important;
-            font-family: 'Sarabun', 'Segoe UI', Tahoma, Arial, sans-serif !important;
-            font-size: 8.5pt !important;
-            line-height: 1.25 !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            height: auto !important;
-        }
-
-        .container {
-            max-width: 100% !important;
-            width: 100% !important;
             padding: 0 !important;
             margin: 0 !important;
         }
 
-        .formal-document-container {
-            background: #ffffff !important;
-            border: none !important;
-            box-shadow: none !important;
-            border-radius: 0 !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            page-break-inside: avoid !important;
-            page-break-after: avoid !important;
+        .print-only {
+            display: block !important;
         }
 
-        /* ส่วนหัวเอกสารรายงานทางการ */
-        .doc-print-header {
-            border-bottom: 2px solid #0f172a !important;
-            padding-bottom: 6px !important;
-            margin-bottom: 8px !important;
-        }
-
-        .company-logo-box {
-            background: #1e293b !important;
-            color: #ffffff !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-            font-size: 13pt !important;
-            font-weight: 800 !important;
-            padding: 4px 10px !important;
-            border-radius: 4px !important;
-        }
-
-        .company-title {
-            font-size: 13pt !important;
-            font-weight: 800 !important;
-            color: #0f172a !important;
-            margin: 0 !important;
-            line-height: 1.2 !important;
-        }
-
-        .company-subtitle {
-            font-size: 8pt !important;
-            color: #64748b !important;
-        }
-
-        .report-title-text {
-            font-size: 11pt !important;
-            font-weight: 700 !important;
-            color: #1e3a8a !important;
-            margin-top: 2px !important;
-            margin-bottom: 0 !important;
-        }
-
-        .meta-info-box {
-            background: #f8fafc !important;
+        .stat-card, .report-card {
             border: 1px solid #cbd5e1 !important;
-            font-size: 7.5pt !important;
-            line-height: 1.35 !important;
-            padding: 4px 8px !important;
-            border-radius: 4px !important;
-        }
-
-        .filter-tags-bar {
-            font-size: 8pt !important;
-            margin-top: 4px !important;
-            padding-top: 3px !important;
-            border-top: 1px dotted #cbd5e1 !important;
-        }
-
-        /* กล่องสรุปสถิติผู้บริหาร (Executive KPI Summary Bar) */
-        .kpi-print-summary {
-            display: flex !important;
-            border: 1px solid #94a3b8 !important;
-            background: #f8fafc !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-            border-radius: 4px !important;
-            margin-bottom: 8px !important;
-        }
-
-        .kpi-print-item {
-            flex: 1 !important;
-            padding: 4px 6px !important;
-            text-align: center !important;
-            border-right: 1px solid #cbd5e1 !important;
-        }
-
-        .kpi-print-item:last-child {
-            border-right: none !important;
-        }
-
-        .kpi-print-label {
-            font-size: 7.5pt !important;
-            color: #475569 !important;
-            font-weight: 600 !important;
-            display: block !important;
-            margin-bottom: 1px !important;
-        }
-
-        .kpi-print-val {
-            font-size: 11pt !important;
-            font-weight: 800 !important;
+            box-shadow: none !important;
+            background: #ffffff !important;
             color: #0f172a !important;
-            line-height: 1 !important;
+            border-radius: 8px !important;
         }
 
-        /* ตารางข้อมูลรายงานทางการ (Formal Corporate Table) */
-        .table-corporate {
-            width: 100% !important;
-            border-collapse: collapse !important;
-            font-size: 8pt !important;
-            margin-bottom: 8px !important;
-        }
-
-        .table-corporate th {
+        .table-custom th {
             background-color: #f1f5f9 !important;
+            color: #0f172a !important;
+            border: 1px solid #94a3b8 !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
-            color: #0f172a !important;
-            font-weight: 700 !important;
-            text-align: center !important;
-            border: 1px solid #64748b !important;
-            padding: 4px 5px !important;
+            padding: 8px 10px !important;
         }
 
-        .table-corporate td {
+        .table-custom td {
+            border: 1px solid #cbd5e1 !important;
+            color: #0f172a !important;
+            padding: 8px 10px !important;
+        }
+
+        .badge {
             border: 1px solid #94a3b8 !important;
-            padding: 4px 6px !important;
-            color: #0f172a !important;
-            vertical-align: middle !important;
-            background: transparent !important;
-        }
-
-        .table-corporate tr:nth-child(even) td {
-            background-color: #f8fafc !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
-        }
-
-        .badge-corporate {
-            display: inline-block !important;
-            font-size: 7.5pt !important;
-            font-weight: 700 !important;
-            padding: 1px 5px !important;
-            border-radius: 3px !important;
-            border: 1px solid #64748b !important;
-            background: #ffffff !important;
-            color: #0f172a !important;
-            white-space: nowrap !important;
-        }
-
-        /* ส่วนลงนามท้ายเอกสาร 3 ฝ่าย (จัดเรียง 3 คอลัมน์เต็มหน้า และหมายเหตุด้านล่าง) */
-        .signature-container {
-            width: 100% !important;
-            margin-top: 10px !important;
-            page-break-inside: avoid !important;
-        }
-
-        .signature-grid {
-            display: flex !important;
-            flex-direction: row !important;
-            justify-content: space-between !important;
-            width: 100% !important;
-            gap: 12px !important;
-        }
-
-        .signature-col {
-            flex: 1 !important;
-            width: 32% !important;
-            text-align: center !important;
-        }
-
-        .signature-card {
-            border: 1px solid #94a3b8 !important;
-            background: #ffffff !important;
-            padding: 6px 8px !important;
-            border-radius: 4px !important;
-        }
-
-        .signature-role-title {
-            font-size: 8pt !important;
-            font-weight: 700 !important;
-            color: #1e293b !important;
-            display: block !important;
-            margin-bottom: 18px !important;
-        }
-
-        .signature-line {
-            border-top: 1px dotted #475569 !important;
-            padding-top: 3px !important;
-            font-size: 7.5pt !important;
-            line-height: 1.3 !important;
-        }
-
-        .document-footer-note {
-            display: block !important;
-            width: 100% !important;
-            margin-top: 6px !important;
-            padding-top: 4px !important;
-            border-top: 1px solid #cbd5e1 !important;
-            text-align: center !important;
-            font-size: 6.5pt !important;
-            color: #64748b !important;
         }
     }
 </style>
@@ -300,41 +113,60 @@
 
 @section('content')
 <div class="row g-4">
-    <!-- 1. Screen Header Banner & Actions (แสดงบนหน้าจอเว็บเท่านั้น) -->
+    <!-- 1. Header Banner -->
     <div class="col-12 screen-only">
         <div class="hero-welcome-card p-4">
             <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
                 <div class="d-flex align-items-center gap-3">
                     <div class="action-icon icon-indigo">
-                        <i class="bi bi-file-earmark-pdf-fill"></i>
+                        <i class="bi bi-file-earmark-bar-graph-fill"></i>
                     </div>
                     <div>
-                        <h3 class="fw-bold mb-1 gradient-text">รายงานการลงเวลาปฏิบัติงาน (Attendance Report)</h3>
+                        <h3 class="fw-bold mb-1 gradient-text">รายงานสรุปเวลาทำงานพนักงาน</h3>
                         <p class="text-muted mb-0 small">
-                            จัดทำเอกสารรายงานสรุปเวลาทำงานตามรูปแบบมาตรฐานบริษัท พร้อมระบบพิมพ์และบันทึกเป็นเอกสาร PDF
+                            ตรวจสอบภาพรวมการเข้างาน การมาสาย การขาด และการลาของพนักงานทุกคนในองค์กร
                         </p>
                     </div>
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                    <button type="button" class="btn btn-primary rounded-3 px-3 py-2 d-flex align-items-center gap-2 shadow-sm" onclick="window.print();" title="พิมพ์หรือบันทึกเป็น PDF (Save as PDF)">
-                        <i class="bi bi-printer-fill fs-5"></i>
-                        <span class="fw-bold">พิมพ์ / บันทึกเป็น PDF</span>
+                    <button type="button" class="btn btn-outline-secondary rounded-3 px-3 py-2 d-flex align-items-center gap-2" onclick="window.print();" title="พิมพ์รายงาน">
+                        <i class="bi bi-printer"></i>
+                        <span>พิมพ์รายงาน</span>
                     </button>
-                    <a href="{{ route('attendances.checkin', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2">
-                        <i class="bi bi-stopwatch me-1"></i> หน้าลงเวลา
+                    <a href="{{ route('attendances.checkin', [], false) }}" class="btn btn-outline-primary rounded-3 px-3 py-2 d-flex align-items-center gap-2">
+                        <i class="bi bi-stopwatch"></i>
+                        <span>หน้าลงเวลา</span>
                     </a>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 2. Filter & Search Card (แสดงบนหน้าจอเว็บเท่านั้น) -->
+    <!-- Print Only Header -->
+    <div class="col-12 print-only mb-3">
+        <div class="d-flex justify-content-between align-items-end border-bottom pb-2">
+            <div>
+                <h3 class="fw-bold mb-1">รายงานสรุปการลงเวลาปฏิบัติงานประจำวัน</h3>
+                <span class="text-muted small">
+                    วันที่ตรวจสอบ: {{ \Carbon\Carbon::parse($date)->format('d/m/Y') }} 
+                    @if($departmentId)
+                        • แผนก: {{ $departments->firstWhere('id', $departmentId)->name ?? '-' }}
+                    @endif
+                </span>
+            </div>
+            <div class="text-end text-muted small">
+                พิมพ์เมื่อ: {{ date('d/m/Y H:i') }} น. | ผู้ออกเอกสาร: {{ Auth::user()->name }}
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Filter Card -->
     <div class="col-12 screen-only filter-section">
         <div class="report-card p-4">
             <form method="GET" action="{{ route('attendances.report', [], false) }}" class="row g-3 align-items-end">
                 <div class="col-md-4">
                     <label class="form-label small fw-semibold text-theme">
-                        <i class="bi bi-calendar-event me-1"></i> วันที่ตรวจสอบข้อมูล
+                        <i class="bi bi-calendar-event me-1"></i> วันที่ตรวจสอบ
                     </label>
                     <input type="date" name="date" class="form-control filter-input" value="{{ $date }}" required>
                 </div>
@@ -343,7 +175,7 @@
                         <i class="bi bi-diagram-3 me-1"></i> แผนกงาน
                     </label>
                     <select name="department_id" class="form-select filter-input">
-                        <option value="">-- ทุกแผนก (All Departments) --</option>
+                        <option value="">-- ทุกแผนก --</option>
                         @foreach($departments as $dept)
                             <option value="{{ $dept->id }}" {{ $departmentId == $dept->id ? 'selected' : '' }}>
                                 {{ $dept->name }}
@@ -356,15 +188,15 @@
                         <i class="bi bi-funnel me-1"></i> สถานะการลงเวลา
                     </label>
                     <select name="status" class="form-select filter-input">
-                        <option value="">-- ทุกสถานะ (All Status) --</option>
+                        <option value="">-- ทุกสถานะ --</option>
                         <option value="on_time" {{ $status === 'on_time' ? 'selected' : '' }}>ตรงเวลา (On Time)</option>
                         <option value="late" {{ $status === 'late' ? 'selected' : '' }}>มาสาย (Late)</option>
-                        <option value="leave" {{ $status === 'leave' ? 'selected' : '' }}>ลางาน (Approved Leave)</option>
+                        <option value="leave" {{ $status === 'leave' ? 'selected' : '' }}>ลางาน (Leave)</option>
                         <option value="absent" {{ $status === 'absent' ? 'selected' : '' }}>ยังไม่ลงเวลา / ขาดงาน</option>
                     </select>
                 </div>
                 <div class="col-md-1">
-                    <button type="submit" class="btn btn-primary w-100 rounded-3 d-flex align-items-center justify-content-center" style="height: 42px;" title="ค้นหาข้อมูล">
+                    <button type="submit" class="btn btn-primary w-100 rounded-3 d-flex align-items-center justify-content-center" style="height: 42px;" title="ค้นหา">
                         <i class="bi bi-search"></i>
                     </button>
                 </div>
@@ -372,249 +204,146 @@
         </div>
     </div>
 
-    <!-- 3. Screen Mini KPI Cards (แสดงบนหน้าจอเว็บเท่านั้น) -->
-    <div class="col-12 screen-only">
-        <div class="row g-3">
-            <div class="col-6 col-md-4 col-xl-2">
-                <div class="stat-card p-3 text-center">
-                    <span class="text-muted small d-block mb-1">พนักงานทั้งหมด</span>
-                    <h4 class="fw-bold mb-0 text-primary">{{ number_format($totalEmployees) }} <span class="fs-6 fw-normal text-muted">คน</span></h4>
-                </div>
-            </div>
-            <div class="col-6 col-md-4 col-xl-2">
-                <div class="stat-card p-3 text-center">
-                    <span class="text-muted small d-block mb-1">มาปฏิบัติงาน</span>
-                    <h4 class="fw-bold mb-0 text-success">{{ number_format($attendedCount) }} <span class="fs-6 fw-normal text-muted">คน</span></h4>
-                </div>
-            </div>
-            <div class="col-6 col-md-4 col-xl-2">
-                <div class="stat-card p-3 text-center">
-                    <span class="text-muted small d-block mb-1">ตรงเวลา</span>
-                    <h4 class="fw-bold mb-0 text-success">{{ number_format($onTimeCount) }} <span class="fs-6 fw-normal text-muted">คน</span></h4>
-                </div>
-            </div>
-            <div class="col-6 col-md-4 col-xl-2">
-                <div class="stat-card p-3 text-center">
-                    <span class="text-muted small d-block mb-1">เข้างานสาย</span>
-                    <h4 class="fw-bold mb-0 text-warning">{{ number_format($lateCount) }} <span class="fs-6 fw-normal text-muted">คน</span></h4>
-                </div>
-            </div>
-            <div class="col-6 col-md-4 col-xl-2">
-                <div class="stat-card p-3 text-center">
-                    <span class="text-muted small d-block mb-1">ลางาน (อนุมัติ)</span>
-                    <h4 class="fw-bold mb-0 text-info">{{ number_format($leaveCount) }} <span class="fs-6 fw-normal text-muted">คน</span></h4>
-                </div>
-            </div>
-            <div class="col-6 col-md-4 col-xl-2">
-                <div class="stat-card p-3 text-center">
-                    <span class="text-muted small d-block mb-1">ยังไม่ลงเวลา / ขาด</span>
-                    <h4 class="fw-bold mb-0 text-danger">{{ number_format($absentCount) }} <span class="fs-6 fw-normal text-muted">คน</span></h4>
-                </div>
-            </div>
+    <!-- 3. Card สรุปผล (KPI Stat Cards) -->
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="stat-card p-3 text-center">
+            <span class="text-muted small d-block mb-1">พนักงานทั้งหมด</span>
+            <h3 class="fw-bold mb-0 text-primary">{{ number_format($totalEmployees) }}</h3>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="stat-card p-3 text-center">
+            <span class="text-muted small d-block mb-1">เข้างานแล้ว</span>
+            <h3 class="fw-bold mb-0 text-success">{{ number_format($attendedCount) }}</h3>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="stat-card p-3 text-center">
+            <span class="text-muted small d-block mb-1">เข้างานตรงเวลา</span>
+            <h3 class="fw-bold mb-0 text-success">{{ number_format($onTimeCount) }}</h3>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="stat-card p-3 text-center">
+            <span class="text-muted small d-block mb-1">เข้างานสาย</span>
+            <h3 class="fw-bold mb-0 text-warning">{{ number_format($lateCount) }}</h3>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="stat-card p-3 text-center">
+            <span class="text-muted small d-block mb-1">ลางาน (อนุมัติ)</span>
+            <h3 class="fw-bold mb-0 text-info">{{ number_format($leaveCount) }}</h3>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="stat-card p-3 text-center">
+            <span class="text-muted small d-block mb-1">ยังไม่ลงเวลา / ขาด</span>
+            <h3 class="fw-bold mb-0 text-danger">{{ number_format($absentCount) }}</h3>
         </div>
     </div>
 
-    <!-- 4. Formal Corporate Report Document (พิมพ์พอดี 1 หน้ากระดาษ A4 Landscape) -->
+    <!-- 4. ตารางแสดงผล ด้านล่าง Card สรุปผล (Report Table) -->
     <div class="col-12">
-        <div class="formal-document-container p-4 p-md-5">
-
-            <!-- ส่วนหัวเอกสารรายงานทางการ (Official Corporate Letterhead) -->
-            <div class="doc-print-header pb-2 mb-3">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <div class="d-flex align-items-center gap-2 mb-1">
-                            <span class="company-logo-box">WB</span>
-                            <div>
-                                <h4 class="company-title">บริษัท ดับเบิ้ลยูบี แมเนจเม้นท์ จำกัด</h4>
-                                <span class="company-subtitle">WB-EMS CORPORATION CO., LTD. • ทะเบียนนิติบุคคล: 0105569000000</span>
-                            </div>
-                        </div>
-                        <h5 class="report-title-text">
-                            รายงานสรุปการลงเวลาปฏิบัติงานประจำวัน (Daily Attendance Report)
-                        </h5>
-                    </div>
-
-                    <div class="text-end">
-                        <div class="meta-info-box text-start d-inline-block">
-                            <div><strong>เลขที่เอกสาร:</strong> ATT-{{ date('Ymd', strtotime($date)) }}</div>
-                            <div><strong>วันที่ตรวจสอบ:</strong> {{ date('d/m/Y', strtotime($date)) }}</div>
-                            <div><strong>พิมพ์เมื่อ:</strong> {{ date('d/m/Y H:i') }} น.</div>
-                            <div><strong>ผู้ออกเอกสาร:</strong> {{ Auth::user()->name }} ({{ strtoupper(Auth::user()->role) }})</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- แถบสรุปตัวกรองเงื่อนไข -->
-                <div class="filter-tags-bar d-flex justify-content-between text-muted">
-                    <div>
-                        <strong>แผนกที่เลือก:</strong> 
-                        <span>{{ $departmentId ? ($departments->firstWhere('id', $departmentId)->name ?? 'ทั้งหมด') : 'ทุกแผนก' }}</span>
-                        &nbsp;&bull;&nbsp;
-                        <strong>ตัวกรองสถานะ:</strong> 
-                        <span>
-                            @if($status === 'on_time') ตรงเวลา
-                            @elseif($status === 'late') มาสาย
-                            @elseif($status === 'leave') ลางาน
-                            @elseif($status === 'absent') ยังไม่ลงเวลา / ขาด
-                            @else ทั้งหมด
-                            @endif
-                        </span>
-                    </div>
-                    <div>
-                        <strong>จำนวนรายการ:</strong> <strong>{{ count($reportData) }}</strong> คน
-                    </div>
-                </div>
+        <div class="report-card overflow-hidden">
+            <div class="p-4 border-bottom border-theme d-flex align-items-center justify-content-between">
+                <h5 class="fw-bold mb-0 text-theme">
+                    <i class="bi bi-table me-2 text-primary"></i>รายการลงเวลาประจำวันที่ {{ \Carbon\Carbon::parse($date)->format('d F Y') }}
+                </h5>
+                <span class="badge bg-secondary-subtle text-secondary px-3 py-2 rounded-pill">
+                    แสดงข้อมูล <strong>{{ count($reportData) }}</strong> คน
+                </span>
             </div>
 
-            <!-- กล่องสรุปสถิติผู้บริหาร (Executive KPI Summary Bar) -->
-            <div class="kpi-print-summary d-flex">
-                <div class="kpi-print-item">
-                    <span class="kpi-print-label">พนักงานทั้งหมด</span>
-                    <span class="kpi-print-val text-primary">{{ number_format($totalEmployees) }}</span>
-                </div>
-                <div class="kpi-print-item">
-                    <span class="kpi-print-label">มาปฏิบัติงาน</span>
-                    <span class="kpi-print-val text-success">{{ number_format($attendedCount) }}</span>
-                </div>
-                <div class="kpi-print-item">
-                    <span class="kpi-print-label">เข้างานตรงเวลา</span>
-                    <span class="kpi-print-val text-success">{{ number_format($onTimeCount) }}</span>
-                </div>
-                <div class="kpi-print-item">
-                    <span class="kpi-print-label">เข้างานสาย</span>
-                    <span class="kpi-print-val text-warning">{{ number_format($lateCount) }}</span>
-                </div>
-                <div class="kpi-print-item">
-                    <span class="kpi-print-label">ลางาน (อนุมัติ)</span>
-                    <span class="kpi-print-val text-info">{{ number_format($leaveCount) }}</span>
-                </div>
-                <div class="kpi-print-item">
-                    <span class="kpi-print-label">ยังไม่ลงเวลา / ขาด</span>
-                    <span class="kpi-print-val text-danger">{{ number_format($absentCount) }}</span>
-                </div>
-            </div>
-
-            <!-- ตารางข้อมูลรายงานทางการ (Formal Corporate Attendance Table) -->
             <div class="table-responsive">
-                <table class="table-corporate">
+                <table class="table table-custom mb-0">
                     <thead>
                         <tr>
-                            <th style="width: 40px;">ลำดับ</th>
-                            <th style="width: 90px;">รหัสพนักงาน</th>
-                            <th style="min-width: 170px;" class="text-start">ชื่อ - นามสกุล</th>
-                            <th style="width: 120px;">แผนก</th>
-                            <th style="width: 120px;">ตำแหน่ง</th>
-                            <th style="width: 80px;">เวลาเข้างาน</th>
-                            <th style="width: 80px;">เวลาเลิกงาน</th>
-                            <th style="width: 110px;">สถานะการเข้างาน</th>
-                            <th style="min-width: 120px;">หมายเหตุ</th>
+                            <th style="width: 100px;">รหัสพนักงาน</th>
+                            <th>พนักงาน</th>
+                            <th>แผนก / ตำแหน่ง</th>
+                            <th>เวลาเข้างาน</th>
+                            <th>เวลาเลิกงาน</th>
+                            <th>สถานะการเข้างาน</th>
+                            <th>หมายเหตุ</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($reportData as $index => $row)
+                        @forelse($reportData as $row)
                             @php
                                 $emp = $row['user'];
                                 $rowStatus = $row['status'];
                             @endphp
                             <tr>
-                                <td class="text-center font-monospace">{{ $index + 1 }}</td>
-                                <td class="text-center font-monospace fw-semibold">{{ $emp->emp_code }}</td>
                                 <td>
-                                    <strong>{{ $emp->name }}</strong>
-                                    <span class="text-muted d-block screen-only" style="font-size: 0.75rem;">{{ $emp->email }}</span>
+                                    <span class="badge bg-secondary-subtle text-secondary font-monospace px-2 py-1">
+                                        {{ $emp->emp_code }}
+                                    </span>
                                 </td>
-                                <td>{{ $emp->department->name ?? '-' }}</td>
-                                <td>{{ $emp->position->name ?? '-' }}</td>
-                                <td class="text-center font-monospace">
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar-circle" style="width: 36px; height: 36px; font-size: 0.85rem;">
+                                            {{ mb_substr($emp->name, 0, 1) }}
+                                        </div>
+                                        <div>
+                                            <a href="{{ route('employees.show', $emp, false) }}" class="fw-bold text-theme text-decoration-none">
+                                                {{ $emp->name }}
+                                            </a>
+                                            <span class="d-block text-muted small">{{ $emp->email }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold">{{ $emp->department->name ?? '-' }}</div>
+                                    <span class="text-muted small">{{ $emp->position->name ?? '-' }}</span>
+                                </td>
+                                <td>
                                     @if($row['check_in'])
-                                        <strong>{{ substr($row['check_in'], 0, 5) }} น.</strong>
+                                        <span class="font-monospace fw-semibold text-success">{{ substr($row['check_in'], 0, 5) }} น.</span>
                                     @else
                                         <span class="text-muted">-</span>
                                     @endif
                                 </td>
-                                <td class="text-center font-monospace">
+                                <td>
                                     @if($row['check_out'])
-                                        <strong>{{ substr($row['check_out'], 0, 5) }} น.</strong>
+                                        <span class="font-monospace fw-semibold text-warning">{{ substr($row['check_out'], 0, 5) }} น.</span>
                                     @else
                                         <span class="text-muted">-</span>
                                     @endif
                                 </td>
-                                <td class="text-center">
+                                <td>
                                     @if($rowStatus === 'on_time')
-                                        <span class="badge-corporate text-success">
-                                            ตรงเวลา
+                                        <span class="badge bg-success-subtle text-success px-2 py-1">
+                                            <i class="bi bi-check-circle-fill me-1"></i>ตรงเวลา
                                         </span>
                                     @elseif($rowStatus === 'late')
-                                        <span class="badge-corporate text-warning">
-                                            มาสาย
+                                        <span class="badge bg-warning-subtle text-warning px-2 py-1">
+                                            <i class="bi bi-exclamation-triangle-fill me-1"></i>มาสาย
                                         </span>
                                     @elseif($rowStatus === 'leave')
-                                        <span class="badge-corporate text-info">
-                                            ลางาน
+                                        <span class="badge bg-info-subtle text-info px-2 py-1">
+                                            <i class="bi bi-sun-fill me-1"></i>ลางาน (อนุมัติแล้ว)
                                         </span>
                                     @else
-                                        <span class="badge-corporate text-danger">
-                                            ยังไม่ลงเวลา
+                                        <span class="badge bg-danger-subtle text-danger px-2 py-1">
+                                            <i class="bi bi-x-circle-fill me-1"></i>ยังไม่ลงเวลา
                                         </span>
                                     @endif
                                 </td>
-                                <td class="small text-muted">
+                                <td class="text-muted small">
                                     {{ $row['notes'] ?? '-' }}
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="text-center py-4 text-muted">
-                                    <span>ไม่พบข้อมูลพนักงานตามเงื่อนไขที่ระบุ</span>
+                                <td colspan="7" class="text-center py-5 text-muted">
+                                    <i class="bi bi-inbox fs-1 d-block mb-2 opacity-50"></i>
+                                    <span>ไม่พบข้อมูลตามเงื่อนไขที่เลือก</span>
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-
-            <!-- ส่วนลงนามท้ายเอกสาร 3 ฝ่าย (Official Signatures Section - เต็มความกว้าง ไม่หลุดไปหน้า 2) -->
-            <div class="signature-container">
-                <div class="signature-grid">
-                    <div class="signature-col">
-                        <div class="signature-card">
-                            <span class="signature-role-title">ผู้จัดทำรายงาน (Prepared By)</span>
-                            <div class="signature-line">
-                                <strong>{{ Auth::user()->name }}</strong>
-                                <div>เจ้าหน้าที่ฝ่ายบุคคล (HR Officer)</div>
-                                <div>วันที่: {{ date('d / m / Y') }}</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="signature-col">
-                        <div class="signature-card">
-                            <span class="signature-role-title">ผู้ตรวจสอบรายงาน (Verified By)</span>
-                            <div class="signature-line">
-                                <div>....................................................</div>
-                                <div>( ผู้จัดการฝ่ายบุคคล / ผู้ตรวจสอบ )</div>
-                                <div>วันที่: ...... / ...... / .........</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="signature-col">
-                        <div class="signature-card">
-                            <span class="signature-role-title">ผู้มีอำนาจอนุมัติ (Approved By)</span>
-                            <div class="signature-line">
-                                <div>....................................................</div>
-                                <div>( กรรมการผู้จัดการ / ผู้บริหารสูงสุด )</div>
-                                <div>วันที่: ...... / ...... / .........</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="document-footer-note">
-                    เอกสารนี้สร้างขึ้นจากระบบบริหารจัดการข้อมูลพนักงาน (WB-EMS) • ข้อมูลในรายงานนี้ถือเป็นความลับขององค์กร ห้ามคัดลอกหรือเผยแพร่โดยไม่ได้รับอนุญาต
-                </div>
-            </div>
-
         </div>
     </div>
 </div>
