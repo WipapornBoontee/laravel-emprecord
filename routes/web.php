@@ -79,6 +79,7 @@ Route::middleware(['auth'])->group(function () {
 
         // สรุปรายงานเวลาทำงานองค์กร (Organization Attendance Report)
         Route::get('/attendance/report', [\App\Http\Controllers\AttendanceController::class, 'report'])->name('attendances.report');
+        Route::get('/attendance/report/print', [\App\Http\Controllers\AttendanceController::class, 'printReport'])->name('attendances.report.print');
     });
 
     // หน้ารายละเอียดโปรไฟล์พนักงาน (เข้าถึงได้ตามสิทธิ์ที่ Controller ตรวจสอบ)

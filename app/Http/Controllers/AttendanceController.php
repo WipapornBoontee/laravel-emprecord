@@ -170,6 +170,24 @@ class AttendanceController extends Controller
      */
     public function report(Request $request)
     {
+        $data = $this->getReportData($request);
+        return view('attendances.report', $data);
+    }
+
+    /**
+     * ออกรายงานสรุปเวลาทำงานในรูปแบบเอกสารทางการ (Corporate PDF / Print Report)
+     */
+    public function printReport(Request $request)
+    {
+        $data = $this->getReportData($request);
+        return view('attendances.print-report', $data);
+    }
+
+    /**
+     * รวบรวมข้อมูลสถิติและการลงเวลาสำหรับออกรายงาน
+     */
+    protected function getReportData(Request $request): array
+    {
         $date = $request->input('date', Carbon::today()->format('Y-m-d'));
         $departmentId = $request->input('department_id');
         $status = $request->input('status');
@@ -218,7 +236,7 @@ class AttendanceController extends Controller
         $leaveCount = $attendances->where('status', 'leave')->count();
         $absentCount = max(0, $totalEmployees - $attendedCount - $leaveCount);
 
-        return view('attendances.report', compact(
+        return compact(
             'reportData',
             'departments',
             'date',
@@ -230,6 +248,6 @@ class AttendanceController extends Controller
             'lateCount',
             'leaveCount',
             'absentCount'
-        ));
+        );
     }
 }
