@@ -47,7 +47,6 @@ Route::middleware(['auth'])->group(function () {
 
     // Profile (Read-only สำหรับพนักงานทั่วไป, Admin/HR ดูของตนเองได้)
     Route::get('/profile', [\App\Http\Controllers\EmployeeController::class, 'profile'])->name('profile');
-    Route::get('/employees/{employee}', [\App\Http\Controllers\EmployeeController::class, 'show'])->name('employees.show');
 
     // Employee & Organization Management (เฉพาะ Admin และ HR เท่านั้น)
     Route::middleware(['role:admin,hr'])->group(function () {
@@ -55,9 +54,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/employees', [\App\Http\Controllers\EmployeeController::class, 'index'])->name('employees.index');
         Route::get('/employees/create', [\App\Http\Controllers\EmployeeController::class, 'create'])->name('employees.create');
         Route::post('/employees', [\App\Http\Controllers\EmployeeController::class, 'store'])->name('employees.store');
-        Route::get('/employees/{employee}/edit', [\App\Http\Controllers\EmployeeController::class, 'edit'])->name('employees.edit');
-        Route::put('/employees/{employee}', [\App\Http\Controllers\EmployeeController::class, 'update'])->name('employees.update');
-        Route::delete('/employees/{employee}', [\App\Http\Controllers\EmployeeController::class, 'destroy'])->name('employees.destroy');
+        Route::get('/employees/{employee}/edit', [\App\Http\Controllers\EmployeeController::class, 'edit'])->where('employee', '[0-9]+')->name('employees.edit');
+        Route::put('/employees/{employee}', [\App\Http\Controllers\EmployeeController::class, 'update'])->where('employee', '[0-9]+')->name('employees.update');
+        Route::delete('/employees/{employee}', [\App\Http\Controllers\EmployeeController::class, 'destroy'])->where('employee', '[0-9]+')->name('employees.destroy');
 
         // จัดการโครงสร้างองค์กร (แผนก และ ตำแหน่งงาน)
         Route::get('/departments', [\App\Http\Controllers\DepartmentController::class, 'index'])->name('departments.index');
@@ -81,4 +80,9 @@ Route::middleware(['auth'])->group(function () {
         // สรุปรายงานเวลาทำงานองค์กร (Organization Attendance Report)
         Route::get('/attendance/report', [\App\Http\Controllers\AttendanceController::class, 'report'])->name('attendances.report');
     });
+
+    // หน้ารายละเอียดโปรไฟล์พนักงาน (เข้าถึงได้ตามสิทธิ์ที่ Controller ตรวจสอบ)
+    Route::get('/employees/{employee}', [\App\Http\Controllers\EmployeeController::class, 'show'])
+        ->where('employee', '[0-9]+')
+        ->name('employees.show');
 });
