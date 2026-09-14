@@ -123,7 +123,7 @@
                 <i class="bi bi-lightning-charge-fill text-warning"></i> เมนูดำเนินการด่วน (Quick Actions)
             </h5>
             <div class="row g-3">
-                <div class="col-md-4">
+                <div class="{{ (Auth::user()->isAdmin() || Auth::user()->isHr()) ? 'col-md-3 col-sm-6' : 'col-md-4' }}">
                     <a href="{{ route('leaves.create', [], false) }}" class="quick-action-btn p-3 d-flex align-items-center gap-3 text-decoration-none">
                         <div class="action-icon icon-indigo">
                             <i class="bi bi-calendar2-plus-fill"></i>
@@ -134,7 +134,7 @@
                         </div>
                     </a>
                 </div>
-                <div class="col-md-4">
+                <div class="{{ (Auth::user()->isAdmin() || Auth::user()->isHr()) ? 'col-md-3 col-sm-6' : 'col-md-4' }}">
                     <a href="{{ route('attendances.checkin', [], false) }}" class="quick-action-btn p-3 d-flex align-items-center gap-3 text-decoration-none">
                         <div class="action-icon icon-green">
                             <i class="bi bi-fingerprint"></i>
@@ -146,14 +146,25 @@
                     </a>
                 </div>
                 @if(Auth::user()->isAdmin() || Auth::user()->isHr())
-                    <div class="col-md-4">
-                        <a href="{{ route('employees.index', [], false) }}" class="quick-action-btn p-3 d-flex align-items-center gap-3 text-decoration-none">
+                    <div class="col-md-3 col-sm-6">
+                        <a href="{{ route('employees.create', [], false) }}" class="quick-action-btn p-3 d-flex align-items-center gap-3 text-decoration-none">
                             <div class="action-icon icon-purple">
+                                <i class="bi bi-person-plus-fill"></i>
+                            </div>
+                            <div>
+                                <span class="d-block fw-bold action-title">เพิ่มพนักงานใหม่</span>
+                                <span class="text-muted small">สร้างบัญชีผู้ใช้ใหม่</span>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <a href="{{ route('employees.index', [], false) }}" class="quick-action-btn p-3 d-flex align-items-center gap-3 text-decoration-none">
+                            <div class="action-icon icon-amber">
                                 <i class="bi bi-people-fill"></i>
                             </div>
                             <div>
-                                <span class="d-block fw-bold action-title">จัดการข้อมูลพนักงาน</span>
-                                <span class="text-muted small">ระบบสำหรับ HR & Admin</span>
+                                <span class="d-block fw-bold action-title">รายชื่อพนักงาน</span>
+                                <span class="text-muted small">จัดการข้อมูลทั้งหมด</span>
                             </div>
                         </a>
                     </div>

@@ -15,7 +15,7 @@ class AuthController extends Controller
     public function showLoginForm()
     {
         if (Auth::check()) {
-            return redirect()->route('dashboard');
+            return redirect()->to(route('dashboard', [], false));
         }
 
         return view('auth.login');
@@ -61,7 +61,7 @@ class AuthController extends Controller
             $request->session()->regenerate();
 
             // ส่งตรงไปยังหน้า dashboard / home เสมอ
-            return redirect()->route('dashboard')->with('success', 'เข้าสู่ระบบสำเร็จ ยินดีต้อนรับ ' . $user->name);
+            return redirect()->to(route('dashboard', [], false))->with('success', 'เข้าสู่ระบบสำเร็จ ยินดีต้อนรับ ' . $user->name);
         }
 
         return back()
@@ -81,6 +81,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login')->with('success', 'ออกจากระบบเรียบร้อยแล้ว');
+        return redirect()->to(route('login', [], false))->with('success', 'ออกจากระบบเรียบร้อยแล้ว');
     }
 }

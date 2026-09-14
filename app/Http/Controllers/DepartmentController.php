@@ -31,7 +31,7 @@ class DepartmentController extends Controller
 
         Department::create($validated);
 
-        return redirect()->route('departments.index')->with('success', 'เพิ่มแผนกใหม่เรียบร้อยแล้ว');
+        return redirect()->to(route('departments.index', [], false))->with('success', 'เพิ่มแผนกใหม่เรียบร้อยแล้ว');
     }
 
     /**
@@ -40,12 +40,12 @@ class DepartmentController extends Controller
     public function destroy(Department $department)
     {
         if ($department->users()->count() > 0) {
-            return redirect()->route('departments.index')->with('error', 'ไม่สามารถลบแผนกนี้ได้ เนื่องจากมีพนักงานสังกัดอยู่ในแผนกนี้');
+            return redirect()->to(route('departments.index', [], false))->with('error', 'ไม่สามารถลบแผนกนี้ได้ เนื่องจากมีพนักงานสังกัดอยู่ในแผนกนี้');
         }
 
         $department->delete();
 
-        return redirect()->route('departments.index')->with('success', 'ลบแผนกเรียบร้อยแล้ว');
+        return redirect()->to(route('departments.index', [], false))->with('success', 'ลบแผนกเรียบร้อยแล้ว');
     }
 
     /**
@@ -71,7 +71,7 @@ class DepartmentController extends Controller
 
         Position::create($validated);
 
-        return redirect()->route('departments.positions')->with('success', 'เพิ่มตำแหน่งงานใหม่เรียบร้อยแล้ว');
+        return redirect()->to(route('departments.positions', [], false))->with('success', 'เพิ่มตำแหน่งงานใหม่เรียบร้อยแล้ว');
     }
 
     /**
@@ -80,11 +80,11 @@ class DepartmentController extends Controller
     public function destroyPosition(Position $position)
     {
         if ($position->users()->count() > 0) {
-            return redirect()->route('departments.positions')->with('error', 'ไม่สามารถลบตำแหน่งนี้ได้ เนื่องจากมีพนักงานดำรงตำแหน่งนี้อยู่');
+            return redirect()->to(route('departments.positions', [], false))->with('error', 'ไม่สามารถลบตำแหน่งนี้ได้ เนื่องจากมีพนักงานดำรงตำแหน่งนี้อยู่');
         }
 
         $position->delete();
 
-        return redirect()->route('departments.positions')->with('success', 'ลบตำแหน่งงานเรียบร้อยแล้ว');
+        return redirect()->to(route('departments.positions', [], false))->with('success', 'ลบตำแหน่งงานเรียบร้อยแล้ว');
     }
 }

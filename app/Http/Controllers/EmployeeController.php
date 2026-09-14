@@ -126,6 +126,11 @@ class EmployeeController extends Controller
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
+        $validated['department_id'] = !empty($validated['department_id']) ? $validated['department_id'] : null;
+        $validated['position_id'] = !empty($validated['position_id']) ? $validated['position_id'] : null;
+        $validated['start_date'] = !empty($validated['start_date']) ? $validated['start_date'] : null;
+        $validated['phone'] = !empty($validated['phone']) ? $validated['phone'] : null;
+        $validated['address'] = !empty($validated['address']) ? $validated['address'] : null;
 
         // สร้างข้อมูลพนักงาน
         $employee = User::create($validated);
@@ -148,7 +153,7 @@ class EmployeeController extends Controller
             );
         }
 
-        return redirect()->route('employees.index')->with('success', "เพิ่มพนักงาน {$employee->name} สำเร็จเรียบร้อยแล้ว");
+        return redirect()->to(route('employees.index', [], false))->with('success', "เพิ่มพนักงาน {$employee->name} สำเร็จเรียบร้อยแล้ว");
     }
 
     /**
@@ -273,6 +278,12 @@ class EmployeeController extends Controller
             'role.in' => 'ระดับสิทธิ์ที่เลือกไม่ถูกต้อง หรือคุณไม่มีสิทธิ์กำหนดบทบาทนี้',
         ]);
 
+        $validated['department_id'] = !empty($validated['department_id']) ? $validated['department_id'] : null;
+        $validated['position_id'] = !empty($validated['position_id']) ? $validated['position_id'] : null;
+        $validated['start_date'] = !empty($validated['start_date']) ? $validated['start_date'] : null;
+        $validated['phone'] = !empty($validated['phone']) ? $validated['phone'] : null;
+        $validated['address'] = !empty($validated['address']) ? $validated['address'] : null;
+
         // อัปเดตรหัสผ่านเฉพาะเมื่อมีการกรอกค่าใหม่
         if (!empty($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);
@@ -282,7 +293,7 @@ class EmployeeController extends Controller
 
         $employee->update($validated);
 
-        return redirect()->route('employees.index')->with('success', "อัปเดตข้อมูลพนักงาน {$employee->name} สำเร็จเรียบร้อยแล้ว");
+        return redirect()->to(route('employees.index', [], false))->with('success', "อัปเดตข้อมูลพนักงาน {$employee->name} สำเร็จเรียบร้อยแล้ว");
     }
 
     /**
@@ -299,7 +310,7 @@ class EmployeeController extends Controller
 
         // ป้องกันไม่ให้ลบบัญชีตัวเอง
         if ($currentUser->id === $employee->id) {
-            return redirect()->route('employees.index')->with('error', 'คุณไม่สามารถลบบัญชีของตนเองได้');
+            return redirect()->to(route('employees.index', [], false))->with('error', 'คุณไม่สามารถลบบัญชีของตนเองได้');
         }
 
         // ข้อกำหนดสำคัญ: HR ไม่สามารถลบ Admin ได้
@@ -310,6 +321,6 @@ class EmployeeController extends Controller
         $name = $employee->name;
         $employee->delete();
 
-        return redirect()->route('employees.index')->with('success', "ลบข้อมูลพนักงาน {$name} ออกจากระบบเรียบร้อยแล้ว");
+        return redirect()->to(route('employees.index', [], false))->with('success', "ลบข้อมูลพนักงาน {$name} ออกจากระบบเรียบร้อยแล้ว");
     }
 }

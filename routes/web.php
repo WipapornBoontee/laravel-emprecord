@@ -5,7 +5,7 @@ use App\Http\Controllers\AuthController;
 
 // หน้าแรก - หากล็อกอินแล้วจะไป dashboard หากยังไม่ล็อกอินจะถูกส่งไปที่ login อัตโนมัติ
 Route::get('/', function () {
-    return redirect()->route('dashboard');
+    return redirect()->to(route('dashboard', [], false));
 })->name('index');
 
 // Authentication Routes (auth/login)
@@ -22,7 +22,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Route alias สำหรับ /home ให้เชื่อมโยงกับ dashboard
     Route::get('/home', function () {
-        return redirect()->route('dashboard');
+        return redirect()->to(route('dashboard', [], false));
     })->name('home');
     
     // Leave Management Routes (ระบบจัดการการลาสำหรับพนักงานทุกคน)
