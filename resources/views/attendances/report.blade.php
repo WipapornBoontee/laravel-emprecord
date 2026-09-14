@@ -206,10 +206,12 @@
 
     <!-- 3. Card สรุปผล (KPI Stat Cards) -->
     <div class="col-6 col-md-4 col-xl-2">
-        <div class="stat-card p-3 text-center">
-            <span class="text-muted small d-block mb-1">พนักงานทั้งหมด</span>
-            <h3 class="fw-bold mb-0 text-primary">{{ number_format($totalEmployees) }}</h3>
-        </div>
+        <a href="{{ route('attendances.report', array_filter(['date' => $date, 'department_id' => $departmentId]), false) }}" class="text-decoration-none" title="คลิกเพื่อดูพนักงานทั้งหมด">
+            <div class="stat-card p-3 text-center {{ empty($status) ? 'border-primary' : '' }}">
+                <span class="text-muted small d-block mb-1">พนักงานทั้งหมด</span>
+                <h3 class="fw-bold mb-0 text-primary">{{ number_format($totalEmployees) }}</h3>
+            </div>
+        </a>
     </div>
     <div class="col-6 col-md-4 col-xl-2">
         <div class="stat-card p-3 text-center">
@@ -218,28 +220,36 @@
         </div>
     </div>
     <div class="col-6 col-md-4 col-xl-2">
-        <div class="stat-card p-3 text-center">
-            <span class="text-muted small d-block mb-1">เข้างานตรงเวลา</span>
-            <h3 class="fw-bold mb-0 text-success">{{ number_format($onTimeCount) }}</h3>
-        </div>
+        <a href="{{ route('attendances.report', array_filter(['date' => $date, 'department_id' => $departmentId, 'status' => 'on_time']), false) }}" class="text-decoration-none" title="คลิกเพื่อกรองเฉพาะตรงเวลา">
+            <div class="stat-card p-3 text-center {{ $status === 'on_time' ? 'border-success' : '' }}">
+                <span class="text-muted small d-block mb-1">เข้างานตรงเวลา</span>
+                <h3 class="fw-bold mb-0 text-success">{{ number_format($onTimeCount) }}</h3>
+            </div>
+        </a>
     </div>
     <div class="col-6 col-md-4 col-xl-2">
-        <div class="stat-card p-3 text-center">
-            <span class="text-muted small d-block mb-1">เข้างานสาย</span>
-            <h3 class="fw-bold mb-0 text-warning">{{ number_format($lateCount) }}</h3>
-        </div>
+        <a href="{{ route('attendances.report', array_filter(['date' => $date, 'department_id' => $departmentId, 'status' => 'late']), false) }}" class="text-decoration-none" title="คลิกเพื่อกรองเฉพาะมาสาย">
+            <div class="stat-card p-3 text-center {{ $status === 'late' ? 'border-warning' : '' }}">
+                <span class="text-muted small d-block mb-1">เข้างานสาย</span>
+                <h3 class="fw-bold mb-0 text-warning">{{ number_format($lateCount) }}</h3>
+            </div>
+        </a>
     </div>
     <div class="col-6 col-md-4 col-xl-2">
-        <div class="stat-card p-3 text-center">
-            <span class="text-muted small d-block mb-1">ลางาน (อนุมัติ)</span>
-            <h3 class="fw-bold mb-0 text-info">{{ number_format($leaveCount) }}</h3>
-        </div>
+        <a href="{{ route('attendances.report', array_filter(['date' => $date, 'department_id' => $departmentId, 'status' => 'leave']), false) }}" class="text-decoration-none" title="คลิกเพื่อกรองเฉพาะลางาน">
+            <div class="stat-card p-3 text-center {{ $status === 'leave' ? 'border-info' : '' }}">
+                <span class="text-muted small d-block mb-1">ลางาน (อนุมัติ)</span>
+                <h3 class="fw-bold mb-0 text-info">{{ number_format($leaveCount) }}</h3>
+            </div>
+        </a>
     </div>
     <div class="col-6 col-md-4 col-xl-2">
-        <div class="stat-card p-3 text-center">
-            <span class="text-muted small d-block mb-1">ยังไม่ลงเวลา / ขาด</span>
-            <h3 class="fw-bold mb-0 text-danger">{{ number_format($absentCount) }}</h3>
-        </div>
+        <a href="{{ route('attendances.report', array_filter(['date' => $date, 'department_id' => $departmentId, 'status' => 'absent']), false) }}" class="text-decoration-none" title="คลิกเพื่อกรองเฉพาะยังไม่ลงเวลา / ขาดงาน">
+            <div class="stat-card p-3 text-center {{ $status === 'absent' ? 'border-danger' : '' }}">
+                <span class="text-muted small d-block mb-1">ยังไม่ลงเวลา / ขาด</span>
+                <h3 class="fw-bold mb-0 text-danger">{{ number_format($absentCount) }}</h3>
+            </div>
+        </a>
     </div>
 
     <!-- 4. ตารางแสดงผล ด้านล่าง Card สรุปผล (Report Table) -->

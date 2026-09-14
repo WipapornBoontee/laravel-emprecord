@@ -192,7 +192,7 @@ class AttendanceController extends Controller
         $departmentId = $request->input('department_id');
         $status = $request->input('status');
 
-        // ดึงพนักงาน active ทั้งหมด
+        // ดึงพนักงาน active ทั้งหมดตามเงื่อนไขแผนก
         $usersQuery = User::with(['department', 'position'])
             ->where('status', 'active');
 
@@ -201,40 +201,43 @@ class AttendanceController extends Controller
         }
 
         $allUsers = $usersQuery->orderBy('emp_code')->get();
+        $allUserIds = $allUsers->pluck('id')->toArray();
 
-        // ดึงข้อมูลการลงเวลาของวันที่เลือก
+        // ดึงข้อมูลการลงเวลาเฉพาะพนักงานในเงื่อนไขการค้นหา ของวันที่เลือก
         $attendances = Attendance::with(['user.department', 'user.position', 'leaveRequest.leaveType'])
+            ->whereIn('user_id', $allUserIds)
             ->where('date', $date)
             ->get()
             ->keyBy('user_id');
 
-        // รวมข้อมูลพนักงานกับการลงเวลา
-        $reportData = $allUsers->map(function ($emp) use ($attendances, $date) {
+        // รวมข้อมูลพนักงานทุกคนกับการลงเวลา (ถ้าไม่มีข้อมูลการลงเวลา ให้ถือเป็น 'absent' = ยังไม่ลงเวลา / ขาดงาน)
+        $allReportData = $allUsers->map(function ($emp) use ($attendances) {
             $att = $attendances->get($emp->id);
             return [
                 'user' => $emp,
                 'attendance' => $att,
-                'status' => $att ? $att->status : 'absent', // ถ้าไม่มีข้อมูลถือว่ายังไม่ลงเวลา/ขาดงาน
+                'status' => $att ? $att->status : 'absent',
                 'check_in' => $att ? $att->check_in : null,
                 'check_out' => $att ? $att->check_out : null,
                 'notes' => $att ? $att->notes : 'ยังไม่ลงเวลา',
             ];
         });
 
-        // กรองตาม status ถ้ามีการเลือก
+        // สรุปสถิติประจำวันที่เลือก (นับจากรายการพนักงานตามเงื่อนไขแผนกอย่างแม่นยำ 100%)
+        $totalEmployees = $allReportData->count();
+        $onTimeCount = $allReportData->where('status', 'on_time')->count();
+        $lateCount = $allReportData->where('status', 'late')->count();
+        $attendedCount = $onTimeCount + $lateCount;
+        $leaveCount = $allReportData->where('status', 'leave')->count();
+        $absentCount = $allReportData->where('status', 'absent')->count();
+
+        // กรองตาม status ถ้ามีการเลือก (สำหรับแสดงข้อมูลในตาราง)
+        $reportData = $allReportData;
         if (!empty($status)) {
             $reportData = $reportData->where('status', $status);
         }
 
         $departments = Department::orderBy('name')->get();
-
-        // สรุปสถิติประจำวันที่เลือก
-        $totalEmployees = $allUsers->count();
-        $attendedCount = $attendances->whereIn('status', ['on_time', 'late'])->count();
-        $onTimeCount = $attendances->where('status', 'on_time')->count();
-        $lateCount = $attendances->where('status', 'late')->count();
-        $leaveCount = $attendances->where('status', 'leave')->count();
-        $absentCount = max(0, $totalEmployees - $attendedCount - $leaveCount);
 
         return compact(
             'reportData',
