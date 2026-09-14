@@ -292,7 +292,7 @@
                 <div class="mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-1">
                         <label for="password" class="form-label-custom mb-0">รหัสผ่าน</label>
-                        <a href="#" class="text-decoration-none small" style="color: var(--accent-color); font-size: 0.78rem;">ลืมรหัสผ่าน?</a>
+                        {{-- <a href="#" class="text-decoration-none small" style="color: var(--accent-color); font-size: 0.78rem;">ลืมรหัสผ่าน?</a> --}}
                     </div>
                     <div class="input-group-custom">
                         <i class="bi bi-key input-icon"></i>
