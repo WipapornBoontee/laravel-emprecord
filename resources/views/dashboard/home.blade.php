@@ -54,7 +54,7 @@
         </div>
     </div>
 
-    {{-- <div class="col-sm-6 col-xl-3">
+    <div class="col-sm-6 col-xl-3">
         <a href="{{ route('leaves.balances', [], false) }}" class="text-decoration-none">
             <div class="stat-card p-4">
                 <div class="d-flex align-items-center justify-content-between mb-3">
@@ -70,7 +70,7 @@
                 <p class="stat-desc mb-0"><i class="bi bi-arrow-up-right me-1"></i> โควตาประจำปี {{ date('Y') }}</p>
             </div>
         </a>
-    </div> --}}
+    </div>
 
     @php
         $todayAtt = Auth::user()->attendances()->where('date', date('Y-m-d'))->first();
