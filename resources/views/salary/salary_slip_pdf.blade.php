@@ -132,5 +132,13 @@
         *เอกสารฉบับนี้จัดทำขึ้นโดยระบบคอมพิวเตอร์ ไม่จำเป็นต้องมีลายเซ็นรับรอง
     </div>
 
+    <script>
+        // เปิดหน้าต่าง Print อัตโนมัติเมื่อโหลดหน้าเว็บเสร็จ
+        window.onload = function() {
+            setTimeout(function() {
+                window.print();
+            }, 500);
+        };
+    </script>
 </body>
 </html>

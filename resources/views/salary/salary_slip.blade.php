@@ -21,14 +21,15 @@
                     @endif
 
                     <div class="text-center mb-4">
-                        <p class="text-muted">เลือกเดือนและปีที่ต้องการดาวน์โหลดสลิปเงินเดือน <br> <span class="text-danger fw-bold"><i class="bi bi-lock-fill"></i> ไฟล์ PDF จะถูกล็อกด้วยรหัสผ่าน<br>(ให้ใช้เลขประจำตัวประชาชน 13 หลักในการเปิด)</span></p>
+                        <p class="text-muted">เพื่อความปลอดภัย กรุณากรอกเลขประจำตัวประชาชน 13 หลัก เพื่อยืนยันตัวตนก่อนดาวน์โหลดสลิปเงินเดือน</p>
                     </div>
 
-                    <form action="{{ route('salary_slip.download', [], false) }}" method="GET">
-                        <div class="row mb-4">
+                    <form action="{{ route('salary_slip.verify', [], false) }}" method="POST">
+                        @csrf
+                        <div class="row mb-3">
                             <div class="col-6">
                                 <label for="month" class="form-label">เดือน</label>
-                                <select class="form-select form-select-lg" id="month" name="month" required>
+                                <select class="form-select" id="month" name="month" required>
                                     @for($i = 1; $i <= 12; $i++)
                                         <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}" {{ date('m') == $i ? 'selected' : '' }}>
                                             {{ Carbon\Carbon::create()->month($i)->translatedFormat('F') }}
@@ -38,7 +39,7 @@
                             </div>
                             <div class="col-6">
                                 <label for="year" class="form-label">ปี</label>
-                                <select class="form-select form-select-lg" id="year" name="year" required>
+                                <select class="form-select" id="year" name="year" required>
                                     @for($i = date('Y'); $i >= date('Y') - 2; $i--)
                                         <option value="{{ $i }}">{{ $i }}</option>
                                     @endfor
@@ -46,9 +47,19 @@
                             </div>
                         </div>
 
-                        <div class="d-grid mt-4">
+                        <div class="mb-4">
+                            <label for="id_card" class="form-label fw-bold">เลขประจำตัวประชาชน 13 หลัก</label>
+                            <input type="password" class="form-control form-control-lg text-center letter-spacing-2" 
+                                id="id_card" name="id_card" maxlength="13" 
+                                placeholder="X-XXXX-XXXXX-XX-X" required>
+                            @error('id_card')
+                                <div class="text-danger mt-1 small">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="d-grid">
                             <button type="submit" class="btn btn-success btn-lg fw-bold rounded-pill shadow-sm">
-                                <i class="bi bi-download me-2"></i> ดาวน์โหลดไฟล์ PDF
+                                <i class="bi bi-unlock-fill me-2"></i> ยืนยันและดาวน์โหลดสลิป
                             </button>
                         </div>
                     </form>
@@ -57,4 +68,10 @@
         </div>
     </div>
 </div>
+
+<style>
+    .letter-spacing-2 {
+        letter-spacing: 2px;
+    }
+</style>
 @endsection
