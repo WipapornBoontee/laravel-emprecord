@@ -48,6 +48,9 @@ Route::middleware(['auth'])->group(function () {
     // Profile (Read-only สำหรับพนักงานทั่วไป, Admin/HR ดูของตนเองได้)
     Route::get('/profile', [\App\Http\Controllers\EmployeeController::class, 'profile'])->name('profile');
 
+    // Salary (เงินเดือน)
+    Route::get('/salary', [\App\Http\Controllers\SalaryController::class, 'show'])->name('salary_show');
+
     // Employee & Organization Management (เฉพาะ Admin และ HR เท่านั้น)
     Route::middleware(['role:admin,hr'])->group(function () {
         // จัดการข้อมูลพนักงาน (Admin จัดการได้ทุกคนรวมทั้ง HR, HR จัดการได้เฉพาะ employee)
@@ -86,4 +89,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/employees/{employee}', [\App\Http\Controllers\EmployeeController::class, 'show'])
         ->where('employee', '[0-9]+')
         ->name('employees.show');
+
+    
+    
 });

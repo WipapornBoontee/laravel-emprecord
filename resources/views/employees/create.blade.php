@@ -189,11 +189,11 @@
                             value="{{ old('phone') }}" placeholder="เช่น 081-234-5678">
                     </div>
                     <div class="col-md-8">
-                        <label for="name" class="form-label form-label-custom">
-                            ฐานเงินเดือน <span class="text-danger">*</span>
+                        <label for="salary" class="form-label form-label-custom">
+                            ฐานเงินเดือน (บาท) <span class="text-danger">*</span>
                         </label>
-                        <input type="text" class="form-control form-control-custom" id="name" name="name" 
-                            value="{{ old('name') }}" placeholder="เช่น สมเกียรติ สว่างดี" required>
+                        <input type="text" class="form-control form-control-custom" id="salary" name="salary" 
+                            value="{{ old('salary') }}" placeholder="เช่น 50000" required>
                     </div>
                 </div>
 

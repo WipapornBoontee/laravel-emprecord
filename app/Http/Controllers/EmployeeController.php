@@ -113,6 +113,7 @@ class EmployeeController extends Controller
             'position_id' => ['nullable', 'exists:positions,id'],
             'start_date' => ['nullable', 'date'],
             'status' => ['required', Rule::in(['active', 'resigned'])],
+            'salary' => ['required', 'numeric', 'min:0'],
         ], [
             'emp_code.required' => 'กรุณาระบุรหัสพนักงาน',
             'emp_code.unique' => 'รหัสพนักงานนี้มีในระบบแล้ว',
@@ -152,6 +153,12 @@ class EmployeeController extends Controller
                 ]
             );
         }
+
+        // บันทึกเงินเดือนเริ่มต้นลงในตาราง salary_emps
+        \App\Models\SalaryEmp::create([
+            'user_id' => $employee->id,
+            'salary' => $request->input('salary'),
+        ]);
 
         return redirect()->to(route('employees.index', [], false))->with('success', "เพิ่มพนักงาน {$employee->name} สำเร็จเรียบร้อยแล้ว");
     }

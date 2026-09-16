@@ -55,6 +55,20 @@
                         </ul>
                     </li>
 
+                    <!-- แสดงผลเฉพาะพนักงาน -->
+                   @if(Auth::user()?->isEmployee())
+                     <li class="nav-item dropdown">
+                        <a class="nav-link nav-link-custom dropdown-toggle {{ Request::is('leaves*') || Request::is('apply-leave*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-calendar2-check-fill me-1"></i> เงินเดือน
+                        </a>
+                        <ul class="dropdown-menu custom-dropdown-menu border-0 shadow-lg">
+                            <li><a class="dropdown-item py-2" href="{{ route('salary_show', [], false) }}"><i class="bi bi-file-earmark-plus me-2 text-info"></i> ฐานเงินเดือน</a></li>
+                            <li><a class="dropdown-item py-2" href="{{ route('salary_show', [], false) }}"><i class="bi bi-clock-history me-2 text-primary"></i>ค่าล่วงเวลา</a></li>
+                            <li><a class="dropdown-item py-2" href="{{ route('salary_show', [], false) }}"><i class="bi bi-pie-chart-fill me-2 text-success"></i>สลิปเงินเดือน</a></li>
+                        </ul>
+                    </li>
+                    @endif
+
                     <!-- เมนูระบบลงเวลา (Time Attendance) -->
                     <li class="nav-item dropdown">
                         <a class="nav-link nav-link-custom dropdown-toggle {{ Request::is('attendance*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
