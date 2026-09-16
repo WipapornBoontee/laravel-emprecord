@@ -33,14 +33,7 @@
 </head>
 <body>
 
-    <div id="action-buttons" style="text-align: center; margin-bottom: 20px; margin-top: 20px;">
-        <button onclick="downloadPDF()" style="padding: 10px 20px; font-size: 16px; cursor: pointer; background-color: #28a745; color: white; border: none; border-radius: 5px; font-weight: bold;">
-            ⬇️ ดาวน์โหลดสลิป (Export PDF)
-        </button>
-        <a href="{{ route('salary_slip', [], false) }}" style="padding: 10px 20px; font-size: 16px; cursor: pointer; background-color: #6c757d; color: white; border: none; border-radius: 5px; text-decoration: none; margin-left: 10px;">
-            กลับหน้าหลัก
-        </a>
-    </div>
+   
 
     <!-- กรอบเนื้อหาสลิปที่จะเซฟเป็น PDF -->
     <div id="payslip-content" style="padding: 20px; background: white; max-width: 800px; margin: 0 auto; border: 1px solid #ddd; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
@@ -145,6 +138,15 @@
     <div class="mt-4" style="font-size: 12px; color: #555;">
         วันที่พิมพ์: {{ $datePrinted }} <br>
         *เอกสารฉบับนี้จัดทำขึ้นโดยระบบคอมพิวเตอร์ ไม่จำเป็นต้องมีลายเซ็นรับรอง
+    </div>
+
+     <div id="action-buttons" style="text-align: center; margin-bottom: 20px; margin-top: 20px;">
+        <button onclick="downloadPDF()" style="padding: 10px 20px; font-size: 16px; cursor: pointer; background-color: #28a745; color: white; border: none; border-radius: 5px; font-weight: bold;">
+            ดาวน์โหลดสลิป (Export PDF)
+        </button>
+        <a href="{{ route('salary_slip', [], false) }}" style="padding: 10px 20px; font-size: 16px; cursor: pointer; background-color: #6c757d; color: white; border: none; border-radius: 5px; text-decoration: none; margin-left: 10px;">
+            กลับหน้าหลัก
+        </a>
     </div>
     </div> <!-- ปิด id="payslip-content" -->
 
