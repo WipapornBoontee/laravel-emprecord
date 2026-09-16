@@ -141,7 +141,7 @@
                 <table class="table table-custom mb-0">
                     <thead>
                         <tr>
-                            <th class="col-2">วันที่</th>
+                            <th class="col-2 md-2">วันที่</th>
                             <th class="col-2">เวลาเข้างาน</th>
                             <th class="col-2">เวลาเลิกงาน</th>
                             <th class="col-2">สถานะการลงเวลา</th>
@@ -151,7 +151,7 @@
                     <tbody>
                         @forelse($attendances as $record)
                             <tr>
-                                <td class="fw-bold text-theme">
+                                <td class="fw-bold text-theme md-2">
                                     {{ \Carbon\Carbon::parse($record->date)->format('d/m/Y') }}
                                     <span class="badge bg-secondary-subtle text-secondary small ms-1">
                                         {{ \Carbon\Carbon::parse($record->date)->format('D') }}
