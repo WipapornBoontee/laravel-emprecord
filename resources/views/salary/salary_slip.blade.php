@@ -30,9 +30,12 @@
                             <div class="col-6">
                                 <label for="month" class="form-label">เดือน</label>
                                 <select class="form-select" id="month" name="month" required>
+                                    @php
+                                        $thaiMonths = [1=>'มกราคม', 2=>'กุมภาพันธ์', 3=>'มีนาคม', 4=>'เมษายน', 5=>'พฤษภาคม', 6=>'มิถุนายน', 7=>'กรกฎาคม', 8=>'สิงหาคม', 9=>'กันยายน', 10=>'ตุลาคม', 11=>'พฤศจิกายน', 12=>'ธันวาคม'];
+                                    @endphp
                                     @for($i = 1; $i <= 12; $i++)
                                         <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}" {{ date('m') == $i ? 'selected' : '' }}>
-                                            {{ Carbon\Carbon::create()->month($i)->translatedFormat('F') }}
+                                            {{ $thaiMonths[$i] }}
                                         </option>
                                     @endfor
                                 </select>

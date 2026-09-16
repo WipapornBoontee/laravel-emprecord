@@ -61,7 +61,10 @@
             <td class="font-bold">ตำแหน่ง :</td>
             <td>{{ $user->position->name ?? '-' }}</td>
             <td class="font-bold">ประจำเดือน :</td>
-            <td>{{ Carbon\Carbon::create()->month((int)$month)->translatedFormat('F') }} {{ $year }}</td>
+            @php
+                $thaiMonths = [1=>'มกราคม', 2=>'กุมภาพันธ์', 3=>'มีนาคม', 4=>'เมษายน', 5=>'พฤษภาคม', 6=>'มิถุนายน', 7=>'กรกฎาคม', 8=>'สิงหาคม', 9=>'กันยายน', 10=>'ตุลาคม', 11=>'พฤศจิกายน', 12=>'ธันวาคม'];
+            @endphp
+            <td>{{ $thaiMonths[(int)$month] }} {{ $year }}</td>
         </tr>
     </table>
 
