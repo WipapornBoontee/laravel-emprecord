@@ -11,7 +11,7 @@ class SalaryController extends Controller
     {
         $user = \Illuminate\Support\Facades\Auth::user();
         
-        $baseSalary = $user->salary ?? 0;
+        $baseSalary = (float) ($user->salary ?? 0);
         $daysInMonth = \Carbon\Carbon::now()->daysInMonth;
         
         $dailyWage = 0;
