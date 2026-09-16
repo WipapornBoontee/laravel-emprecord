@@ -3,7 +3,7 @@
 @section('title', 'ค่าล่วงเวลา')
 
 @section('content')
-<div class="container py-4">
+<div class="container py-6">
     <div class="row justify-content-center">
         <div class="col-md-10">
             <div class="card shadow-sm border-0">
