@@ -93,7 +93,7 @@
                             <td class="text-right" style="border: none;">{{ number_format($socialSecurity, 2) }}</td>
                         </tr>
                         <tr>
-                            <td style="border: none;" class="text-danger">หักกรณีไม่อนุมัติลา ({{ number_format($rejectedLeaveDays, 1) }} วัน)</td>
+                            <td style="border: none;" class="text-danger">หักกรณีไม่อนุมัติการลา ({{ $rejectedLeaveDays + 0 }} วัน)</td>
                             <td class="text-right text-danger" style="border: none;">{{ number_format($leaveDeduction, 2) }}</td>
                         </tr>
                     </table>
