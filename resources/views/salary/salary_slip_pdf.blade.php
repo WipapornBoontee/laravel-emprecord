@@ -33,6 +33,18 @@
 </head>
 <body>
 
+    <div id="action-buttons" style="text-align: center; margin-bottom: 20px; margin-top: 20px;">
+        <button onclick="downloadPDF()" style="padding: 10px 20px; font-size: 16px; cursor: pointer; background-color: #28a745; color: white; border: none; border-radius: 5px; font-weight: bold;">
+            ⬇️ ดาวน์โหลดสลิป (Export PDF)
+        </button>
+        <a href="{{ route('salary_slip', [], false) }}" style="padding: 10px 20px; font-size: 16px; cursor: pointer; background-color: #6c757d; color: white; border: none; border-radius: 5px; text-decoration: none; margin-left: 10px;">
+            กลับหน้าหลัก
+        </a>
+    </div>
+
+    <!-- กรอบเนื้อหาสลิปที่จะเซฟเป็น PDF -->
+    <div id="payslip-content" style="padding: 20px; background: white; max-width: 800px; margin: 0 auto; border: 1px solid #ddd; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+
     <div class="text-center">
         <div class="company-name">บริษัท ดับบลิวบี-อีเอ็มเอส จำกัด (WB-EMS Co., Ltd.)</div>
         <div class="header-title">ใบแจ้งเงินเดือน / PAYSLIP</div>
@@ -131,14 +143,30 @@
         วันที่พิมพ์: {{ $datePrinted }} <br>
         *เอกสารฉบับนี้จัดทำขึ้นโดยระบบคอมพิวเตอร์ ไม่จำเป็นต้องมีลายเซ็นรับรอง
     </div>
+    </div> <!-- ปิด id="payslip-content" -->
 
+    <!-- ใช้ html2pdf.js สำหรับดาวน์โหลด PDF โดยไม่ต้องพึ่ง Server -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>
-        // เปิดหน้าต่าง Print อัตโนมัติเมื่อโหลดหน้าเว็บเสร็จ
-        window.onload = function() {
-            setTimeout(function() {
-                window.print();
-            }, 500);
-        };
+        function downloadPDF() {
+            // ซ่อนปุ่มก่อนโหลด
+            document.getElementById('action-buttons').style.display = 'none';
+            
+            var element = document.getElementById('payslip-content');
+            var opt = {
+                margin:       10,
+                filename:     'slip_{{ $user->emp_code }}_{{ $month }}_{{ $year }}.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            // สร้างและโหลด PDF
+            html2pdf().set(opt).from(element).save().then(function() {
+                // แสดงปุ่มกลับมาหลังจากโหลดเสร็จ
+                document.getElementById('action-buttons').style.display = 'block';
+            });
+        }
     </script>
 </body>
 </html>
