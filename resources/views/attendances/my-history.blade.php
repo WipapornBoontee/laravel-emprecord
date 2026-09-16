@@ -141,11 +141,11 @@
                 <table class="table table-custom mb-0">
                     <thead>
                         <tr>
-                            <th>วันที่</th>
-                            <th>เวลาเข้างาน</th>
-                            <th>เวลาเลิกงาน</th>
-                            <th>สถานะการลงเวลา</th>
-                            <th>หมายเหตุ / รายละเอียด</th>
+                            <th class="col-2">วันที่</th>
+                            <th class="col-2">เวลาเข้างาน</th>
+                            <th class="col-2">เวลาเลิกงาน</th>
+                            <th class="col-2">สถานะการลงเวลา</th>
+                            <th class="col-2">หมายเหตุ / รายละเอียด</th>
                         </tr>
                     </thead>
                     <tbody>
