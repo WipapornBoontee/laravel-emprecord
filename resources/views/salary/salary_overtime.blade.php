@@ -131,10 +131,10 @@
                     <div class="row g-3 mb-4">
                         <div class="col-12 mb-3">
                             <div class="d-flex flex-column align-items-center justify-content-center">
-                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm mb-2" style="width: 64px; height: 64px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
+                                <!-- <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm mb-2" style="width: 64px; height: 64px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
                                     <i class="bi bi-person-fill" style="font-size: 2rem;"></i>
                                 </div>
-                                <h6 class="fw-bold text-dark mb-2">{{ Auth::user()->name }}</h6>
+                                <h6 class="fw-bold text-dark mb-2">{{ Auth::user()->name }}</h6> -->
                                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill shadow-sm">
                                     <i class="bi bi-cash-stack me-1"></i> เรทล่วงเวลา: {{ number_format($hourlyRate, 2) }} บาท/ชม.
                                 </span>
