@@ -50,6 +50,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Salary (เงินเดือน)
     Route::get('/salary', [\App\Http\Controllers\SalaryController::class, 'show'])->name('salary_show');
+    Route::get('/salary/overtime', [\App\Http\Controllers\SalaryController::class, 'overtime'])->name('salary_overtime');
 
     // Employee & Organization Management (เฉพาะ Admin และ HR เท่านั้น)
     Route::middleware(['role:admin,hr'])->group(function () {

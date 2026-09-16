@@ -189,7 +189,7 @@
                             <i class="bi bi-box-arrow-right fs-1"></i>
                         </div>
                         <h4 class="fw-bold mb-1 text-theme">บันทึกเวลาเลิกงาน</h4>
-                        <p class="text-muted small mb-4">เวลาเลิกงานปกติ 18:00 น. บันทึกเมื่อสิ้นสุดการทำงาน</p>
+                        <p class="text-muted small mb-4">เวลาเลิกงานปกติ 17:00 น. บันทึกเมื่อสิ้นสุดการทำงาน</p>
 
                         @if($todayAttendance && !empty($todayAttendance->check_out))
                             <div class="status-box mb-4">
