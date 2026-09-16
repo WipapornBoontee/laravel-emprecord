@@ -129,11 +129,17 @@
                 <div class="card-body p-3 p-md-4">
                     <!-- Summary Stats -->
                     <div class="row g-3 mb-4">
-                        <div class="avatar-wrapper">
-                            <i class="bi bi-person-fill" style="font-size: 2rem; color: white;"></i>
+                        <div class="col-12 mb-3">
+                            <div class="d-flex flex-column align-items-center justify-content-center">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm mb-2" style="width: 64px; height: 64px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
+                                    <i class="bi bi-person-fill" style="font-size: 2rem;"></i>
+                                </div>
+                                <h6 class="fw-bold text-dark mb-2">{{ Auth::user()->name }}</h6>
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill shadow-sm">
+                                    <i class="bi bi-cash-stack me-1"></i> เรทล่วงเวลา: {{ number_format($hourlyRate, 2) }} บาท/ชม.
+                                </span>
+                            </div>
                         </div>
-                        <div class="text-dark fw-bold text-center">พนักงาน: {{ Auth::user()->name }} </div> 
-                        <div class="text-dark fw-bold text-center">เรท: {{ number_format($hourlyRate, 2) . ' บาท/ชม.'}} </div>
                         <div class="col-md-6">
                             <div class="ot-stat-card">
                                 <p class="ot-stat-title"><i class="bi bi-stopwatch me-2 text-primary"></i>ชั่วโมงล่วงเวลาทั้งหมด (เดือนนี้)</p>
