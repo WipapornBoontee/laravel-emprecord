@@ -69,4 +69,114 @@ class SalaryController extends Controller
             'month', 'year', 'otDetails', 'totalOtHours', 'totalOtPay', 'hourlyRate'
         ));
     }
+
+    public function slip()
+    {
+        return view('salary.salary_slip');
+    }
+
+    public function verifySlip(\Illuminate\Http\Request $request)
+    {
+        $request->validate([
+            'id_card' => 'required|string|size:13',
+            'month' => 'required',
+            'year' => 'required'
+        ], [
+            'id_card.required' => 'กรุณากรอกเลขบัตรประชาชน',
+            'id_card.size' => 'เลขบัตรประชาชนต้องมี 13 หลัก',
+        ]);
+
+        $user = \Illuminate\Support\Facades\Auth::user();
+
+        if ($user->id_card !== $request->id_card) {
+            return back()->with('error', 'เลขบัตรประชาชนไม่ถูกต้อง รหัสไม่ตรงกับข้อมูลในระบบ');
+        }
+
+        // เก็บ session อนุมัติไว้สั้นๆ 5 นาที (300 วินาที)
+        $request->session()->put('slip_verified_user_' . $user->id, true);
+        $request->session()->put('slip_verified_time_' . $user->id, time());
+        
+        return redirect()->route('salary_slip.download', [
+            'month' => $request->month,
+            'year' => $request->year
+        ]);
+    }
+
+    public function downloadSlip(\Illuminate\Http\Request $request)
+    {
+        $user = \Illuminate\Support\Facades\Auth::user();
+        
+        // เช็ค Session สิทธิ์
+        $isVerified = $request->session()->get('slip_verified_user_' . $user->id);
+        $verifiedTime = $request->session()->get('slip_verified_time_' . $user->id);
+        
+        if (!$isVerified || (time() - $verifiedTime) > 300) {
+            // ลบ session ทิ้งและเตะกลับ
+            $request->session()->forget('slip_verified_user_' . $user->id);
+            $request->session()->forget('slip_verified_time_' . $user->id);
+            return redirect()->route('salary_slip')->with('error', 'เซสชันหมดอายุ กรุณากรอกเลขบัตรประชาชนใหม่');
+        }
+
+        // ดึงข้อมูล
+        $month = $request->input('month', date('m'));
+        $year = $request->input('year', date('Y'));
+        
+        $baseSalary = (float) ($user->salary ?? 0);
+
+        // คำนวณวันในเดือนและค่าแรงรายวัน
+        $daysInMonth = \Carbon\Carbon::create($year, $month)->daysInMonth;
+        $dailyWage = $daysInMonth > 0 ? $baseSalary / $daysInMonth : 0;
+
+        // ดึงข้อมูลการเข้า-ออกงานเพื่อหา OT
+        $attendances = \App\Models\Attendance::where('user_id', $user->id)
+            ->whereYear('date', $year)
+            ->whereMonth('date', $month)
+            ->whereNotNull('check_out')
+            ->get();
+
+        $standardCheckOut = \Carbon\Carbon::createFromTimeString('17:00:00');
+        $hourlyRate = 40;
+        $totalOtPay = 0;
+
+        foreach ($attendances as $att) {
+            $checkOut = \Carbon\Carbon::createFromTimeString($att->check_out);
+            if ($checkOut->greaterThan($standardCheckOut)) {
+                $diffInMinutes = $standardCheckOut->diffInMinutes($checkOut);
+                $otHours = $diffInMinutes / 60;
+                $totalOtPay += ($otHours * $hourlyRate);
+            }
+        }
+
+        // ดึงข้อมูลการลาที่ถูกปฏิเสธ (Rejected Leave) เพื่อนำมาหักเงิน
+        $rejectedLeaves = \App\Models\LeaveRequest::where('user_id', $user->id)
+            ->whereYear('start_date', $year)
+            ->whereMonth('start_date', $month)
+            ->where('status', 'rejected')
+            ->get();
+        
+        $rejectedLeaveDays = $rejectedLeaves->sum('days_count');
+        $leaveDeduction = $rejectedLeaveDays * $dailyWage;
+
+        $netSalary = $baseSalary + $totalOtPay - $leaveDeduction;
+
+        $data = [
+            'user' => $user,
+            'month' => $month,
+            'year' => $year,
+            'baseSalary' => $baseSalary,
+            'totalOtPay' => $totalOtPay,
+            'rejectedLeaveDays' => $rejectedLeaveDays,
+            'leaveDeduction' => $leaveDeduction,
+            'netSalary' => $netSalary,
+            'datePrinted' => date('d/m/Y H:i:s')
+        ];
+
+        // เคลียร์ session ทันทีเพื่อความปลอดภัย (ดูได้ครั้งเดียว)
+        $request->session()->forget('slip_verified_user_' . $user->id);
+        $request->session()->forget('slip_verified_time_' . $user->id);
+
+        // โหลด View สลิปเพื่อสร้าง PDF
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('salary.salary_slip_pdf', $data);
+        return $pdf->download('slip_'.$user->emp_code.'_'.$year.'_'.$month.'.pdf');
+    }
 }

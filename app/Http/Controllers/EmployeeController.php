@@ -114,6 +114,7 @@ class EmployeeController extends Controller
             'start_date' => ['nullable', 'date'],
             'status' => ['required', Rule::in(['active', 'resigned'])],
             'salary' => ['required', 'numeric', 'min:0'],
+            'id_card' => ['required', 'string', 'size:13'],
         ], [
             'emp_code.required' => 'กรุณาระบุรหัสพนักงาน',
             'emp_code.unique' => 'รหัสพนักงานนี้มีในระบบแล้ว',
@@ -124,6 +125,8 @@ class EmployeeController extends Controller
             'password.min' => 'รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร',
             'role.required' => 'กรุณาเลือกระดับสิทธิ์',
             'role.in' => 'ระดับสิทธิ์ที่เลือกไม่ถูกต้อง หรือคุณไม่มีสิทธิ์กำหนดบทบาทนี้',
+            'id_card.required' => 'กรุณากรอกเลขบัตรประชาชน',
+            'id_card.size' => 'เลขบัตรประชาชนต้องมี 13 หลัก',
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
@@ -268,6 +271,8 @@ class EmployeeController extends Controller
             'position_id' => ['nullable', 'exists:positions,id'],
             'start_date' => ['nullable', 'date'],
             'status' => ['required', Rule::in(['active', 'resigned'])],
+            'salary' => ['required', 'numeric', 'min:0'],
+            'id_card' => ['required', 'string', 'size:13'],
         ], [
             'emp_code.required' => 'กรุณาระบุรหัสพนักงาน',
             'emp_code.unique' => 'รหัสพนักงานนี้มีผู้ใช้งานแล้ว',
@@ -277,6 +282,8 @@ class EmployeeController extends Controller
             'password.min' => 'รหัสผ่านใหม่ต้องมีความยาวอย่างน้อย 6 ตัวอักษร',
             'role.required' => 'กรุณาเลือกระดับสิทธิ์',
             'role.in' => 'ระดับสิทธิ์ที่เลือกไม่ถูกต้อง หรือคุณไม่มีสิทธิ์กำหนดบทบาทนี้',
+            'id_card.required' => 'กรุณากรอกเลขบัตรประชาชน',
+            'id_card.size' => 'เลขบัตรประชาชนต้องมี 13 หลัก',
         ]);
 
         $validated['department_id'] = !empty($validated['department_id']) ? $validated['department_id'] : null;

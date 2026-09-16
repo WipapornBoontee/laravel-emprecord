@@ -64,7 +64,7 @@
                         <ul class="dropdown-menu custom-dropdown-menu border-0 shadow-lg">
                             <li><a class="dropdown-item py-2" href="{{ route('salary_show', [], false) }}"><i class="bi bi-file-earmark-plus me-2 text-info"></i> ฐานเงินเดือน</a></li>
                             <li><a class="dropdown-item py-2" href="{{ route('salary_overtime', [], false) }}"><i class="bi bi-clock-history me-2 text-primary"></i>ค่าล่วงเวลา</a></li>
-                            <li><a class="dropdown-item py-2" href="{{ route('salary_show', [], false) }}"><i class="bi bi-pie-chart-fill me-2 text-success"></i>สลิปเงินเดือน</a></li>
+                            <li><a class="dropdown-item py-2" href="{{ route('salary_slip', [], false) }}"><i class="bi bi-pie-chart-fill me-2 text-success"></i>สลิปเงินเดือน</a></li>
                         </ul>
                     </li>
                     @endif
