@@ -111,16 +111,16 @@
         <div class="col-lg-10">
             <div class="ot-card fade-in">
                 
-                <div class="ot-header">
+                <div class="col-6 ot-header">
                     <div class="d-flex align-items-center gap-3">
                         <div class="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-size: 1.2rem;">
                             <i class="bi bi-clock-fill"></i>
                         </div>
-                        <div class="col-6 mb-3">
+                        <div class="col-6 mb-1">
                             <h5 class="mb-0 fw-bold">สรุปค่าล่วงเวลา (OT)</h5>
                              
                         </div>
-                        <div class="col-6 mb-3">
+                        <div class="col-6 mb-1">
                             <div class="d-flex flex-column align-items-center justify-content-center">
                                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill shadow-sm">
                                     <i class="bi bi-cash-stack me-1"></i> เรทล่วงเวลา: {{ number_format($hourlyRate, 2) }} บาท/ชม.
