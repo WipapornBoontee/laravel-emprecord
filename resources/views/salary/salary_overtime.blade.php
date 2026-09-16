@@ -118,10 +118,15 @@
                         </div>
                         <div>
                             <h5 class="mb-0 fw-bold">สรุปค่าล่วงเวลา (OT)</h5>
-                             <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill shadow-sm">
+                             
+                        </div>
+                        <div class="col-12 mb-3">
+                            <div class="d-flex flex-column align-items-center justify-content-center">
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill shadow-sm">
                                     <i class="bi bi-cash-stack me-1"></i> เรทล่วงเวลา: {{ number_format($hourlyRate, 2) }} บาท/ชม.
                                 </span>
-                        </div>
+                            </div>
+                        </div>  
                     </div>
                     <div class="ot-month-badge">
                         <i class="bi bi-calendar-event me-2"></i>เดือน {{ Carbon\Carbon::create()->month((int)$month)->translatedFormat('F') }} {{ $year }}
