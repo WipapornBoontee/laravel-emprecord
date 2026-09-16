@@ -298,36 +298,7 @@
                                             </button>
                                         </div>
 
-                                        <!-- Reject Modal -->
-                                        <div class="modal fade text-start" id="rejectModal{{ $leave->id }}" tabindex="-1" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered">
-                                                <div class="modal-content form-card p-3 border-0">
-                                                    <div class="modal-header border-0">
-                                                        <h5 class="modal-title fw-bold text-danger">
-                                                            <i class="bi bi-x-circle-fill me-1"></i> ปฏิเสธคำขอลา
-                                                        </h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <form action="{{ route('leaves.approvals.reject', $leave, false) }}" method="POST">
-                                                        @csrf
-                                                        <div class="modal-body">
-                                                            <p class="text-muted small">
-                                                                ระบุเหตุผลในการไม่อนุมัติคำขอลาของ <strong>{{ $leave->user->name }}</strong>
-                                                            </p>
-                                                            <div class="mb-3">
-                                                                <label class="form-label small fw-semibold text-theme">หมายเหตุ / เหตุผลที่ปฏิเสธ</label>
-                                                                <textarea name="remark" class="form-control filter-input" rows="3" 
-                                                                    placeholder="เช่น ติดงานด่วนในช่วงเวลาดังกล่าว, แจ้งลากะทันหันเกินไป..." required></textarea>
-                                                            </div>
-                                                        </div>
-                                                        <div class="modal-footer border-0">
-                                                            <button type="button" class="btn btn-outline-secondary rounded-3" data-bs-dismiss="modal">ยกเลิก</button>
-                                                            <button type="submit" class="btn btn-danger rounded-3">ยืนยันปฏิเสธคำขอ</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <!-- Reject Modal is at the bottom of the file -->
                                     @else
                                         <span class="text-muted small">ดำเนินการแล้ว</span>
                                     @endif
@@ -353,4 +324,40 @@
         </div>
     </div>
 </div>
+
+<!-- Render Modals Outside Table to Fix Backdrop Issue -->
+@foreach($leaveRequests as $leave)
+    @if($leave->status === 'pending')
+        <!-- Reject Modal -->
+        <div class="modal fade text-start" id="rejectModal{{ $leave->id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content form-card p-3 border-0">
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title fw-bold text-danger">
+                            <i class="bi bi-x-circle-fill me-1"></i> ปฏิเสธคำขอลา
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ route('leaves.approvals.reject', $leave, false) }}" method="POST">
+                        @csrf
+                        <div class="modal-body">
+                            <p class="text-muted small">
+                                ระบุเหตุผลในการไม่อนุมัติคำขอลาของ <strong>{{ $leave->user->name }}</strong>
+                            </p>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold text-theme">หมายเหตุ / เหตุผลที่ปฏิเสธ</label>
+                                <textarea name="remark" class="form-control filter-input" rows="3" 
+                                    placeholder="เช่น ติดงานด่วนในช่วงเวลาดังกล่าว, แจ้งลากะทันหันเกินไป..." required></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-0">
+                            <button type="button" class="btn btn-outline-secondary rounded-3" data-bs-dismiss="modal">ยกเลิก</button>
+                            <button type="submit" class="btn btn-danger rounded-3">ยืนยันปฏิเสธคำขอ</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endif
+@endforeach
 @endsection
