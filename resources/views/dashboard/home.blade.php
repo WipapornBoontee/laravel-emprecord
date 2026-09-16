@@ -41,6 +41,20 @@
     </div>
 
     <!-- 2. Interactive KPI Stats Cards -->
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card p-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <span class="stat-label">ระดับสิทธิ์ (Role)</span>
+                <div class="stat-icon-wrapper icon-purple">
+                    <i class="bi bi-shield-shaded"></i>
+                </div>
+            </div>
+            <h3 class="stat-value mb-1 text-uppercase">{{ Auth::user()->role }}</h3>
+            <p class="stat-desc mb-0"><i class="bi bi-key-fill me-1"></i> ได้รับการยืนยันสิทธิ์</p>
+        </div>
+    </div>
+    
     <div class="col-sm-6 col-xl-3">
         <div class="stat-card p-4">
             <div class="d-flex align-items-center justify-content-between mb-3">
@@ -80,18 +94,7 @@
         </div>
     </div>
 
-    <div class="col-sm-6 col-xl-3">
-        <div class="stat-card p-4">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-                <span class="stat-label">ระดับสิทธิ์ (Role)</span>
-                <div class="stat-icon-wrapper icon-purple">
-                    <i class="bi bi-shield-shaded"></i>
-                </div>
-            </div>
-            <h3 class="stat-value mb-1 text-uppercase">{{ Auth::user()->role }}</h3>
-            <p class="stat-desc mb-0"><i class="bi bi-key-fill me-1"></i> ได้รับการยืนยันสิทธิ์</p>
-        </div>
-    </div>
+    
 
     <!-- 3. Quick Actions Menu -->
     <div class="col-12">
