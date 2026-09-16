@@ -36,7 +36,7 @@ class SalaryController extends Controller
             ->orderBy('date', 'asc')
             ->get();
 
-        $standardCheckOut = \Carbon\Carbon::createFromTimeString('17:00:00');
+        $standardCheckOut = \Carbon\Carbon::createFromTimeString('17:33:00');
         $hourlyRate = 40;
         
         $totalOtHours = 0;

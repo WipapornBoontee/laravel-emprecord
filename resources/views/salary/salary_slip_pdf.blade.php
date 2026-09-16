@@ -139,8 +139,9 @@
         วันที่พิมพ์: {{ $datePrinted }} <br>
         *เอกสารฉบับนี้จัดทำขึ้นโดยระบบคอมพิวเตอร์ ไม่จำเป็นต้องมีลายเซ็นรับรอง
     </div>
-
-     <div id="action-buttons" style="text-align: center; margin-bottom: 20px; margin-top: 20px;">
+     
+    </div> <!-- ปิด id="payslip-content" -->
+    <div id="action-buttons" style="text-align: center; margin-bottom: 20px; margin-top: 20px;">
         <button onclick="downloadPDF()" style="padding: 10px 20px; font-size: 16px; cursor: pointer; background-color: #28a745; color: white; border: none; border-radius: 5px; font-weight: bold;">
             ดาวน์โหลดสลิป (Export PDF)
         </button>
@@ -148,7 +149,6 @@
             กลับหน้าหลัก
         </a>
     </div>
-    </div> <!-- ปิด id="payslip-content" -->
 
     <!-- ใช้ html2pdf.js สำหรับดาวน์โหลด PDF โดยไม่ต้องพึ่ง Server -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
