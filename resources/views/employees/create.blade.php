@@ -181,14 +181,14 @@
                             value="{{ old('name') }}" placeholder="เช่น สมเกียรติ สว่างดี" required>
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <label for="phone" class="form-label form-label-custom">
                             เบอร์โทรศัพท์
                         </label>
                         <input type="text" class="form-control form-control-custom" id="phone" name="phone" 
                             value="{{ old('phone') }}" placeholder="เช่น 081-234-5678">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-8">
                         <label for="name" class="form-label form-label-custom">
                             ฐานเงินเดือน <span class="text-danger">*</span>
                         </label>
