@@ -8,7 +8,7 @@
         <div class="col-md-8">
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="bi bi-wallet2 me-2"></i> ข้อมูลเงินเดือน (อยู่ระหว่างการพัฒนา)</h5>
+                    <h5 class="mb-0"><i class="bi bi-wallet2 me-2"></i> ข้อมูลฐานเงินเดือน</h5>
                 </div>
                 <div class="card-body">
                     <div class="text-center mb-4 mt-3">
@@ -20,30 +20,16 @@
                     <hr>
 
                     <div class="row text-center mt-4">
-                        <div class="col-md-4">
+                        <div class="col-md-12">
                             <div class="p-3 border rounded bg-light">
                                 <p class="text-muted mb-1">ฐานเงินเดือน</p>
-                                <h5 class="mb-0 text-primary">รอการอัปเดต</h5>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="p-3 border rounded bg-light">
-                                <p class="text-muted mb-1">ค่าล่วงเวลา (OT)</p>
-                                <h5 class="mb-0 text-success">รอการอัปเดต</h5>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="p-3 border rounded bg-light">
-                                <p class="text-muted mb-1">สลิปเงินเดือน</p>
-                                <h5 class="mb-0 text-info">รอการอัปเดต</h5>
+                                <h4 class="mb-2 text-primary">฿ {{ number_format($baseSalary, 2) }}</h4>
+                                <hr>
+                                <p class="text-muted mb-1">ค่าแรงต่อวัน (คำนวณจากเดือนนี้มี {{ $daysInMonth }} วัน)</p>
+                                <h5 class="mb-0 text-success">฿ {{ number_format($dailyWage, 2) }} / วัน</h5>
                             </div>
                         </div>
                     </div>
-
-                    <div class="alert alert-warning mt-4 text-center">
-                        <i class="bi bi-tools me-2"></i> ระบบแสดงผลเงินเดือนเต็มรูปแบบจะเปิดใช้งานในเร็วๆ นี้
-                    </div>
-                </div>
             </div>
         </div>
     </div>
