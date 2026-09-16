@@ -60,8 +60,8 @@
                     <!-- แสดงผลเฉพาะพนักงาน -->
                    @if(Auth::user()?->isEmployee())
                      <li class="nav-item dropdown">
-                        <a class="nav-link nav-link-custom dropdown-toggle {{ Request::is('leaves*') || Request::is('apply-leave*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-calendar2-check-fill me-1"></i> เงินเดือน
+                        <a class="nav-link nav-link-custom dropdown-toggle {{ Request::is('salary*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-wallet-fill me-1"></i> เงินเดือน
                         </a>
                         <ul class="dropdown-menu custom-dropdown-menu border-0 shadow-lg">
                             <li><a class="dropdown-item py-2" href="{{ route('salary_show', [], false) }}"><i class="bi bi-file-earmark-plus me-2 text-info"></i> ฐานเงินเดือน</a></li>
