@@ -27,8 +27,8 @@
                         </div>
                         <div class="col-md-6">
                             <div class="p-3 border rounded bg-light">
-                                <p class="text-muted mb-1">รวมเงินค่าล่วงเวลา</p>
-                                <h4 class="mb-0 text-success">฿ {{ number_format($totalOtPay, 2) }}</h4>
+                                <p class="text-muted mb-1">รวมเงินค่าล่วงเวลา OT</p>
+                                <h4 class="mb-0 text-success"> {{ number_format($totalOtPay, 2) }} <small class="fs-6 text-muted">บาท</small></h4>
                             </div>
                         </div>
                     </div>
@@ -43,7 +43,7 @@
                                         <th>วันที่</th>
                                         <th>เวลาเข้างาน</th>
                                         <th>เวลาเลิกงาน</th>
-                                        <th>ชั่วโมง OT (ตามจริง)</th>
+                                        <th>ชั่วโมง OT</th>
                                         <th>จำนวนเงิน (บาท)</th>
                                     </tr>
                                 </thead>

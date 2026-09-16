@@ -159,6 +159,7 @@ class SalaryController extends Controller
         $leaveDeduction = $rejectedLeaveDays * $dailyWage;
 
         $netSalary = $baseSalary + $totalOtPay - $leaveDeduction;
+        $netSalaryText = $this->bahtText($netSalary);
 
         $data = [
             'user' => $user,
@@ -169,6 +170,7 @@ class SalaryController extends Controller
             'rejectedLeaveDays' => $rejectedLeaveDays,
             'leaveDeduction' => $leaveDeduction,
             'netSalary' => $netSalary,
+            'netSalaryText' => $netSalaryText,
             'datePrinted' => date('d/m/Y H:i:s')
         ];
 
@@ -178,5 +180,40 @@ class SalaryController extends Controller
 
         // โหลด View สลิปในรูปแบบ HTML สำหรับการปริ้นเป็น PDF ผ่านเบราว์เซอร์
         return view('salary.salary_slip_pdf', $data);
+    }
+
+    private function bahtText($number)
+    {
+        $number = number_format($number, 2, '.', '');
+        list($integer, $fraction) = explode('.', $number);
+        
+        $txtNum = ['ศูนย์', 'หนึ่ง', 'สอง', 'สาม', 'สี่', 'ห้า', 'หก', 'เจ็ด', 'แปด', 'เก้า', 'สิบ'];
+        $txtUnit = ['', 'สิบ', 'ร้อย', 'พัน', 'หมื่น', 'แสน', 'ล้าน'];
+        
+        $convert = function($num) use ($txtNum, $txtUnit) {
+            $val = '';
+            $len = strlen($num);
+            for ($i = 0; $i < $len; $i++) {
+                $n = substr($num, $i, 1);
+                if ($n != 0) {
+                    if ($i == ($len - 1) && $n == 1 && $len > 1 && substr($num, $i - 1, 1) != 0) {
+                        $val .= 'เอ็ด';
+                    } elseif ($i == ($len - 2) && $n == 2) {
+                        $val .= 'ยี่';
+                    } elseif ($i == ($len - 2) && $n == 1) {
+                        $val .= '';
+                    } else {
+                        $val .= $txtNum[$n];
+                    }
+                    $val .= $txtUnit[$len - $i - 1];
+                }
+            }
+            return $val;
+        };
+
+        $baht = $integer > 0 ? $convert($integer) . 'บาท' : 'ศูนย์บาท';
+        $satang = $fraction > 0 ? $convert($fraction) . 'สตางค์' : 'ถ้วน';
+
+        return $baht . $satang;
     }
 }
