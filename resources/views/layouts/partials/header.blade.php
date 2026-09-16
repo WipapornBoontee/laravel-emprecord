@@ -35,7 +35,7 @@
                                 <li><hr class="dropdown-divider opacity-25"></li>
                                 <li><a class="dropdown-item py-2" href="{{ route('departments.index', [], false) }}"><i class="bi bi-diagram-3-fill me-2 text-warning"></i> จัดการแผนกและตำแหน่ง</a></li>
                                 <li><hr class="dropdown-divider opacity-25"></li>
-                                <li><a class="dropdown-item py-2" href="{{ route('settings.payroll', [], false) }}"><i class="bi bi-gear-fill me-2 text-secondary"></i> ตั้งค่าการหักเงินเดือน</a></li>
+                                <li><a class="dropdown-item py-2" href="{{ route('settings.payroll', [], false) }}"><i class="bi bi-gear-fill me-2 text-secondary"></i> ตั้งค่าการหักภาษี/ประกัน</a></li>
                             </ul>
                         </li>
                     @endif
