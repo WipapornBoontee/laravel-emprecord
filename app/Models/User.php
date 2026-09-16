@@ -6,7 +6,6 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -30,6 +29,7 @@ class User extends Authenticatable
         'role',
         'department_id',
         'position_id',
+        'salary',
         'start_date',
         'status',
     ];
@@ -88,10 +88,6 @@ class User extends Authenticatable
         return $this->hasMany(Attendance::class);
     }
 
-    public function salaryEmp(): HasOne
-    {
-        return $this->hasOne(SalaryEmp::class);
-    }
 
     /**
      * Check if user is admin

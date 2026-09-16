@@ -9,18 +9,16 @@ class SalaryController extends Controller
 {
     public function show()
     {
-        // $user = \Illuminate\Support\Facades\Auth::user();
-        // $salaryData = $user->salaryEmp;
+        $user = \Illuminate\Support\Facades\Auth::user();
         
-        // $baseSalary = $salaryData ? $salaryData->salary : 0;
-        // $daysInMonth = \Carbon\Carbon::now()->daysInMonth;
+        $baseSalary = $user->salary ?? 0;
+        $daysInMonth = \Carbon\Carbon::now()->daysInMonth;
         
-        // $dailyWage = 0;
-        // if ($daysInMonth > 0 && $baseSalary > 0) {
-        //     $dailyWage = $baseSalary / $daysInMonth;
-        // }
+        $dailyWage = 0;
+        if ($daysInMonth > 0 && $baseSalary > 0) {
+            $dailyWage = $baseSalary / $daysInMonth;
+        }
 
-        // return view('salary.salary_show', compact('baseSalary', 'daysInMonth', 'dailyWage'));
-        return view('salary.salary_show');
+        return view('salary.salary_show', compact('baseSalary', 'daysInMonth', 'dailyWage'));
     }
 }

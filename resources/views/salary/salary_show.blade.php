@@ -23,11 +23,11 @@
                         <div class="col-md-12">
                             <div class="p-3 border rounded bg-light">
                                 <p class="text-muted mb-1">ฐานเงินเดือน</p>
-                                <!-- <h4 class="mb-2 text-primary">฿ {{ number_format($baseSalary, 2) }}</h4>
+                                <h4 class="mb-2 text-primary">฿ {{ number_format($baseSalary, 2) }}</h4>
                                 <hr>
                                 <p class="text-muted mb-1">ค่าแรงต่อวัน (คำนวณจากเดือนนี้มี {{ $daysInMonth }} วัน)</p>
                                 <h5 class="mb-0 text-success">฿ {{ number_format($dailyWage, 2) }} / วัน</h5>
-                            </div> -->
+                            </div>
                         </div>
                     </div>
             </div>
