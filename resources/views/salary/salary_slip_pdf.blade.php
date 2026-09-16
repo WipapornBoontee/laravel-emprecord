@@ -134,7 +134,7 @@
                 เงินรับสุทธิ (Net Pay)
             </td>
             <td width="25%" class="font-bold text-right" style="font-size: 16px;">{{ number_format($netSalary, 2) }}</td>
-            <td width="50%" class="font-bold text-left" style="font-size: 14px; padding-left: 20px; color: #626262ff; font-style: italic;">({{ $netSalaryText }})</td>
+            <td width="50%" class="font-bold text-left" style="font-size: 14px; padding-center: 15px; color: #626262ff; font-style: italic;">({{ $netSalaryText }})</td>
         </tr>
     </table>
 
