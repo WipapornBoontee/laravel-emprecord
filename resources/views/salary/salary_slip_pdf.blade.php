@@ -43,7 +43,7 @@
         <div class="header-title">ใบแจ้งเงินเดือน / PAYSLIP</div>
     </div>
 
-    <table class="w-100 info-table mt-4 mb-2">
+    <table class="w-100 info-table mt-4 mb-3">
         <tr>
             <td width="15%" class="font-bold">บัตรประชาชน :</td>
             <td width="35%">{{ $user->id_card }}</td>
