@@ -86,11 +86,11 @@
                     <table class="w-100" style="border: none;">
                         <tr>
                             <td style="border: none;">หักภาษี ณ ที่จ่าย (Tax)</td>
-                            <td class="text-right" style="border: none;">0.00</td>
+                            <td class="text-right" style="border: none;">{{ number_format($tax, 2) }}</td>
                         </tr>
                         <tr>
                             <td style="border: none;">ประกันสังคม (Social Security)</td>
-                            <td class="text-right" style="border: none;">0.00</td>
+                            <td class="text-right" style="border: none;">{{ number_format($socialSecurity, 2) }}</td>
                         </tr>
                         <tr>
                             <td style="border: none;" class="text-danger">หักกรณีไม่อนุมัติลา ({{ number_format($rejectedLeaveDays, 1) }} วัน)</td>
@@ -120,7 +120,7 @@
                     <table class="w-100" style="border: none;">
                         <tr>
                             <td style="border: none;">รวมรายการหัก (Total Deductions)</td>
-                            <td class="text-right" style="border: none;">{{ number_format($leaveDeduction, 2) }}</td>
+                            <td class="text-right" style="border: none;">{{ number_format($leaveDeduction + $tax + $socialSecurity, 2) }}</td>
                         </tr>
                     </table>
                 </td>
@@ -130,10 +130,10 @@
 
     <table class="payslip-table">
         <tr>
-            <td width="20%" class="font-bold text-right" style="background-color: #f0f0f0;">
+            <td width="30%" class="font-bold text-right" style="background-color: #f0f0f0;">
                 เงินรับสุทธิ (Net Pay)
             </td>
-            <td width="40%" class="font-bold text-right" style="font-size: 16px;">{{ number_format($netSalary, 2) }}</td>
+            <td width="30%" class="font-bold text-right" style="font-size: 16px;">{{ number_format($netSalary, 2) }}</td>
             <td width="40%" class="font-bold text-left" style="font-size: 16px; padding-left: 40px; color: #626262ff;">({{ $netSalaryText }})</td>
         </tr>
     </table>

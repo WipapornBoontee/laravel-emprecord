@@ -156,9 +156,36 @@ class SalaryController extends Controller
             ->get();
         
         $rejectedLeaveDays = $rejectedLeaves->sum('days_count');
+
+        // ดึงการตั้งค่าเงินเดือน (ถ้าไม่มีให้จำลองค่า default)
+        $setting = \App\Models\PayrollSetting::first() ?? new \App\Models\PayrollSetting([
+            'ss_min_salary' => 1,
+            'ss_percent' => 5,
+            'ss_max_deduction' => 750,
+            'tax_min_salary' => 26000,
+            'tax_percent' => 3
+        ]);
+
+        // คำนวณประกันสังคม (คิดจากฐานเงินเดือน)
+        $socialSecurity = 0;
+        if ($baseSalary >= $setting->ss_min_salary) {
+            $socialSecurity = ($baseSalary * $setting->ss_percent) / 100;
+            if ($socialSecurity > $setting->ss_max_deduction) {
+                $socialSecurity = $setting->ss_max_deduction;
+            }
+        }
+
+        // คำนวณหักภาษี ณ ที่จ่าย (คิดจากฐานเงินเดือน หรืออาจรวมรายรับอื่นด้วย)
+        // ในที่นี้คิดจากเงินรับรวม (เงินเดือน + OT)
+        $tax = 0;
+        $totalIncome = $baseSalary + $totalOtPay;
+        if ($totalIncome >= $setting->tax_min_salary) {
+            $tax = ($totalIncome * $setting->tax_percent) / 100;
+        }
+
         $leaveDeduction = $rejectedLeaveDays * $dailyWage;
 
-        $netSalary = $baseSalary + $totalOtPay - $leaveDeduction;
+        $netSalary = $baseSalary + $totalOtPay - $leaveDeduction - $socialSecurity - $tax;
         $netSalaryText = $this->bahtText($netSalary);
 
         $data = [
@@ -169,6 +196,8 @@ class SalaryController extends Controller
             'totalOtPay' => $totalOtPay,
             'rejectedLeaveDays' => $rejectedLeaveDays,
             'leaveDeduction' => $leaveDeduction,
+            'socialSecurity' => $socialSecurity,
+            'tax' => $tax,
             'netSalary' => $netSalary,
             'netSalaryText' => $netSalaryText,
             'datePrinted' => date('d/m/Y H:i:s')

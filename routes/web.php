@@ -57,6 +57,10 @@ Route::middleware(['auth'])->group(function () {
 
     // Employee & Organization Management (เฉพาะ Admin และ HR เท่านั้น)
     Route::middleware(['role:admin,hr'])->group(function () {
+        // ตั้งค่าเงินเดือน
+        Route::get('/settings/payroll', [\App\Http\Controllers\PayrollSettingController::class, 'index'])->name('settings.payroll');
+        Route::post('/settings/payroll', [\App\Http\Controllers\PayrollSettingController::class, 'update'])->name('settings.payroll.update');
+        
         // จัดการข้อมูลพนักงาน (Admin จัดการได้ทุกคนรวมทั้ง HR, HR จัดการได้เฉพาะ employee)
         Route::get('/employees', [\App\Http\Controllers\EmployeeController::class, 'index'])->name('employees.index');
         Route::get('/employees/create', [\App\Http\Controllers\EmployeeController::class, 'create'])->name('employees.create');

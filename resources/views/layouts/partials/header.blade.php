@@ -26,7 +26,7 @@
                     {{-- เมนูสำหรับ Admin และ HR เท่านั้น --}}
                     @if(Auth::user()->isAdmin() || Auth::user()->isHr())
                         <li class="nav-item dropdown">
-                            <a class="nav-link nav-link-custom dropdown-toggle {{ Request::is('employees*') || Request::is('departments*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link nav-link-custom dropdown-toggle {{ Request::is('employees*') || Request::is('departments*') || Request::is('settings*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-people-fill me-1"></i> จัดการพนักงาน
                             </a>
                             <ul class="dropdown-menu custom-dropdown-menu border-0 shadow-lg">
@@ -34,6 +34,8 @@
                                 <li><a class="dropdown-item py-2" href="{{ route('employees.create', [], false) }}"><i class="bi bi-person-plus-fill me-2 text-success"></i> เพิ่มพนักงานใหม่</a></li>
                                 <li><hr class="dropdown-divider opacity-25"></li>
                                 <li><a class="dropdown-item py-2" href="{{ route('departments.index', [], false) }}"><i class="bi bi-diagram-3-fill me-2 text-warning"></i> จัดการแผนกและตำแหน่ง</a></li>
+                                <li><hr class="dropdown-divider opacity-25"></li>
+                                <li><a class="dropdown-item py-2" href="{{ route('settings.payroll', [], false) }}"><i class="bi bi-gear-fill me-2 text-secondary"></i> ตั้งค่าการหักเงินเดือน</a></li>
                             </ul>
                         </li>
                     @endif
