@@ -13,14 +13,14 @@
     }
     .ot-header {
         background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-        padding: 30px;
+        padding: 20px 25px;
         color: white;
         border-radius: 20px 20px 0 0;
         display: flex;
         justify-content: space-between;
         align-items: center;
         flex-wrap: wrap;
-        gap: 15px;
+        gap: 10px;
     }
     .ot-month-badge {
         background: rgba(255, 255, 255, 0.2);
@@ -34,8 +34,8 @@
     .ot-stat-card {
         background: #f8fafc;
         border: 1px solid #e2e8f0;
-        border-radius: 16px;
-        padding: 20px;
+        border-radius: 12px;
+        padding: 15px;
         text-align: center;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
         height: 100%;
@@ -48,12 +48,12 @@
     .ot-stat-title {
         color: #64748b;
         font-weight: 600;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         text-transform: uppercase;
-        margin-bottom: 12px;
+        margin-bottom: 8px;
     }
     .ot-stat-value {
-        font-size: 2rem;
+        font-size: 1.5rem;
         font-weight: 700;
         margin-bottom: 0;
     }
@@ -77,18 +77,19 @@
         color: #475569;
         font-weight: 600;
         text-transform: uppercase;
-        font-size: 0.85rem;
-        padding: 15px;
+        font-size: 0.8rem;
+        padding: 12px 10px;
         border-bottom: 2px solid #e2e8f0;
     }
-    .ot-table th:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
-    .ot-table th:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+    .ot-table th:first-child { border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+    .ot-table th:last-child { border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
     
     .ot-table td {
-        padding: 15px;
+        padding: 12px 10px;
         vertical-align: middle;
         border-bottom: 1px solid #f1f5f9;
         color: #334155;
+        font-size: 0.9rem;
     }
     .ot-table tr:hover td {
         background-color: #f8fafc;
@@ -105,19 +106,19 @@
 @endpush
 
 @section('content')
-<div class="container py-4 py-md-5">
+<div class="container py-4">
     <div class="row justify-content-center">
         <div class="col-lg-10">
             <div class="ot-card fade-in">
                 
                 <div class="ot-header">
                     <div class="d-flex align-items-center gap-3">
-                        <div class="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; font-size: 1.5rem;">
+                        <div class="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-size: 1.2rem;">
                             <i class="bi bi-clock-fill"></i>
                         </div>
                         <div>
-                            <h4 class="mb-0 fw-bold">สรุปค่าล่วงเวลา (OT)</h4>
-                            <div class="text-white-50 small mt-1">พนักงาน: {{ Auth::user()->name }} | เรทล่วงเวลา: ฿ {{ number_format($hourlyRate, 2) }} / ชม.</div>
+                            <h5 class="mb-0 fw-bold">สรุปค่าล่วงเวลา (OT)</h5>
+                            <div class="text-white-50 small mt-1">พนักงาน: {{ Auth::user()->name }} | เรท: ฿ {{ number_format($hourlyRate, 2) }} / ชม.</div>
                         </div>
                     </div>
                     <div class="ot-month-badge">
@@ -125,9 +126,9 @@
                     </div>
                 </div>
 
-                <div class="card-body p-4 p-md-5">
+                <div class="card-body p-3 p-md-4">
                     <!-- Summary Stats -->
-                    <div class="row g-4 mb-5">
+                    <div class="row g-3 mb-4">
                         <div class="col-md-6">
                             <div class="ot-stat-card">
                                 <p class="ot-stat-title"><i class="bi bi-stopwatch me-2 text-primary"></i>ชั่วโมงล่วงเวลาทั้งหมด (เดือนนี้)</p>
@@ -142,7 +143,7 @@
                         </div>
                     </div>
 
-                    <h5 class="fw-bold text-dark mb-4 border-bottom pb-3"><i class="bi bi-list-columns-reverse text-primary me-2"></i>รายละเอียดการทำ OT รายวัน</h5>
+                    <h6 class="fw-bold text-dark mb-3 border-bottom pb-2"><i class="bi bi-list-columns-reverse text-primary me-2"></i>รายละเอียดการทำ OT รายวัน</h6>
                     
                     @if(count($otDetails) > 0)
                         <div class="table-responsive">
