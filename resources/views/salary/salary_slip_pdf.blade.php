@@ -130,11 +130,11 @@
 
     <table class="payslip-table">
         <tr>
-            <td width="70%" class="font-bold text-right" style="background-color: #f0f0f0;">
-                <span style="float: left; font-style: italic; font-weight: normal; color: #555;">({{ $netSalaryText }})</span>
+            <td width="20%" class="font-bold text-right" style="background-color: #f0f0f0;">
                 เงินรับสุทธิ (Net Pay)
             </td>
-            <td width="30%" class="font-bold text-right" style="font-size: 16px;">{{ number_format($netSalary, 2) }}</td>
+            <td width="40%" class="font-bold text-right" style="font-size: 16px;">{{ number_format($netSalary, 2) }}</td>
+            <td width="40%" class="font-bold text-left" style="font-size: 16px; padding-left: 40px; color: #626262ff;">({{ $netSalaryText }})</td>
         </tr>
     </table>
 
