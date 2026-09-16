@@ -361,6 +361,52 @@
         .text-theme {
             color: var(--text-main);
         }
+
+        /* Pagination Styling */
+        .pagination {
+            margin-bottom: 0;
+            gap: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .pagination .page-link {
+            background: var(--surface-bg);
+            border: 1px solid var(--surface-border);
+            color: var(--text-main);
+            border-radius: 8px !important;
+            padding: 6px 14px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .pagination .page-link:hover {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: var(--accent-color);
+            color: var(--text-main);
+        }
+        .pagination .page-item.active .page-link {
+            background: var(--primary-gradient);
+            border-color: transparent;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+        }
+        .pagination .page-item.disabled .page-link {
+            background: var(--badge-bg);
+            border-color: var(--surface-border);
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+        .pagination svg {
+            width: 14px !important;
+            height: 14px !important;
+            max-width: 14px !important;
+            max-height: 14px !important;
+            vertical-align: middle;
+        }
     </style>
     @stack('styles')
 </head>

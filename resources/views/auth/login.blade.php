@@ -200,6 +200,32 @@
             transform: translateY(0);
         }
 
+        .form-check-input-pro {
+            width: 1.25em;
+            height: 1.25em;
+            background-color: var(--input-bg);
+            border: 1.5px solid var(--input-border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .form-check-input-pro:hover {
+            border-color: var(--accent-color);
+        }
+
+        .form-check-input-pro:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .form-check-input-pro:checked {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+        }
+
         .theme-toggle-fixed {
             position: fixed;
             top: 24px;
@@ -246,7 +272,7 @@
                 <div class="brand-logo-badge">
                     <i class="bi bi-shield-lock-fill"></i>
                 </div>
-                <h1 class="auth-title mb-1">เข้าสู่ระบบนะจ้ะ</h1>
+                <h1 class="auth-title mb-1">เข้าสู่ระบบ 55555</h1>
                 <p class="auth-subtitle mb-0">ระบบบริหารจัดการข้อมูลพนักงาน (LV-PROJECT)</p>
             </div>
 
@@ -284,28 +310,31 @@
                     <div class="input-group-custom">
                         <i class="bi bi-person input-icon"></i>
                         <input type="text" class="form-control-pro @error('username') is-invalid @enderror"
-                            id="username" name="username" value="{{ old('username') }}" 
-                            placeholder="เช่น admin, hr, employee" required autofocus autocomplete="username">
+                            id="username" name="username" value="{{ old('username', $rememberedUsername ?? '') }}" 
+                            placeholder="เช่น admin, hr, employee" required 
+                            {{ empty($rememberedUsername) && !old('username') ? 'autofocus' : '' }} 
+                            autocomplete="username">
                     </div>
                 </div>
 
                 <div class="mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-1">
                         <label for="password" class="form-label-custom mb-0">รหัสผ่าน</label>
-                        <a href="#" class="text-decoration-none small" style="color: var(--accent-color); font-size: 0.78rem;">ลืมรหัสผ่าน?</a>
                     </div>
                     <div class="input-group-custom">
                         <i class="bi bi-key input-icon"></i>
                         <input type="password" class="form-control-pro @error('password') is-invalid @enderror"
-                            id="password" name="password" placeholder="กรอกรหัสผ่านของคุณ" required autocomplete="current-password">
+                            id="password" name="password" placeholder="กรอกรหัสผ่านของคุณ" required 
+                            {{ (!empty($rememberedUsername) || old('username')) ? 'autofocus' : '' }}
+                            autocomplete="current-password">
                     </div>
                 </div>
 
-                <div class="form-check mb-4">
-                    <input type="checkbox" class="form-check-input" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}
-                        style="background-color: var(--input-bg); border-color: var(--input-border);">
-                    <label class="form-check-label small" for="remember" style="color: var(--text-muted); cursor: pointer;">
-                        จดจำการเข้าสู่ระบบ
+                <div class="form-check mb-4 d-flex align-items-center gap-2">
+                    <input type="checkbox" class="form-check-input form-check-input-pro m-0" id="remember" name="remember" 
+                        {{ (old('remember') || (!empty($isRemembered) && !old())) ? 'checked' : '' }}>
+                    <label class="form-check-label small mb-0" for="remember" style="color: var(--text-muted); cursor: pointer; user-select: none;">
+                        จดจำการเข้าสู่ระบบ (Remember Me)
                     </label>
                 </div>
 
@@ -319,7 +348,7 @@
         </div>
     </div>
 
-    <!-- Theme Switcher JS -->
+    <!-- Theme Switcher & Remember JS -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const themeToggleBtn = document.getElementById('themeToggleBtn');
@@ -339,6 +368,36 @@
                     const currentTheme = htmlElement.getAttribute('data-bs-theme') || getPreferredTheme();
                     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
                     setTheme(newTheme);
+                });
+            }
+
+            // Client-side Remember Username sync (fallback & smooth UX)
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const rememberCheckbox = document.getElementById('remember');
+            const loginForm = document.querySelector('form');
+
+            // Pre-fill username if empty
+            if (usernameInput && (!usernameInput.value || usernameInput.value.trim() === '')) {
+                const savedUsername = localStorage.getItem('wb_remember_username');
+                if (savedUsername) {
+                    usernameInput.value = savedUsername;
+                    if (rememberCheckbox) {
+                        rememberCheckbox.checked = true;
+                    }
+                    if (passwordInput) {
+                        passwordInput.focus();
+                    }
+                }
+            }
+
+            if (loginForm && usernameInput && rememberCheckbox) {
+                loginForm.addEventListener('submit', function () {
+                    if (rememberCheckbox.checked && usernameInput.value.trim() !== '') {
+                        localStorage.setItem('wb_remember_username', usernameInput.value.trim());
+                    } else {
+                        localStorage.removeItem('wb_remember_username');
+                    }
                 });
             }
         });

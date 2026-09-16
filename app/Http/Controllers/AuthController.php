@@ -12,13 +12,16 @@ class AuthController extends Controller
     /**
      * แสดงหน้า Login
      */
-    public function showLoginForm()
+    public function showLoginForm(Request $request)
     {
         if (Auth::check()) {
-            return redirect()->route('dashboard');
+            return redirect()->to(route('dashboard', [], false));
         }
 
-        return view('auth.login');
+        $rememberedUsername = $request->cookie('remember_username', '');
+        $isRemembered = !empty($rememberedUsername);
+
+        return view('auth.login', compact('rememberedUsername', 'isRemembered'));
     }
 
     /**
@@ -56,12 +59,19 @@ class AuthController extends Controller
                     ]);
             }
 
-            // บันทึกการล็อกอินด้วย Laravel Auth
+            // บันทึกการล็อกอินด้วย Laravel Auth (พร้อม persistent session ถ้าเลือก remember)
             Auth::login($user, $remember);
             $request->session()->regenerate();
 
+            // จัดการคุกกี้จดจำชื่อผู้ใช้งาน (remember_username: 30 วัน = 43200 นาที)
+            if ($remember) {
+                cookie()->queue('remember_username', $loginInput, 43200);
+            } else {
+                cookie()->queue(cookie()->forget('remember_username'));
+            }
+
             // ส่งตรงไปยังหน้า dashboard / home เสมอ
-            return redirect()->route('dashboard')->with('success', 'เข้าสู่ระบบสำเร็จ ยินดีต้อนรับ ' . $user->name);
+            return redirect()->to(route('dashboard', [], false))->with('success', 'เข้าสู่ระบบสำเร็จ ยินดีต้อนรับ ' . $user->name);
         }
 
         return back()
@@ -81,6 +91,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login')->with('success', 'ออกจากระบบเรียบร้อยแล้ว');
+        return redirect()->to(route('login', [], false))->with('success', 'ออกจากระบบเรียบร้อยแล้ว');
     }
 }

@@ -18,7 +18,7 @@ class CheckRole
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
         if (!Auth::check()) {
-            return redirect()->route('login')->with('error', 'กรุณาเข้าสู่ระบบก่อนใช้งาน');
+            return redirect()->to(route('login', [], false))->with('error', 'กรุณาเข้าสู่ระบบก่อนใช้งาน');
         }
 
         $user = Auth::user();
@@ -29,7 +29,7 @@ class CheckRole
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
-            return redirect()->route('login')->with('error', 'บัญชีผู้ใช้นี้ถูกระงับการใช้งาน หรือลาออกแล้ว');
+            return redirect()->to(route('login', [], false))->with('error', 'บัญชีผู้ใช้นี้ถูกระงับการใช้งาน หรือลาออกแล้ว');
         }
 
         // หากไม่มีการระบุ role หรือ user มี role ตรงกับที่กำหนด

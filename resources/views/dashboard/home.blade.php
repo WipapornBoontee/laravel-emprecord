@@ -69,29 +69,52 @@
     </div>
 
     <div class="col-sm-6 col-xl-3">
-        <div class="stat-card p-4">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-                <span class="stat-label">สิทธิ์วันลาคงเหลือ</span>
-                <div class="stat-icon-wrapper icon-indigo">
-                    <i class="bi bi-calendar-heart-fill"></i>
+        <a href="{{ route('leaves.balances', [], false) }}" class="text-decoration-none">
+            <div class="stat-card p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <span class="stat-label">สิทธิ์วันลาคงเหลือ</span>
+                    <div class="stat-icon-wrapper icon-indigo">
+                        <i class="bi bi-calendar-heart-fill"></i>
+                    </div>
                 </div>
+                @php
+                    $myRemainingDays = Auth::user()->leaveBalances()->where('year', date('Y'))->sum('remaining_days');
+                @endphp
+                <h3 class="stat-value text-primary mb-1">{{ $myRemainingDays ?? 0 }} <span class="fs-6 fw-normal text-muted">วัน</span></h3>
+                <p class="stat-desc mb-0"><i class="bi bi-arrow-up-right me-1"></i> โควตาประจำปี {{ date('Y') }}</p>
             </div>
-            <h3 class="stat-value text-primary mb-1">30 <span class="fs-6 fw-normal text-muted">วัน/ปี</span></h3>
-            <p class="stat-desc mb-0"><i class="bi bi-arrow-up-right me-1"></i> โควตาประจำปี {{ date('Y') }}</p>
-        </div>
+        </a>
     </div>
 
+    @php
+        $todayAtt = Auth::user()->attendances()->where('date', date('Y-m-d'))->first();
+    @endphp
     <div class="col-sm-6 col-xl-3">
-        <div class="stat-card p-4">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-                <span class="stat-label">บันทึกเวลาวันนี้</span>
-                <div class="stat-icon-wrapper icon-amber">
-                    <i class="bi bi-clock-history"></i>
+        <a href="{{ route('attendances.checkin', [], false) }}" class="text-decoration-none">
+            <div class="stat-card p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <span class="stat-label">บันทึกเวลาวันนี้</span>
+                    <div class="stat-icon-wrapper {{ $todayAtt ? ($todayAtt->status === 'late' ? 'icon-amber' : ($todayAtt->status === 'leave' ? 'icon-indigo' : 'icon-green')) : 'icon-amber' }}">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
                 </div>
+                @if($todayAtt)
+                    @if($todayAtt->status === 'leave')
+                        <h3 class="stat-value text-info mb-1">ลางาน</h3>
+                        <p class="stat-desc mb-0"><i class="bi bi-calendar-check me-1"></i> ได้รับอนุมัติการลา</p>
+                    @elseif($todayAtt->status === 'late')
+                        <h3 class="stat-value text-warning mb-1">มาสาย</h3>
+                        <p class="stat-desc mb-0"><i class="bi bi-clock me-1"></i> เข้า {{ substr($todayAtt->check_in, 0, 5) }} น.</p>
+                    @else
+                        <h3 class="stat-value text-success mb-1">ตรงเวลา</h3>
+                        <p class="stat-desc mb-0"><i class="bi bi-check-circle me-1"></i> เข้า {{ substr($todayAtt->check_in, 0, 5) }} น.</p>
+                    @endif
+                @else
+                    <h3 class="stat-value text-secondary mb-1">ยังไม่ลงเวลา</h3>
+                    <p class="stat-desc mb-0"><i class="bi bi-box-arrow-in-right me-1"></i> คลิกเพื่อลงเวลาเข้างาน</p>
+                @endif
             </div>
-            <h3 class="stat-value text-warning mb-1">ตรงเวลา</h3>
-            <p class="stat-desc mb-0"><i class="bi bi-geo-alt-fill me-1"></i> Check-in เรียบร้อย</p>
-        </div>
+        </a>
     </div>
 
     
@@ -103,8 +126,8 @@
                 <i class="bi bi-lightning-charge-fill text-warning"></i> เมนูดำเนินการด่วน (Quick Actions)
             </h5>
             <div class="row g-3">
-                <div class="col-md-4">
-                    <a href="#" class="quick-action-btn p-3 d-flex align-items-center gap-3 text-decoration-none">
+                <div class="{{ (Auth::user()->isAdmin() || Auth::user()->isHr()) ? 'col-md-3 col-sm-6' : 'col-md-4' }}">
+                    <a href="{{ route('leaves.create', [], false) }}" class="quick-action-btn p-3 d-flex align-items-center gap-3 text-decoration-none">
                         <div class="action-icon icon-indigo">
                             <i class="bi bi-calendar2-plus-fill"></i>
                         </div>
@@ -114,8 +137,8 @@
                         </div>
                     </a>
                 </div>
-                <div class="col-md-4">
-                    <a href="#" class="quick-action-btn p-3 d-flex align-items-center gap-3 text-decoration-none">
+                <div class="{{ (Auth::user()->isAdmin() || Auth::user()->isHr()) ? 'col-md-3 col-sm-6' : 'col-md-4' }}">
+                    <a href="{{ route('attendances.checkin', [], false) }}" class="quick-action-btn p-3 d-flex align-items-center gap-3 text-decoration-none">
                         <div class="action-icon icon-green">
                             <i class="bi bi-fingerprint"></i>
                         </div>
@@ -126,26 +149,37 @@
                     </a>
                 </div>
                 @if(Auth::user()->isAdmin() || Auth::user()->isHr())
-                    <div class="col-md-4">
-                        <a href="#" class="quick-action-btn p-3 d-flex align-items-center gap-3 text-decoration-none">
+                    <div class="col-md-3 col-sm-6">
+                        <a href="{{ route('employees.create', [], false) }}" class="quick-action-btn p-3 d-flex align-items-center gap-3 text-decoration-none">
                             <div class="action-icon icon-purple">
+                                <i class="bi bi-person-plus-fill"></i>
+                            </div>
+                            <div>
+                                <span class="d-block fw-bold action-title">เพิ่มพนักงานใหม่</span>
+                                <span class="text-muted small">สร้างบัญชีผู้ใช้ใหม่</span>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <a href="{{ route('employees.index', [], false) }}" class="quick-action-btn p-3 d-flex align-items-center gap-3 text-decoration-none">
+                            <div class="action-icon icon-amber">
                                 <i class="bi bi-people-fill"></i>
                             </div>
                             <div>
-                                <span class="d-block fw-bold action-title">จัดการข้อมูลพนักงาน</span>
-                                <span class="text-muted small">ระบบสำหรับ HR & Admin</span>
+                                <span class="d-block fw-bold action-title">รายชื่อพนักงาน</span>
+                                <span class="text-muted small">จัดการข้อมูลทั้งหมด</span>
                             </div>
                         </a>
                     </div>
                 @else
                     <div class="col-md-4">
-                        <a href="#" class="quick-action-btn p-3 d-flex align-items-center gap-3 text-decoration-none">
+                        <a href="{{ route('profile', [], false) }}" class="quick-action-btn p-3 d-flex align-items-center gap-3 text-decoration-none">
                             <div class="action-icon icon-amber">
                                 <i class="bi bi-person-lines-fill"></i>
                             </div>
                             <div>
                                 <span class="d-block fw-bold action-title">ประวัติส่วนตัว</span>
-                                <span class="text-muted small">ตรวจสอบข้อมูลของฉัน</span>
+                                <span class="text-muted small">ตรวจสอบข้อมูลของฉัน (Read-only)</span>
                             </div>
                         </a>
                     </div>
