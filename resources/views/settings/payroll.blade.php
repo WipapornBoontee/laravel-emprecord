@@ -26,17 +26,17 @@
                         <div class="row mb-4">
                             <div class="col-md-6 mb-3">
                                 <label for="ss_min_salary" class="form-label">ฐานเงินเดือนขั้นต่ำที่ถูกหัก (บาท)</label>
-                                <input type="number" class="form-control" id="ss_min_salary" name="ss_min_salary" value="{{ old('ss_min_salary', $setting->ss_min_salary ?? 0) }}" required>
+                                <input type="number" class="form-control" id="ss_min_salary" name="ss_min_salary" value="{{ old('ss_min_salary', $setting->ss_min_salary ?? 0) }}" required onfocus="this.select()">
                                 <small class="text-muted">กำหนดเป็น 1 หากต้องการให้หักทุกคนที่มีเงินเดือน</small>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="ss_percent" class="form-label">เปอร์เซ็นต์การหัก (%)</label>
-                                <input type="number" step="0.01" class="form-control" id="ss_percent" name="ss_percent" value="{{ old('ss_percent', $setting->ss_percent ?? 5.00) }}" required>
+                                <input type="number" step="0.01" class="form-control" id="ss_percent" name="ss_percent" value="{{ old('ss_percent', $setting->ss_percent ?? 5.00) }}" required onfocus="this.select()">
                                 <small class="text-muted">ปกติ 5%</small>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="ss_max_deduction" class="form-label">เพดานหักสูงสุด (บาท)</label>
-                                <input type="number" class="form-control" id="ss_max_deduction" name="ss_max_deduction" value="{{ old('ss_max_deduction', $setting->ss_max_deduction ?? 750) }}" required>
+                                <input type="number" class="form-control" id="ss_max_deduction" name="ss_max_deduction" value="{{ old('ss_max_deduction', $setting->ss_max_deduction ?? 750) }}" required onfocus="this.select()">
                                 <small class="text-muted">ปกติสูงสุด 750 บาท/เดือน</small>
                             </div>
                         </div>
@@ -45,12 +45,12 @@
                         <div class="row mb-4">
                             <div class="col-md-6 mb-3">
                                 <label for="tax_min_salary" class="form-label">ฐานเงินเดือนขั้นต่ำที่ต้องเสียภาษี (บาท)</label>
-                                <input type="number" class="form-control" id="tax_min_salary" name="tax_min_salary" value="{{ old('tax_min_salary', $setting->tax_min_salary ?? 26000) }}" required>
+                                <input type="number" class="form-control" id="tax_min_salary" name="tax_min_salary" value="{{ old('tax_min_salary', $setting->tax_min_salary ?? 26000) }}" required onfocus="this.select()">
                                 <small class="text-muted">เช่น 26,000 บาทขึ้นไป</small>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="tax_percent" class="form-label">เปอร์เซ็นต์การหัก (%)</label>
-                                <input type="number" step="0.01" class="form-control" id="tax_percent" name="tax_percent" value="{{ old('tax_percent', $setting->tax_percent ?? 3.00) }}" required>
+                                <input type="number" step="0.01" class="form-control" id="tax_percent" name="tax_percent" value="{{ old('tax_percent', $setting->tax_percent ?? 3.00) }}" required onfocus="this.select()">
                                 <small class="text-muted">เช่น หักเหมา 3%</small>
                             </div>
                         </div>
