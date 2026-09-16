@@ -11,7 +11,7 @@ class SalaryEmp extends Model
 
     protected $fillable = [
         'user_id',
-        'salary',
+        // 'salary',
     ];
 
     public function user()
