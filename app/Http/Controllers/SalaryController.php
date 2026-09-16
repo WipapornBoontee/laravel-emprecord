@@ -75,50 +75,10 @@ class SalaryController extends Controller
         return view('salary.salary_slip');
     }
 
-    public function verifySlip(\Illuminate\Http\Request $request)
-    {
-        $request->validate([
-            'id_card' => 'required|string|size:13',
-            'month' => 'required',
-            'year' => 'required'
-        ], [
-            'id_card.required' => 'กรุณากรอกเลขบัตรประชาชน',
-            'id_card.size' => 'เลขบัตรประชาชนต้องมี 13 หลัก',
-        ]);
-
-        $user = \Illuminate\Support\Facades\Auth::user();
-
-        if ($user->id_card !== $request->id_card) {
-            return back()->with('error', 'เลขบัตรประชาชนไม่ถูกต้อง รหัสไม่ตรงกับข้อมูลในระบบ');
-        }
-
-        // เก็บ session อนุมัติไว้สั้นๆ 5 นาที (300 วินาที)
-        $request->session()->put('slip_verified_user_' . $user->id, true);
-        $request->session()->put('slip_verified_time_' . $user->id, time());
-        
-        return redirect()->route('salary_slip.download', [
-            'month' => $request->month,
-            'year' => $request->year
-        ]);
-    }
-
-
-
     public function downloadSlip(\Illuminate\Http\Request $request)
     {
         $user = \Illuminate\Support\Facades\Auth::user();
         
-        // เช็ค Session สิทธิ์
-        $isVerified = $request->session()->get('slip_verified_user_' . $user->id);
-        $verifiedTime = $request->session()->get('slip_verified_time_' . $user->id);
-        
-        if (!$isVerified || (time() - $verifiedTime) > 300) {
-            // ลบ session ทิ้งและเตะกลับ
-            $request->session()->forget('slip_verified_user_' . $user->id);
-            $request->session()->forget('slip_verified_time_' . $user->id);
-            return redirect()->route('salary_slip')->with('error', 'เซสชันหมดอายุ กรุณากรอกเลขบัตรประชาชนใหม่');
-        }
-
         // ดึงข้อมูล
         $month = $request->input('month', date('m'));
         $year = $request->input('year', date('Y'));
@@ -173,11 +133,27 @@ class SalaryController extends Controller
             'datePrinted' => date('d/m/Y H:i:s')
         ];
 
-        // เคลียร์ session ทันทีเพื่อความปลอดภัย (ดูได้ครั้งเดียว)
-        $request->session()->forget('slip_verified_user_' . $user->id);
-        $request->session()->forget('slip_verified_time_' . $user->id);
+        $html = view('salary.salary_slip_pdf', $data)->render();
 
-        // โหลด View สลิปในรูปแบบ HTML สำหรับการปริ้นเป็น PDF ผ่านเบราว์เซอร์
-        return view('salary.salary_slip_pdf', $data);
+        $mpdf = new \Mpdf\Mpdf([
+            'default_font' => 'garuda',
+            'format' => 'A4',
+            'margin_left' => 15,
+            'margin_right' => 15,
+            'margin_top' => 15,
+            'margin_bottom' => 15,
+        ]);
+
+        // ถ้าพนักงานมีเลขบัตรประชาชน ให้ตั้งเป็นรหัสผ่าน
+        if (!empty($user->id_card)) {
+            $mpdf->SetProtection(['print', 'copy'], $user->id_card, $user->id_card);
+        }
+
+        $mpdf->WriteHTML($html);
+        $pdfContent = $mpdf->Output('', 'S');
+
+        return response($pdfContent)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'attachment; filename="slip_'.$user->emp_code.'_'.$year.'_'.$month.'.pdf"');
     }
 }
