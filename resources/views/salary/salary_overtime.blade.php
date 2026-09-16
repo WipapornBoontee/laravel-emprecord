@@ -129,8 +129,11 @@
                 <div class="card-body p-3 p-md-4">
                     <!-- Summary Stats -->
                     <div class="row g-3 mb-4">
-                        <div><i class="bi bi-person"></i> พนักงาน: {{ Auth::user()->name }} </i></div>
-                        <div><i class="bi bi-cash"></i> เรท: {{ number_format($hourlyRate, 2) . ' บาท/ชม.'}} </i></div>
+                        <div class="avatar-wrapper">
+                            <i class="bi bi-person-fill" style="font-size: 2rem; color: white;"></i>
+                        </div>
+                        <div class="text-dark fw-bold text-center">พนักงาน: {{ Auth::user()->name }} </div> 
+                        <div class="text-dark fw-bold text-center">เรท: {{ number_format($hourlyRate, 2) . ' บาท/ชม.'}} </div>
                         <div class="col-md-6">
                             <div class="ot-stat-card">
                                 <p class="ot-stat-title"><i class="bi bi-stopwatch me-2 text-primary"></i>ชั่วโมงล่วงเวลาทั้งหมด (เดือนนี้)</p>
