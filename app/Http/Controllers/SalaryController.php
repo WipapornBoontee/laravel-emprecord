@@ -102,6 +102,8 @@ class SalaryController extends Controller
         ]);
     }
 
+
+
     public function downloadSlip(\Illuminate\Http\Request $request)
     {
         $user = \Illuminate\Support\Facades\Auth::user();
@@ -175,8 +177,7 @@ class SalaryController extends Controller
         $request->session()->forget('slip_verified_user_' . $user->id);
         $request->session()->forget('slip_verified_time_' . $user->id);
 
-        // โหลด View สลิปเพื่อสร้าง PDF
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('salary.salary_slip_pdf', $data);
-        return $pdf->download('slip_'.$user->emp_code.'_'.$year.'_'.$month.'.pdf');
+        // โหลด View สลิปในรูปแบบ HTML สำหรับการปริ้นเป็น PDF ผ่านเบราว์เซอร์
+        return view('salary.salary_slip_pdf', $data);
     }
 }
