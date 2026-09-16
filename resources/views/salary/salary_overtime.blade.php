@@ -9,7 +9,7 @@
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i> สรุปค่าล่วงเวลา (OT)</h5>
-                    <span class="badge bg-light text-primary">เดือน {{ Carbon\Carbon::create()->month($month)->translatedFormat('F') }} {{ $year }}</span>
+                    <span class="badge bg-light text-primary">เดือน {{ Carbon\Carbon::create()->month((int)$month)->translatedFormat('F') }} {{ $year }}</span>
                 </div>
                 <div class="card-body">
                     <div class="text-center mb-4 mt-3">
