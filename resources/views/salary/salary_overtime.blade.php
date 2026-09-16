@@ -111,23 +111,15 @@
         <div class="col-lg-10">
             <div class="ot-card fade-in">
                 
-                <div class="col-6 ot-header">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-size: 1.2rem;">
+                <div class="ot-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <div class="d-flex align-items-center flex-wrap gap-3">
+                        <div class="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 45px; height: 45px; font-size: 1.25rem;">
                             <i class="bi bi-clock-fill"></i>
                         </div>
-                        <div class="col-6 mb-1">
-                            <h5 class="mb-0 fw-bold">สรุปค่าล่วงเวลา (OT)</h5>
-                             
-                        </div>
-                        <div class="col-6 mb-1">
-                            <div class="d-flex flex-column align-items-center justify-content-center">
-                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill shadow-sm">
-                                    <i class="bi bi-cash-stack me-1"></i> เรทล่วงเวลา: {{ number_format($hourlyRate, 2) }} บาท/ชม.
-                                </span>
-                            </div>
-                        </div>  
-                    </div>
+                        <h5 class="mb-0 fw-bold">สรุปค่าล่วงเวลา (OT)</h5>
+                        <span class="badge bg-white text-primary px-3 py-2 rounded-pill shadow-sm ms-md-2" style="font-size: 0.9rem;">
+                            <i class="bi bi-cash-stack me-1"></i> เรท: {{ number_format($hourlyRate, 2) }} บาท/ชม.
+                        </span>                    </div>
                     <div class="ot-month-badge">
                         <i class="bi bi-calendar-event me-2"></i>เดือน {{ Carbon\Carbon::create()->month((int)$month)->translatedFormat('F') }} {{ $year }}
                     </div>
