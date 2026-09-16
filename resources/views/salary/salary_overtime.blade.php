@@ -53,7 +53,14 @@
                                             <td>{{ $detail['date'] }}</td>
                                             <td>{{ $detail['check_in'] }}</td>
                                             <td class="text-danger fw-bold">{{ $detail['check_out'] }}</td>
-                                            <td class="text-primary">{{ number_format($detail['ot_hours'], 2) }}</td>
+                                            <td class="text-primary">
+                                                @php
+                                                    $h = floor($detail['ot_minutes'] / 60);
+                                                    $m = $detail['ot_minutes'] % 60;
+                                                @endphp
+                                                {{ $h > 0 ? $h . ' ชม. ' : '' }}{{ $m }} นาที <br>
+                                                <small class="text-muted">({{ number_format($detail['ot_hours'], 2) }} ชม.)</small>
+                                            </td>
                                             <td class="text-success fw-bold">฿ {{ number_format($detail['ot_pay'], 2) }}</td>
                                         </tr>
                                     @endforeach

@@ -36,7 +36,7 @@ class SalaryController extends Controller
             ->orderBy('date', 'asc')
             ->get();
 
-        $standardCheckOut = \Carbon\Carbon::createFromTimeString('17:33:00');
+        $standardCheckOut = \Carbon\Carbon::createFromTimeString('17:00:00');
         $hourlyRate = 40;
         
         $totalOtHours = 0;
@@ -60,6 +60,7 @@ class SalaryController extends Controller
                     'check_in' => $att->check_in,
                     'check_out' => $att->check_out,
                     'ot_hours' => round($otHours, 2),
+                    'ot_minutes' => $diffInMinutes,
                     'ot_pay' => round($otPay, 2)
                 ];
             }
