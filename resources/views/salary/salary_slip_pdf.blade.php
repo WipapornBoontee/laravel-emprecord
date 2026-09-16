@@ -45,6 +45,8 @@
 
     <table class="w-100 info-table mt-4 mb-2">
         <tr>
+            <td width="15%" class="font-bold">บัตรประชาชน :</td>
+            <td width="35%">{{ $user->id_card }}</td>
             <td width="15%" class="font-bold">ชื่อพนักงาน :</td>
             <td width="35%">{{ $user->name }}</td>
             <td width="15%" class="font-bold">รหัสพนักงาน :</td>
@@ -58,6 +60,7 @@
                 $thaiMonths = [1=>'มกราคม', 2=>'กุมภาพันธ์', 3=>'มีนาคม', 4=>'เมษายน', 5=>'พฤษภาคม', 6=>'มิถุนายน', 7=>'กรกฎาคม', 8=>'สิงหาคม', 9=>'กันยายน', 10=>'ตุลาคม', 11=>'พฤศจิกายน', 12=>'ธันวาคม'];
             @endphp
             <td>{{ $thaiMonths[(int)$month] }} {{ $year }}</td>
+            
         </tr>
     </table>
 
