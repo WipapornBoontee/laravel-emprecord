@@ -160,7 +160,7 @@
                         <div class="col-12">
                             <div class="ot-stat-card">
                                 <p class="ot-stat-title"><i class="bi bi-stopwatch me-2 text-primary"></i>ชั่วโมงล่วงเวลาทั้งหมด (เดือนนี้)</p>
-                                <h2 class="ot-stat-value value-hours">{{ number_format($totalOtHours, 2) }} <span class="fs-6 text-muted fw-normal">ชม.</span></h2>
+                                <h2 class="ot-stat-value value-hours">{{ ($totalOtHours) }} <span class="fs-6 text-muted fw-normal">ชม.</span></h2>
                             </div>
                         </div>
                     </div>

@@ -12,17 +12,17 @@ class OverTimeController extends Controller
 {
     public function index()
     {
-        $user = \Illuminate\Support\Facades\Auth::user();
-        
-        $baseOvertime = (float) ($user->overtime ?? 0);
-        $daysInMonth = \Carbon\Carbon::now()->daysInMonth;
-        
-        $dailyWage = 0;
-        if ($daysInMonth > 0 && $baseOvertime > 0) {
-            $dailyWage = $baseOvertime / $daysInMonth;
-        }
+        $pendingRequests = Overtime::with('user')
+            ->where('status', 'pending')
+            ->orderBy('created_at', 'desc')
+            ->get();
+            
+        $handledRequests = Overtime::with(['user', 'hr'])
+            ->whereIn('status', ['approved', 'rejected'])
+            ->orderBy('updated_at', 'desc')
+            ->get();
 
-        return view('overtime.index', compact('baseOvertime', 'daysInMonth', 'dailyWage'));
+        return view('overtime.overtime', compact('pendingRequests', 'handledRequests'));
     }
 
     public function create()
@@ -149,5 +149,48 @@ class OverTimeController extends Controller
         $overtime->save();
 
         return redirect()->back()->with('success', 'บันทึกเหตุผลกลับก่อนเวลาส่งให้ HR เรียบร้อยแล้ว');
+    }
+
+    public function approve(Request $request, $id)
+    {
+        $overtime = Overtime::findOrFail($id);
+        $overtime->status = 'approved';
+        $overtime->hr_id = Auth::id();
+        $overtime->hr_approved_at = now();
+        $overtime->save();
+
+        return redirect()->back()->with('success', 'อนุมัติคำขอทำล่วงเวลาเรียบร้อยแล้ว');
+    }
+
+    public function reject(Request $request, $id)
+    {
+        $request->validate([
+            'hr_reject_reason' => 'required|string|max:1000'
+        ]);
+
+        $overtime = Overtime::findOrFail($id);
+        $overtime->status = 'rejected';
+        $overtime->hr_reject_reason = $request->hr_reject_reason;
+        $overtime->hr_id = Auth::id();
+        $overtime->hr_approved_at = now();
+        $overtime->save();
+
+        return redirect()->back()->with('success', 'ปฏิเสธคำขอทำล่วงเวลาเรียบร้อยแล้ว');
+    }
+
+    public function bulkApprove(Request $request)
+    {
+        $request->validate([
+            'overtime_ids' => 'required|array',
+            'overtime_ids.*' => 'exists:overtimes,id'
+        ]);
+
+        Overtime::whereIn('id', $request->overtime_ids)->update([
+            'status' => 'approved',
+            'hr_id' => Auth::id(),
+            'hr_approved_at' => now()
+        ]);
+
+        return redirect()->back()->with('success', 'อนุมัติคำขอที่เลือกเรียบร้อยแล้ว');
     }
 }

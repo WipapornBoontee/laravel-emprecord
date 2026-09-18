@@ -8,7 +8,7 @@
         <div class="col-md-8 col-lg-6">
             <div class="card shadow-sm border-0 rounded-4">
                 <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
-                    <h5 class="fw-bold text-primary mb-0"><i class="bi bi-wallet-fill me-2"></i>ยื่นคำขอทำล่วงเวลา (OT)</h5>
+                    <h5 class="fw-bold text-primary mb-0"><i class="bi bi-wallet-fill me-2"></i>ยื่นคำขอทำงานล่วงเวลา (OT)</h5>
                 </div>
                 <div class="card-body p-4">
                     <form action="{{ route('overtime.request') }}" method="POST">
@@ -17,13 +17,14 @@
                         
                         <div class="mb-3">
                             <label for="date" class="form-label fw-bold">วันที่ต้องการทำ OT <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control" id="date" name="date" required value="{{ date('Y-m-d') }}">
+                            <input type="text" class="form-control bg-light" id="date_display" value="{{ date('d/m/Y') }}" readonly>
+                            <input type="hidden" name="date" value="{{ date('Y-m-d') }}">
                         </div>
 
                         <div class="mb-3">
                             <label for="hours" class="form-label fw-bold">จำนวนชั่วโมง <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <input type="number" class="form-control" id="hours" name="hours" step="1" min="1" max="24" required placeholder="เช่น 2">
+                                <input type="number" class="form-control" id="hours" name="hours" step="1" min="1" max="24" required placeholder="OT">
                                 <span class="input-group-text">ชั่วโมง</span>
                             </div>
                             <div class="form-text">ระบุเป็นตัวเลขจำนวนเต็มเท่านั้น เช่น 1, 2, 3</div>

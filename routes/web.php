@@ -45,19 +45,25 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/attendance/checkout', [\App\Http\Controllers\AttendanceController::class, 'checkOut'])->name('attendances.checkout.process');
     Route::get('/attendance/my-history', [\App\Http\Controllers\AttendanceController::class, 'myHistory'])->name('attendances.my-history');
 
-    // Overtime Routes (ระบบล่วงเวลา)
-    Route::get('/overtime', [\App\Http\Controllers\OverTimeController::class, 'index'])->name('overtime.index');
+    // Overtime Routes (ระบบล่วงเวลา สำหรับพนักงาน)
     Route::get('/overtime/show', [\App\Http\Controllers\OverTimeController::class, 'overtime'])->name('overtime.show');
     Route::get('/overtime/create', [\App\Http\Controllers\OverTimeController::class, 'create'])->name('overtime.create');
     Route::post('/overtime/request', [\App\Http\Controllers\OverTimeController::class, 'overtimeRequest'])->name('overtime.request'); // กรณีทำฟอร์มขอ OT
     Route::post('/overtime/reason', [\App\Http\Controllers\OverTimeController::class, 'submitEarlyCheckoutReason'])->name('overtime.reason');
-
+    
     // Profile (Read-only สำหรับพนักงานทั่วไป, Admin/HR ดูของตนเองได้)
     Route::get('/profile', [\App\Http\Controllers\EmployeeController::class, 'profile'])->name('profile');
     
 
     // Employee & Organization Management (เฉพาะ Admin และ HR เท่านั้น)
     Route::middleware(['role:admin,hr'])->group(function () {
+        
+        // จัดการคำขอ OT โดย HR
+        Route::get('/overtime', [\App\Http\Controllers\OverTimeController::class, 'index'])->name('overtime.index');
+        Route::post('/overtime/approve/{id}', [\App\Http\Controllers\OverTimeController::class, 'approve'])->name('overtime.approve');
+        Route::post('/overtime/reject/{id}', [\App\Http\Controllers\OverTimeController::class, 'reject'])->name('overtime.reject');
+        Route::post('/overtime/bulk-approve', [\App\Http\Controllers\OverTimeController::class, 'bulkApprove'])->name('overtime.bulkApprove');
+
         // ตั้งค่าเงินเดือน
         Route::get('/settings/payroll', [\App\Http\Controllers\PayrollSettingController::class, 'index'])->name('settings.payroll');
         Route::post('/settings/payroll', [\App\Http\Controllers\PayrollSettingController::class, 'update'])->name('settings.payroll.update');
