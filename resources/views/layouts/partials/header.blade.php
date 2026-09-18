@@ -35,15 +35,8 @@
                                 <li><hr class="dropdown-divider opacity-25"></li>
                                 <li><a class="dropdown-item py-2" href="{{ route('departments.index', [], false) }}"><i class="bi bi-diagram-3-fill me-2 text-warning"></i> จัดการแผนกและตำแหน่ง</a></li>
                                 <li><hr class="dropdown-divider opacity-25"></li>
-                                <li><a class="dropdown-item py-2" href="{{ route('overtime', [], false) }}"><i class="bi bi-gear-fill me-2 text-secondary"></i> จัดการการล่วงเวลา</a></li>
+                                <li><a class="dropdown-item py-2" href="{{ route('overtime.index', [], false) }}"><i class="bi bi-gear-fill me-2 text-secondary"></i> จัดการการทำ OT</a></li>
                              <!-- แสดงผลเฉพาะพนักงาน -->
-                             @if(Auth::user()?->isEmployee())
-                                <li class="dropdown-item py-2">
-                                    <a class="" href="{{ route('overtime.index', [Auth::user()->id], false) }}">
-                                        <i class="bi bi-wallet-fill me-1"></i> เวลา OT
-                                    </a>
-                                </li>
-                                @endif
                             </ul>
                         </li>
                     @endif
@@ -79,6 +72,13 @@
                                 <li><hr class="dropdown-divider opacity-25"></li>
                                 <li><a class="dropdown-item py-2" href="{{ route('attendances.report', [], false) }}"><i class="bi bi-file-earmark-bar-graph me-2 text-warning"></i> สรุปรายงานเวลาทำงาน (HR/Admin)</a></li>
                             @endif
+                             @if(Auth::user()?->isEmployee())
+                                <li class="dropdown-item py-2">
+                                    <a class="" href="{{ route('overtime.index', [Auth::user()->id], false) }}">
+                                        <i class="bi bi-wallet-fill me-1"></i> ขอเวลา OT
+                                    </a>
+                                </li>
+                                @endif
                         </ul>
                     </li>
                 @endauth
