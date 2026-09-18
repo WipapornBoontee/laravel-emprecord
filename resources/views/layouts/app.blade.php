@@ -93,7 +93,6 @@
             background-image: 
                 radial-gradient(at 10% 10%, rgba(99, 102, 241, 0.1) 0px, transparent 40%),
                 radial-gradient(at 90% 90%, rgba(129, 140, 248, 0.08) 0px, transparent 40%);
-            background-attachment: fixed;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
