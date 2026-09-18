@@ -86,9 +86,11 @@ class OverTimeController extends Controller
         $otStartTime = \Carbon\Carbon::createFromTimeString('17:30:00');
         
         $hasOTToday = false;
+        $todayOtHours = 0;
         $todayDateStr = date('Y-m-d');
         if (isset($approvedOvertimes[$todayDateStr])) {
             $hasOTToday = true;
+            $todayOtHours = $approvedOvertimes[$todayDateStr]->hours;
         }
 
         $totalOtHours = 0;
@@ -130,7 +132,7 @@ class OverTimeController extends Controller
         }
 
         return view('overtime.overtime_show', compact(
-            'month', 'year', 'otDetails', 'totalOtHours', 'hasOTToday'
+            'month', 'year', 'otDetails', 'totalOtHours', 'hasOTToday', 'todayOtHours'
         ));
     }
 

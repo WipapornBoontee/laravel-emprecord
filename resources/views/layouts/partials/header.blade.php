@@ -33,9 +33,9 @@
                                 <li><a class="dropdown-item py-2" href="{{ route('employees.index', [], false) }}"><i class="bi bi-list-ul me-2 text-primary"></i> รายชื่อพนักงานทั้งหมด</a></li>
                                 <li><a class="dropdown-item py-2" href="{{ route('employees.create', [], false) }}"><i class="bi bi-person-plus-fill me-2 text-success"></i> เพิ่มพนักงานใหม่</a></li>
                                 <li><hr class="dropdown-divider opacity-25"></li>
-                                <li><a class="dropdown-item py-2" href="{{ route('departments.index', [], false) }}"><i class="bi bi-diagram-3-fill me-2 text-warning"></i> จัดการแผนกและตำแหน่ง</a></li>
+                                <li><a class="dropdown-item py-2" href="{{ route('overtime.index', [], false) }}"><i class="bi bi-check2-square me-2 text-warning"></i> อนุมัติคำขอทำ OT</a></li>
                                 <li><hr class="dropdown-divider opacity-25"></li>
-                                <li><a class="dropdown-item py-2" href="{{ route('overtime.index', [], false) }}"><i class="bi bi-gear-fill me-2 text-secondary"></i> จัดการการทำ OT</a></li>
+                                <li><a class="dropdown-item py-2" href="{{ route('departments.index', [], false) }}"><i class="bi bi-diagram-3-fill me-2 text-secondary"></i> จัดการแผนกและตำแหน่ง</a></li>
                              <!-- แสดงผลเฉพาะพนักงาน -->
                             </ul>
                         </li>
@@ -69,7 +69,7 @@
                             <li><a class="dropdown-item py-2" href="{{ route('attendances.checkin', [], false) }}"><i class="bi bi-fingerprint me-2 text-primary"></i> ลงเวลาเข้า-ออกงาน</a></li>
                             <li><a class="dropdown-item py-2" href="{{ route('attendances.my-history', [], false) }}"><i class="bi bi-calendar3-week me-2 text-info"></i> ประวัติการลงเวลาของฉัน</a></li>
                             @if(Auth::user()?->isEmployee())
-                                <hr>
+                                 <li><hr class="dropdown-divider opacity-25"></li>
                                 <li>
                                     <a class="dropdown-item py-2" href="{{ route('overtime.show', [Auth::user()->id] , false) }}">
                                         <i class="bi bi-wallet-fill me-2 text-success"></i> การทำ(OT)

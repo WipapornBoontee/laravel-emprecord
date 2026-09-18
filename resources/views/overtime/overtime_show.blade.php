@@ -137,9 +137,14 @@
                     @endif
 
                     @if(isset($hasOTToday) && $hasOTToday && \Carbon\Carbon::now()->format('H:i') < '17:30')
+                        @php
+                            // คำนวณเวลาสิ้นสุด OT จากชั่วโมงที่ขอไว้
+                            $otMinutes = (int) ($todayOtHours * 60);
+                            $endTime = \Carbon\Carbon::createFromTimeString('17:30:00')->addMinutes($otMinutes)->format('H:i');
+                        @endphp
                         <div class="alert alert-success d-flex align-items-center fade-in shadow-sm border-0" role="alert" style="background-color: #d1fae5; color: #065f46;">
                             <i class="bi bi-info-circle-fill me-2 fs-5"></i>
-                            <div class="fw-bold">เริ่มเข้างานทำ OT ตามที่ขอ ในเวลา 17.30 น.</div>
+                            <div class="fw-bold">เริ่มเข้างานทำ OT ตามที่ขอ ในเวลา 17.30 น. - {{ $endTime }} น. (จำนวน {{ $todayOtHours }} ชม.)</div>
                         </div>
                     @endif
 
