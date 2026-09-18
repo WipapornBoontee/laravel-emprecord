@@ -25,6 +25,11 @@ class OverTimeController extends Controller
         return view('overtime.index', compact('baseOvertime', 'daysInMonth', 'dailyWage'));
     }
 
+    public function create()
+    {
+        return view('overtime.overtime_create');
+    }
+
     public function overtimeRequest(Request $request)
     {
         $request->validate([

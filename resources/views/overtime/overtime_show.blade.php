@@ -118,8 +118,13 @@
                         </div>
                         <h5 class="mb-0 fw-bold">สรุปล่วงเวลา (OT)</h5>
                     </div>
-                    <div class="ot-month-badge">
-                        <i class="bi bi-calendar-event me-2"></i>เดือน {{ Carbon\Carbon::create()->month((int)$month)->translatedFormat('F') }} {{ $year }}
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                        <div class="ot-month-badge">
+                            <i class="bi bi-calendar-event me-2"></i>เดือน {{ Carbon\Carbon::create()->month((int)$month)->translatedFormat('F') }} {{ $year }}
+                        </div>
+                        <a href="{{ route('overtime.create') }}" class="btn btn-light text-primary fw-bold rounded-pill px-4 shadow-sm" style="border: 2px solid rgba(255,255,255,0.5);">
+                            <i class="bi bi-plus-circle-fill me-2"></i> ขอทำ OT
+                        </a>
                     </div>
                 </div>
 

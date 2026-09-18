@@ -68,17 +68,19 @@
                         <ul class="dropdown-menu custom-dropdown-menu border-0 shadow-lg">
                             <li><a class="dropdown-item py-2" href="{{ route('attendances.checkin', [], false) }}"><i class="bi bi-fingerprint me-2 text-primary"></i> ลงเวลาเข้า-ออกงาน</a></li>
                             <li><a class="dropdown-item py-2" href="{{ route('attendances.my-history', [], false) }}"><i class="bi bi-calendar3-week me-2 text-info"></i> ประวัติการลงเวลาของฉัน</a></li>
+                            @if(Auth::user()?->isEmployee())
+                                <hr class="dropdown-divider opacity-25">
+                                <li>
+                                    <a class="dropdown-item py-2" href="{{ route('overtime.index', [Auth::user()->id] , false) }}">
+                                        <i class="bi bi-wallet-fill me-2 text-success"></i> การทำ(OT)
+                                    </a>
+                                </li>
+                            @endif
                             @if(Auth::user()->isAdmin() || Auth::user()->isHr())
                                 <li><hr class="dropdown-divider opacity-25"></li>
                                 <li><a class="dropdown-item py-2" href="{{ route('attendances.report', [], false) }}"><i class="bi bi-file-earmark-bar-graph me-2 text-warning"></i> สรุปรายงานเวลาทำงาน (HR/Admin)</a></li>
                             @endif
-                             @if(Auth::user()?->isEmployee())
-                                <li class="dropdown-item py-2">
-                                    <a class="" href="{{ route('overtime.index', [Auth::user()->id], false) }}">
-                                        <i class="bi bi-wallet-fill me-1"></i> ขอเวลา OT
-                                    </a>
-                                </li>
-                                @endif
+                            
                         </ul>
                     </li>
                 @endauth
