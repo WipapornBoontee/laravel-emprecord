@@ -116,10 +116,8 @@
                         <div class="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 45px; height: 45px; font-size: 1.25rem;">
                             <i class="bi bi-clock-fill"></i>
                         </div>
-                        <h5 class="mb-0 fw-bold">สรุปค่าล่วงเวลา (OT)</h5>
-                        <span class="badge bg-white text-primary px-3 py-2 rounded-pill shadow-sm ms-md-2" style="font-size: 0.9rem;">
-                            <i class="bi bi-cash-stack me-1"></i> เรท: {{ number_format($hourlyRate, 2) }} บาท/ชม.
-                        </span>                    </div>
+                        <h5 class="mb-0 fw-bold">สรุปล่วงเวลา (OT)</h5>
+                    </div>
                     <div class="ot-month-badge">
                         <i class="bi bi-calendar-event me-2"></i>เดือน {{ Carbon\Carbon::create()->month((int)$month)->translatedFormat('F') }} {{ $year }}
                     </div>
@@ -137,16 +135,10 @@
                                
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-12">
                             <div class="ot-stat-card">
                                 <p class="ot-stat-title"><i class="bi bi-stopwatch me-2 text-primary"></i>ชั่วโมงล่วงเวลาทั้งหมด (เดือนนี้)</p>
                                 <h2 class="ot-stat-value value-hours">{{ number_format($totalOtHours, 2) }} <span class="fs-6 text-muted fw-normal">ชม.</span></h2>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="ot-stat-card">
-                                <p class="ot-stat-title"><i class="bi bi-cash-coin me-2 text-success"></i>รวมเงินค่าล่วงเวลา OT</p>
-                                <h2 class="ot-stat-value value-pay">฿ {{ number_format($totalOtPay, 2) }}</h2>
                             </div>
                         </div>
                     </div>
@@ -162,7 +154,6 @@
                                         <th>เวลาเข้างาน</th>
                                         <th>เวลาเลิกงาน</th>
                                         <th>ชั่วโมง OT</th>
-                                        <th>จำนวนเงิน (บาท)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -179,7 +170,6 @@
                                                 <div class="fw-bold text-primary">{{ $h > 0 ? $h . ' ชม. ' : '' }}{{ $m }} นาที</div>
                                                 <div class="small text-muted">({{ number_format($detail['ot_hours'], 2) }} ชม.)</div>
                                             </td>
-                                            <td class="fw-bold text-success fs-6">฿ {{ number_format($detail['ot_pay'], 2) }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
