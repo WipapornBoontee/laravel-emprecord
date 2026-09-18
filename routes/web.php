@@ -45,6 +45,11 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/attendance/checkout', [\App\Http\Controllers\AttendanceController::class, 'checkOut'])->name('attendances.checkout.process');
     Route::get('/attendance/my-history', [\App\Http\Controllers\AttendanceController::class, 'myHistory'])->name('attendances.my-history');
 
+    // Overtime Routes (ระบบล่วงเวลา)
+    Route::get('/overtime', [\App\Http\Controllers\OverTimeController::class, 'index'])->name('overtime.index');
+    Route::get('/overtime/show', [\App\Http\Controllers\OverTimeController::class, 'overtime'])->name('overtime.show');
+    Route::post('/overtime/request', [\App\Http\Controllers\OverTimeController::class, 'overtimeRequest'])->name('overtime.request'); // กรณีทำฟอร์มขอ OT
+
     // Profile (Read-only สำหรับพนักงานทั่วไป, Admin/HR ดูของตนเองได้)
     Route::get('/profile', [\App\Http\Controllers\EmployeeController::class, 'profile'])->name('profile');
     

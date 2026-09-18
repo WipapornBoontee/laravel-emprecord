@@ -116,29 +116,10 @@
                         <div class="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 45px; height: 45px; font-size: 1.25rem;">
                             <i class="bi bi-clock-fill"></i>
                         </div>
-                        <h5 class="mb-0 fw-bold">สรุปล่วงเวลา (OT)</h5>
+                        <h5 class="mb-0 fw-bold">รายการการทำงานล่วงเวลา (OT)</h5>
                     </div>
                     <div class="ot-month-badge">
                         <i class="bi bi-calendar-event me-2"></i>เดือน {{ Carbon\Carbon::create()->month((int)$month)->translatedFormat('F') }} {{ $year }}
-                    </div>
-                </div>
-
-                <div class="card-body p-3 p-md-4">
-                    <!-- Summary Stats -->
-                    <div class="row g-3 mb-4">
-                        <div class="col-12 mb-3">
-                            <div class="d-flex flex-column align-items-center justify-content-center">
-                                <div class="salary-header-gradient">
-                    <div class="avatar-wrapper">
-                        <i class="bi bi-person-fill" style="font-size: 2rem; color: white;"></i>
-                    </div>
-                    <h4 class="fw-bold mb-1">{{ Auth::user()->name }}</h4>
-                    <p class="mb-0 opacity-75 small"><i class="bi bi-person-badge me-1"></i>รหัสพนักงาน: {{ Auth::user()->emp_code ?? '-' }}</p>
-                </div>
-                <div class="col-12">
-                    <div class="stat-box">
-                        <p class="stat-title"><i class="bi bi-cash-stack me-2"></i>ฐานเงินเดือน (Base Salary)</p>
-                        <h2 class="stat-value">฿ {{ number_format($baseSalary, 2) }}</h2>
                     </div>
                 </div>
                                

@@ -25,7 +25,7 @@ class OverTimeController extends Controller
         return view('overtime.index', compact('baseOvertime', 'daysInMonth', 'dailyWage'));
     }
 
-    public function overtime(Request $request)
+    public function overtimeRequest(Request $request)
     {
         $request->validate([
             'user_id' => 'required',
@@ -35,12 +35,13 @@ class OverTimeController extends Controller
         ]);
 
         $overtime = Overtime::create($request->all());
-        return view('overtime.index', compact('baseOvertime', 'daysInMonth', 'dailyWage'));
+        return redirect()->route('overtime.index')->with('success', 'ส่งคำขอ OT เรียบร้อยแล้ว');
     }
 
     public function overtime(\Illuminate\Http\Request $request)
     {
         $user = \Illuminate\Support\Facades\Auth::user();
+        $baseSalary = (float) ($user->salary ?? 0); // ดึงฐานเงินเดือน
         $month = $request->input('month', date('m'));
         $year = $request->input('year', date('Y'));
 
@@ -83,7 +84,7 @@ class OverTimeController extends Controller
         }
 
         return view('overtime.overtime_show', compact(
-            'month', 'year', 'otDetails', 'totalOtHours', 'totalOtPay', 'hourlyRate'
+            'month', 'year', 'otDetails', 'totalOtHours', 'totalOtPay', 'hourlyRate', 'baseSalary'
         ));
     }
 }
