@@ -69,7 +69,7 @@
                             <li><a class="dropdown-item py-2" href="{{ route('attendances.checkin', [], false) }}"><i class="bi bi-fingerprint me-2 text-primary"></i> ลงเวลาเข้า-ออกงาน</a></li>
                             <li><a class="dropdown-item py-2" href="{{ route('attendances.my-history', [], false) }}"><i class="bi bi-calendar3-week me-2 text-info"></i> ประวัติการลงเวลาของฉัน</a></li>
                             @if(Auth::user()?->isEmployee())
-                                <hr class="dropdown-divider opacity-25">
+                                <hr>
                                 <li>
                                     <a class="dropdown-item py-2" href="{{ route('overtime.show', [Auth::user()->id] , false) }}">
                                         <i class="bi bi-wallet-fill me-2 text-success"></i> การทำ(OT)
