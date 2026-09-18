@@ -40,7 +40,6 @@
 | `role` | ENUM | DEFAULT 'employee' | สิทธิ์ผู้ใช้งาน: `'admin'`, `'hr'`, `'employee'` |
 | `department_id` | BIGINT | FOREIGN KEY, NULLABLE | อ้างอิง `departments.id` |
 | `position_id` | BIGINT | FOREIGN KEY, NULLABLE | อ้างอิง `positions.id` |
-| `salary` | VARCHAR(100) | NOT NULL | เงินเดือน |
 | `start_date` | DATE | NULLABLE | วันที่เริ่มงาน |
 | `status` | ENUM | DEFAULT 'active' | สถานะการทำงาน: `'active'`, `'resigned'` |
 | `remember_token`| VARCHAR(100) | NULLABLE | Token จดจำการเข้าสู่ระบบ |

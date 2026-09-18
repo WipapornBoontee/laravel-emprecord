@@ -140,12 +140,6 @@
                     <h4 class="fw-bold mb-1">{{ Auth::user()->name }}</h4>
                     <p class="mb-0 opacity-75 small"><i class="bi bi-person-badge me-1"></i>รหัสพนักงาน: {{ Auth::user()->emp_code ?? '-' }}</p>
                 </div>
-                <div class="col-12">
-                    <div class="stat-box">
-                        <p class="stat-title"><i class="bi bi-cash-stack me-2"></i>ฐานเงินเดือน (Base Salary)</p>
-                        <h2 class="stat-value">฿ {{ number_format($baseSalary, 2) }}</h2>
-                    </div>
-                </div>
                                
                             </div>
                         </div>
