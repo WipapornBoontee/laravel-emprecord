@@ -71,7 +71,7 @@
                             @if(Auth::user()?->isEmployee())
                                 <hr>
                                 <li>
-                                    <a class="dropdown-item py-2" href="{{ route('overtime.overtime_show', [Auth::user()->id] , false) }}">
+                                    <a class="dropdown-item py-2" href="{{ route('overtime.show', [Auth::user()->id] , false) }}">
                                         <i class="bi bi-wallet-fill me-2 text-success"></i> การทำ(OT)
                                     </a>
                                 </li>
