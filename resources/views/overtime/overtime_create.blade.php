@@ -23,10 +23,10 @@
                         <div class="mb-3">
                             <label for="hours" class="form-label fw-bold">จำนวนชั่วโมง <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <input type="number" class="form-control" id="hours" name="hours" step="0.5" min="0.5" max="24" required placeholder="เช่น 2.5">
+                                <input type="number" class="form-control" id="hours" name="hours" step="1" min="1" max="24" required placeholder="เช่น 2">
                                 <span class="input-group-text">ชั่วโมง</span>
                             </div>
-                            <div class="form-text">ระบุเป็นตัวเลขทศนิยม เช่น 1.5, 2.0</div>
+                            <div class="form-text">ระบุเป็นตัวเลขจำนวนเต็มเท่านั้น เช่น 1, 2, 3</div>
                         </div>
 
                         <div class="mb-4">

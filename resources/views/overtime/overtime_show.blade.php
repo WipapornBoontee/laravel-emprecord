@@ -129,6 +129,20 @@
                 </div>
 
                 <div class="card-body p-3 p-md-4">
+                    @if(session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
+                    @if(isset($hasOTToday) && $hasOTToday && \Carbon\Carbon::now()->format('H:i') < '17:30')
+                        <div class="alert alert-success d-flex align-items-center fade-in shadow-sm border-0" role="alert" style="background-color: #d1fae5; color: #065f46;">
+                            <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+                            <div class="fw-bold">เริ่มเข้างานทำ OT ตามที่ขอ ในเวลา 17.30 น.</div>
+                        </div>
+                    @endif
+
                     <!-- Summary Stats -->
                     <div class="row g-3 mb-4">
                         <div class="col-12 mb-3">
@@ -159,24 +173,34 @@
                                 <thead>
                                     <tr>
                                         <th>วันที่</th>
-                                        <th>เวลาเข้างาน</th>
-                                        <th>เวลาเลิกงาน</th>
-                                        <th>ชั่วโมง OT</th>
+                                        <th>เวลาสแกนเข้า-ออก</th>
+                                        <th>ชั่วโมง OT (ได้จริง)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach($otDetails as $detail)
                                         <tr>
                                             <td class="fw-medium">{{ $detail['date'] }}</td>
-                                            <td class="text-muted">{{ $detail['check_in'] }}</td>
-                                            <td><span class="badge bg-danger-subtle text-danger px-2 py-1">{{ $detail['check_out'] }}</span></td>
+                                            <td class="text-muted">17:00 น. - <span class="badge bg-danger-subtle text-danger px-2 py-1">{{ $detail['check_out'] }} น.</span></td>
                                             <td>
-                                                @php
-                                                    $h = floor($detail['ot_minutes'] / 60);
-                                                    $m = $detail['ot_minutes'] % 60;
-                                                @endphp
-                                                <div class="fw-bold text-primary">{{ $h > 0 ? $h . ' ชม. ' : '' }}{{ $m }} นาที</div>
-                                                <div class="small text-muted">({{ number_format($detail['ot_hours'], 2) }} ชม.)</div>
+                                                <div class="fw-bold text-primary">{{ $detail['ot_hours'] }} ชม.</div>
+                                                <div class="small text-muted mb-1">
+                                                    (ขอไว้ {{ $detail['requested_hours'] }} ชม. | ทำได้ {{ floor($detail['actual_minutes']/60) }} ชม. {{ $detail['actual_minutes']%60 }} นาที)
+                                                </div>
+                                                @if($detail['ot_hours'] < $detail['requested_hours'])
+                                                    @if($detail['early_checkout_reason'])
+                                                        <div class="small text-success"><i class="bi bi-check-circle-fill"></i> แจ้ง HR แล้ว</div>
+                                                    @else
+                                                        <form action="{{ route('overtime.reason') }}" method="POST" class="d-flex align-items-center mt-2">
+                                                            @csrf
+                                                            <input type="hidden" name="overtime_id" value="{{ $detail['overtime_id'] }}">
+                                                            <div class="input-group input-group-sm w-100">
+                                                                <input type="text" name="early_checkout_reason" class="form-control form-control-sm" placeholder="เหตุผลที่กลับก่อน..." required>
+                                                                <button class="btn btn-outline-secondary btn-sm" type="submit"><i class="bi bi-send-fill"></i></button>
+                                                            </div>
+                                                        </form>
+                                                    @endif
+                                                @endif
                                             </td>
                                         </tr>
                                     @endforeach

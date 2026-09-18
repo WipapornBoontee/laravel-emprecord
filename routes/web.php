@@ -50,6 +50,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/overtime/show', [\App\Http\Controllers\OverTimeController::class, 'overtime'])->name('overtime.show');
     Route::get('/overtime/create', [\App\Http\Controllers\OverTimeController::class, 'create'])->name('overtime.create');
     Route::post('/overtime/request', [\App\Http\Controllers\OverTimeController::class, 'overtimeRequest'])->name('overtime.request'); // กรณีทำฟอร์มขอ OT
+    Route::post('/overtime/reason', [\App\Http\Controllers\OverTimeController::class, 'submitEarlyCheckoutReason'])->name('overtime.reason');
 
     // Profile (Read-only สำหรับพนักงานทั่วไป, Admin/HR ดูของตนเองได้)
     Route::get('/profile', [\App\Http\Controllers\EmployeeController::class, 'profile'])->name('profile');

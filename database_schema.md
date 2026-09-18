@@ -54,6 +54,7 @@
 | `date` | DATE | NOT NULL | วันที่ขอทำ OT |
 | `hours` | DECIMAL(4,1) | NOT NULL | จำนวนชั่วโมงที่ขอทำ (เช่น 1.0, 2.5) |
 | `description` | TEXT | NOT NULL | เหตุผล/รายละเอียดการทำ OT |
+| `early_checkout_reason`	| TEXT | NOT NULL | เหตุผล/รายละเอียดการกลับก่อน |
 | `status` | ENUM | DEFAULT 'pending' | สถานะ: `'pending'` (รออนุมัติ), `'approved'` (อนุมัติ), `'rejected'` (ไม่อนุมัติ) |
 | `hr_approved_at` | TIMESTAMP | NULLABLE | วันเวลาที่ผู้จัดการอนุมัติ/ปฏิเสธ |
 | `hr_id` | BIGINT | FOREIGN KEY, NULLABLE | ผู้อนุมัติ/ปฏิเสธ (อ้างอิง `users.id`) |
