@@ -45,8 +45,10 @@ resources/views/
 |    └── report.blade.php           #    - สรุปรายงานการเข้างาน, มาสาย, ขาด, ลา ทั้งหมด [Admin / HR]
 |
 └── overtime/                      # 8. ระบบล่วงเวลา (Overtime Management)
-    ├── overtime_show.blade.php      # - หน้าประวัติการทำงานล่วงเวลาของพนักงาน พร้อมปุ่มการกดยืนยันให้พนักงานทำ OT ส่วน HR 
-    |-- overtime.blade.php           # หน้าตารางการทำงานล่วงเวลาของพนักงาน 
+    ├── overtime_show.blade.php      # - 
+    หน้าตารางการทำงานล่วงเวลาของพนักงาน 
+    |-- overtime.blade.php           # 
+    - หน้าประวัติการทำงานล่วงเวลาของพนักงาน พร้อมปุ่มการกดยืนยันให้พนักงานทำ OT ส่วน HR 
     ├── overtime_create.blade.php    # - แบบฟอร์มยื่นขออนุมัติการทำงานล่วงเวลา
     └── [Admin / HR]
 
