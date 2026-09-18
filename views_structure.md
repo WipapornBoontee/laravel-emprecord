@@ -40,9 +40,16 @@ resources/views/
 │       └── index.blade.php        #      * รายการและตั้งค่าวันลาเริ่มต้นต่อปี
 │
 └── attendances/                   # 7. ระบบบันทึกเวลาเข้า-ออกงาน (Time Attendance)
-    ├── checkin.blade.php          #    - หน้ากดลงเวลาเข้างาน - เลิกงาน (Check-in / Check-out)
-    ├── my-history.blade.php       #    - ประวัติการลงเวลาทำงานของตนเอง (ตาราง attendances)
-    └── report.blade.php           #    - สรุปรายงานการเข้างาน, มาสาย, ขาด, ลา ทั้งหมด [Admin / HR]
+|    ├── checkin.blade.php          #    - หน้ากดลงเวลาเข้างาน - เลิกงาน (Check-in / Check-out)
+|    ├── my-history.blade.php       #    - ประวัติการลงเวลาทำงานของตนเอง (ตาราง attendances)
+|    └── report.blade.php           #    - สรุปรายงานการเข้างาน, มาสาย, ขาด, ลา ทั้งหมด [Admin / HR]
+|
+└── overtime/                      # 8. ระบบล่วงเวลา (Overtime Management)
+    ├── overtime_show.blade.php      # - หน้าประวัติการทำงานล่วงเวลาของพนักงาน พร้อมปุ่มการกดยืนยันให้พนักงานทำ OT 
+    |-- overtime.blade.php           # หน้าตารางการทำงานล่วงเวลาของพนักงาน
+    ├── overtime_create.blade.php    # - แบบฟอร์มยื่นขออนุมัติการทำงานล่วงเวลา
+    └── [Admin / HR]
+
 ```
 
 ---

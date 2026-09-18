@@ -35,7 +35,15 @@
                                 <li><hr class="dropdown-divider opacity-25"></li>
                                 <li><a class="dropdown-item py-2" href="{{ route('departments.index', [], false) }}"><i class="bi bi-diagram-3-fill me-2 text-warning"></i> จัดการแผนกและตำแหน่ง</a></li>
                                 <li><hr class="dropdown-divider opacity-25"></li>
-                                <li><a class="dropdown-item py-2" href="{{ route('settings.payroll', [], false) }}"><i class="bi bi-gear-fill me-2 text-secondary"></i> ตั้งค่าการหักภาษี/ประกัน</a></li>
+                                <li><a class="dropdown-item py-2" href="{{ route('overtime', [], false) }}"><i class="bi bi-gear-fill me-2 text-secondary"></i> จัดการการล่วงเวลา</a></li>
+                             <!-- แสดงผลเฉพาะพนักงาน -->
+                             @if(Auth::user()?->isEmployee())
+                                <li class="dropdown-item py-2">
+                                    <a class="" href="{{ route('overtime.index', [Auth::user()->id], false) }}">
+                                        <i class="bi bi-wallet-fill me-1"></i> เวลา OT
+                                    </a>
+                                </li>
+                                @endif
                             </ul>
                         </li>
                     @endif
@@ -57,19 +65,7 @@
                         </ul>
                     </li>
 
-                    <!-- แสดงผลเฉพาะพนักงาน -->
-                   @if(Auth::user()?->isEmployee())
-                     <li class="nav-item dropdown">
-                        <a class="nav-link nav-link-custom dropdown-toggle {{ Request::is('salary*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-wallet-fill me-1"></i> เงินเดือน
-                        </a>
-                        <ul class="dropdown-menu custom-dropdown-menu border-0 shadow-lg">
-                            <li><a class="dropdown-item py-2" href="{{ route('salary_show', [], false) }}"><i class="bi bi-file-earmark-plus me-2 text-info"></i> ฐานเงินเดือน</a></li>
-                            <li><a class="dropdown-item py-2" href="{{ route('salary_overtime', [], false) }}"><i class="bi bi-clock-history me-2 text-primary"></i>ค่าล่วงเวลา</a></li>
-                            <li><a class="dropdown-item py-2" href="{{ route('salary_slip', [], false) }}"><i class="bi bi-pie-chart-fill me-2 text-success"></i>สลิปเงินเดือน</a></li>
-                        </ul>
-                    </li>
-                    @endif
+                   
 
                     <!-- เมนูระบบลงเวลา (Time Attendance) -->
                     <li class="nav-item dropdown">

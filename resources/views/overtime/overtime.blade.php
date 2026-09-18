@@ -128,10 +128,19 @@
                     <div class="row g-3 mb-4">
                         <div class="col-12 mb-3">
                             <div class="d-flex flex-column align-items-center justify-content-center">
-                                <!-- <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm mb-2" style="width: 64px; height: 64px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
-                                    <i class="bi bi-person-fill" style="font-size: 2rem;"></i>
-                                </div>
-                                <h6 class="fw-bold text-dark mb-2">{{ Auth::user()->name }}</h6> -->
+                                <div class="salary-header-gradient">
+                    <div class="avatar-wrapper">
+                        <i class="bi bi-person-fill" style="font-size: 2rem; color: white;"></i>
+                    </div>
+                    <h4 class="fw-bold mb-1">{{ Auth::user()->name }}</h4>
+                    <p class="mb-0 opacity-75 small"><i class="bi bi-person-badge me-1"></i>รหัสพนักงาน: {{ Auth::user()->emp_code ?? '-' }}</p>
+                </div>
+                <div class="col-12">
+                    <div class="stat-box">
+                        <p class="stat-title"><i class="bi bi-cash-stack me-2"></i>ฐานเงินเดือน (Base Salary)</p>
+                        <h2 class="stat-value">฿ {{ number_format($baseSalary, 2) }}</h2>
+                    </div>
+                </div>
                                
                             </div>
                         </div>

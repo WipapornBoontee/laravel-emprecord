@@ -36,12 +36,28 @@
 | `password` | VARCHAR(255) | NOT NULL | รหัสผ่าน (Hashed) |
 | `phone` | VARCHAR(20) | NULLABLE | เบอร์โทรศัพท์ |
 | `address` | TEXT | NULLABLE | ที่อยู่ปัจจุบัน |
+| `id_card` | VARCHAR(13) | NOT NULL | เลขที่บัตรประชาชน |
 | `role` | ENUM | DEFAULT 'employee' | สิทธิ์ผู้ใช้งาน: `'admin'`, `'hr'`, `'employee'` |
 | `department_id` | BIGINT | FOREIGN KEY, NULLABLE | อ้างอิง `departments.id` |
 | `position_id` | BIGINT | FOREIGN KEY, NULLABLE | อ้างอิง `positions.id` |
+| `salary` | VARCHAR(100) | NOT NULL | เงินเดือน |
 | `start_date` | DATE | NULLABLE | วันที่เริ่มงาน |
 | `status` | ENUM | DEFAULT 'active' | สถานะการทำงาน: `'active'`, `'resigned'` |
 | `remember_token`| VARCHAR(100) | NULLABLE | Token จดจำการเข้าสู่ระบบ |
+| `created_at` | TIMESTAMP | NULLABLE | วันเวลาที่สร้าง |
+| `updated_at` | TIMESTAMP | NULLABLE | วันเวลาที่แก้ไขล่าสุด |
+
+### ตาราง `overtimes` (คำขอการทำงานล่วงเวลา)
+| ฟิลด์ | ชนิดข้อมูล | คุณสมบัติ | คำอธิบาย |
+| :--- | :--- | :--- | :--- |
+| `id` | BIGINT | PRIMARY KEY, AUTO_INCREMENT | รหัสคำขอ OT |
+| `user_id` | BIGINT | FOREIGN KEY, NOT NULL | ผู้ขอ OT (อ้างอิง `users.id`) |
+| `date` | DATE | NOT NULL | วันที่ขอทำ OT |
+| `hours` | DECIMAL(4,1) | NOT NULL | จำนวนชั่วโมงที่ขอทำ (เช่น 1.0, 2.5) |
+| `description` | TEXT | NOT NULL | เหตุผล/รายละเอียดการทำ OT |
+| `status` | ENUM | DEFAULT 'pending' | สถานะ: `'pending'` (รออนุมัติ), `'approved'` (อนุมัติ), `'rejected'` (ไม่อนุมัติ) |
+| `hr_approved_at` | TIMESTAMP | NULLABLE | วันเวลาที่ผู้จัดการอนุมัติ/ปฏิเสธ |
+| `hr_id` | BIGINT | FOREIGN KEY, NULLABLE | ผู้อนุมัติ/ปฏิเสธ (อ้างอิง `users.id`) |
 | `created_at` | TIMESTAMP | NULLABLE | วันเวลาที่สร้าง |
 | `updated_at` | TIMESTAMP | NULLABLE | วันเวลาที่แก้ไขล่าสุด |
 
@@ -106,6 +122,7 @@
 | `check_out` | TIME | NULLABLE | เวลาเลิกงาน (HH:MM:SS) |
 | `status` | ENUM | DEFAULT 'on_time' | สถานะการทำงาน:<br>- `'on_time'`: เข้างานตรงเวลา<br>- `'late'`: มาสาย<br>- `'leave'`: ลา (ดึงจากคำขอที่อนุมัติแล้ว)<br>- `'absent'`: ขาดงาน |
 | `leave_request_id`| BIGINT | FOREIGN KEY, NULLABLE | เชื่อมโยงกับ `leave_requests.id` (กรณี `status` = 'leave') |
+| `hr_id` | BIGINT | FOREIGN KEY, NULLABLE | HR อ้างอิง `users.id` |
 | `notes` | VARCHAR(255) | NULLABLE | หมายเหตุเพิ่มเติม |
 | `created_at` | TIMESTAMP | NULLABLE | วันเวลาที่บันทึกข้อมูล |
 | `updated_at` | TIMESTAMP | NULLABLE | วันเวลาที่แก้ไขล่าสุด |

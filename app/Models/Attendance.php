@@ -18,6 +18,7 @@ class Attendance extends Model
         'status',
         'leave_request_id',
         'notes',
+        'hr_id',
     ];
 
     protected function casts(): array

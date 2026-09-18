@@ -47,13 +47,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Profile (Read-only สำหรับพนักงานทั่วไป, Admin/HR ดูของตนเองได้)
     Route::get('/profile', [\App\Http\Controllers\EmployeeController::class, 'profile'])->name('profile');
-
-    // Salary (เงินเดือน)
-    Route::get('/salary', [\App\Http\Controllers\SalaryController::class, 'show'])->name('salary_show');
-    Route::get('/salary/overtime', [\App\Http\Controllers\SalaryController::class, 'overtime'])->name('salary_overtime');
-    Route::get('/salary/slip', [\App\Http\Controllers\SalaryController::class, 'slip'])->name('salary_slip');
-    Route::post('/salary/slip/verify', [\App\Http\Controllers\SalaryController::class, 'verifySlip'])->name('salary_slip.verify');
-    Route::get('/salary/slip/download', [\App\Http\Controllers\SalaryController::class, 'downloadSlip'])->name('salary_slip.download');
+    
 
     // Employee & Organization Management (เฉพาะ Admin และ HR เท่านั้น)
     Route::middleware(['role:admin,hr'])->group(function () {

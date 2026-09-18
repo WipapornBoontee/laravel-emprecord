@@ -126,6 +126,7 @@ class LeaveApprovalController extends Controller
                         'status' => 'leave',
                         'leave_request_id' => $leaveRequest->id,
                         'notes' => 'อนุมัติการลา: ' . ($leaveRequest->leaveType->name ?? 'ลางาน'),
+                        'hr_id' => Auth::id(),
                     ]
                 );
             }
