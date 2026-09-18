@@ -27,6 +27,18 @@ class OverTimeController extends Controller
 
     public function create()
     {
+        $user = Auth::user();
+        $todayDateStr = date('Y-m-d');
+        
+        $hasCheckedInToday = \App\Models\Attendance::where('user_id', $user->id)
+            ->where('date', $todayDateStr)
+            ->whereNotNull('check_in')
+            ->exists();
+
+        if (!$hasCheckedInToday) {
+            return redirect()->route('overtime.show', $user->id)->with('error', 'คุณต้องสแกนเข้างานก่อนจึงจะสามารถขอทำ OT ได้');
+        }
+
         return view('overtime.overtime_create');
     }
 
@@ -38,6 +50,16 @@ class OverTimeController extends Controller
             'hours' => 'required|integer|min:1',
             'description' => 'required',
         ]);
+
+        $todayDateStr = date('Y-m-d');
+        $hasCheckedInToday = \App\Models\Attendance::where('user_id', $request->user_id)
+            ->where('date', $todayDateStr)
+            ->whereNotNull('check_in')
+            ->exists();
+
+        if (!$hasCheckedInToday) {
+            return back()->withInput()->with('error', 'คุณต้องสแกนเข้างานก่อนจึงจะสามารถขอทำ OT ได้');
+        }
 
         // หาจุดเริ่มต้นและสิ้นสุดของสัปดาห์ (วันจันทร์ ถึง วันอาทิตย์)
         $startOfWeek = \Carbon\Carbon::parse($request->date)->startOfWeek()->format('Y-m-d');
@@ -93,6 +115,11 @@ class OverTimeController extends Controller
             $todayOtHours = $approvedOvertimes[$todayDateStr]->hours;
         }
 
+        $hasCheckedInToday = \App\Models\Attendance::where('user_id', $user->id)
+            ->where('date', $todayDateStr)
+            ->whereNotNull('check_in')
+            ->exists();
+
         $totalOtHours = 0;
         $otDetails = [];
 
@@ -132,7 +159,7 @@ class OverTimeController extends Controller
         }
 
         return view('overtime.overtime_show', compact(
-            'month', 'year', 'otDetails', 'totalOtHours', 'hasOTToday', 'todayOtHours'
+            'month', 'year', 'otDetails', 'totalOtHours', 'hasOTToday', 'todayOtHours', 'hasCheckedInToday'
         ));
     }
 
