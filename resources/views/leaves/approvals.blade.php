@@ -214,6 +214,7 @@
                             <th>ประเภทการลา</th>
                             <th>ช่วงวันที่ลา</th>
                             <th>จำนวนวัน</th>
+                            <th>รูปภาพเพื่อพิจารณา</th>
                             <th>เหตุผลการขอลา</th>
                             <th>สถานะ</th>
                             <th class="text-end" style="width: 180px;">ดำเนินการ</th>
@@ -255,13 +256,15 @@
                                         {{ $leave->days_count }} วัน
                                     </span>
                                 </td>
-                                <td style="max-width: 250px;">
-                                    <div class="small" title="{{ $leave->reason }}">{{ $leave->reason }}</div>
+                                 <td style="max-width: 250px;">
                                     @if($leave->attachment_url)
                                         <a href="{{ $leave->attachment_url }}" target="_blank" class="badge bg-info-subtle text-info border border-info-subtle mt-1 text-decoration-none">
                                             <i class="bi bi-paperclip me-1"></i>ดูเอกสารแนบ
                                         </a>
                                     @endif
+                                </td>
+                                <td style="max-width: 250px;">
+                                    <div class="small" title="{{ $leave->reason }}">{{ $leave->reason }}</div>
                                 </td>
                                 <td>
                                     @if($leave->status === 'approved')
