@@ -153,6 +153,7 @@
                             <th>ช่วงวันที่ลา</th>
                             <th>จำนวนวัน</th>
                             <th>เหตุผลการลา</th>
+                            <th>รูปภาพเพื่อพิจารณา</th>
                             <th>สถานะคำขอ</th>
                             <th>การพิจารณา</th>
                             <th class="text-end" style="width: 100px;">จัดการ</th>
@@ -180,6 +181,8 @@
                                 </td>
                                 <td style="max-width: 250px;">
                                     <div class="text-truncate" title="{{ $leave->reason }}">{{ $leave->reason }}</div>
+                                </td>
+                                 <td style="max-width: 250px;">
                                     @if($leave->attachment_url)
                                         <a href="{{ $leave->attachment_url }}" target="_blank" class="badge bg-info-subtle text-info border border-info-subtle mt-1 text-decoration-none">
                                             <i class="bi bi-paperclip me-1"></i>ดูเอกสารแนบ
@@ -203,8 +206,8 @@
                                 </td>
                                 <td>
                                     @if($leave->approver)
-                                        <div class="small fw-semibold">{{ $leave->approver->name }}</div>
-                                        <span class="text-muted small">{{ $leave->approved_at ? \Carbon\Carbon::parse($leave->approved_at)->format('d/m/Y H:i') : '' }}</span>
+                                        <!-- <div class="small fw-semibold">{{ $leave->approver->name }}</div> -->
+                                        <!-- <span class="text-muted small">{{ $leave->approved_at ? \Carbon\Carbon::parse($leave->approved_at)->format('d/m/Y H:i') : '' }}</span> -->
                                         @if($leave->remark)
                                             <div class="text-muted small fst-italic">"{{ $leave->remark }}"</div>
                                         @endif
