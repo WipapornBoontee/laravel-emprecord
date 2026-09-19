@@ -140,14 +140,12 @@ class LeaveController extends Controller
                 ]);
         }
 
-        // จัดการอัปโหลดไฟล์ไป Cloudinary
+        // จัดการอัปโหลดไฟล์ไปที่ Local Storage (public disk)
         $attachmentUrl = null;
         if ($request->hasFile('attachment')) {
             try {
-                $uploadedFileUrl = cloudinary()->upload($request->file('attachment')->getRealPath(), [
-                    'folder' => 'wb_emprecord/leave_requests'
-                ])->getSecurePath();
-                $attachmentUrl = $uploadedFileUrl;
+                $path = $request->file('attachment')->store('leave_requests', 'public');
+                $attachmentUrl = asset('storage/' . $path);
             } catch (\Exception $e) {
                 return back()->withInput()->with('error', 'เกิดข้อผิดพลาดในการอัปโหลดไฟล์: ' . $e->getMessage());
             }
