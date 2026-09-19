@@ -81,6 +81,7 @@ class LeaveController extends Controller
             'start_date' => ['required', 'date'],
             'end_date' => ['required', 'date', 'after_or_equal:start_date'],
             'reason' => ['required', 'string', 'max:1000'],
+            'attachment' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
         ], [
             'leave_type_id.required' => 'กรุณาเลือกประเภทการลา',
             'leave_type_id.exists' => 'ประเภทการลาที่เลือกไม่ถูกต้อง',
@@ -88,6 +89,8 @@ class LeaveController extends Controller
             'end_date.required' => 'กรุณาระบุวันที่สิ้นสุด',
             'end_date.after_or_equal' => 'วันที่สิ้นสุดต้องไม่น้อยกว่าวันที่เริ่มต้น',
             'reason.required' => 'กรุณาระบุเหตุผลการลา',
+            'attachment.mimes' => 'เอกสารแนบต้องเป็นไฟล์รูปภาพ (JPG, PNG) หรือ PDF เท่านั้น',
+            'attachment.max' => 'ขนาดเอกสารแนบต้องไม่เกิน 5MB',
         ]);
 
         $start = Carbon::parse($request->start_date);
@@ -137,6 +140,19 @@ class LeaveController extends Controller
                 ]);
         }
 
+        // จัดการอัปโหลดไฟล์ไป Cloudinary
+        $attachmentUrl = null;
+        if ($request->hasFile('attachment')) {
+            try {
+                $uploadedFileUrl = cloudinary()->upload($request->file('attachment')->getRealPath(), [
+                    'folder' => 'wb_emprecord/leave_requests'
+                ])->getSecurePath();
+                $attachmentUrl = $uploadedFileUrl;
+            } catch (\Exception $e) {
+                return back()->withInput()->with('error', 'เกิดข้อผิดพลาดในการอัปโหลดไฟล์: ' . $e->getMessage());
+            }
+        }
+
         // สร้างคำขอลาใหม่
         LeaveRequest::create([
             'user_id' => $user->id,
@@ -145,6 +161,7 @@ class LeaveController extends Controller
             'end_date' => $request->end_date,
             'days_count' => $daysCount,
             'reason' => $request->reason,
+            'attachment_url' => $attachmentUrl,
             'status' => 'pending',
         ]);
 

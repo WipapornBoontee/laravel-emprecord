@@ -180,6 +180,11 @@
                                 </td>
                                 <td style="max-width: 250px;">
                                     <div class="text-truncate" title="{{ $leave->reason }}">{{ $leave->reason }}</div>
+                                    @if($leave->attachment_url)
+                                        <a href="{{ $leave->attachment_url }}" target="_blank" class="badge bg-info-subtle text-info border border-info-subtle mt-1 text-decoration-none">
+                                            <i class="bi bi-paperclip me-1"></i>ดูเอกสารแนบ
+                                        </a>
+                                    @endif
                                 </td>
                                 <td>
                                     @if($leave->status === 'approved')

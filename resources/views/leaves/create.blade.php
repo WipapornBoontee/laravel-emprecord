@@ -148,7 +148,7 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('leaves.store', [], false) }}" id="leaveForm">
+            <form method="POST" action="{{ route('leaves.store', [], false) }}" id="leaveForm" enctype="multipart/form-data">
                 @csrf
 
                 <div class="mb-4">
@@ -204,6 +204,16 @@
                         placeholder="ระบุเหตุผลความจำเป็น เช่น ป่วยเป็นไข้หวัดพบแพทย์, ติดต่อธุระราชการ..." required>{{ old('reason') }}</textarea>
                 </div>
 
+                <div class="mb-5">
+                    <label for="attachment" class="form-label fw-semibold small text-theme">
+                        <i class="bi bi-paperclip text-secondary me-1"></i> แนบเอกสาร/ใบรับรองแพทย์ (ถ้ามี)
+                    </label>
+                    <input type="file" class="form-control form-control-custom" id="attachment" name="attachment" accept=".jpg,.jpeg,.png,.pdf" onchange="checkFileSize(this)">
+                    <div class="form-text text-muted small mt-2">
+                        <i class="bi bi-info-circle me-1"></i>รองรับไฟล์รูปภาพ (JPG, PNG) หรือ PDF ขนาดไม่เกิน 5MB
+                    </div>
+                </div>
+
                 <!-- Action Buttons -->
                 <div class="d-flex align-items-center justify-content-between pt-4" style="border-top: 1px dashed var(--surface-border);">
                     <a href="{{ route('leaves.index', [], false) }}" class="btn btn-cancel-custom d-flex align-items-center gap-2">
@@ -220,6 +230,16 @@
 </div>
 
 <script>
+    function checkFileSize(input) {
+        if (input.files && input.files[0]) {
+            const fileSize = input.files[0].size / 1024 / 1024; // MB
+            if (fileSize > 5) {
+                alert('ขนาดไฟล์เกิน 5MB กรุณาเลือกไฟล์ใหม่');
+                input.value = ''; // เคลียร์ค่า
+            }
+        }
+    }
+
     // คำนวณจำนวนวันลาอัตโนมัติ
     function calculateDays() {
         const startInput = document.getElementById('start_date').value;

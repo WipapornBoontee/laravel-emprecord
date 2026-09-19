@@ -102,6 +102,7 @@
 | `end_date` | DATE | NOT NULL | วันที่สิ้นสุดการลา |
 | `days_count` | DECIMAL(4,1) | NOT NULL | จำนวนวันที่ขอลา (เช่น 1, 0.5 วัน) |
 | `reason` | TEXT | NOT NULL | เหตุผลการลา |
+| `attachment_url` | TEXT | NULLABLE | ลิงก์รูปภาพ/เอกสารแนบจาก Cloudinary |
 | `status` | ENUM | DEFAULT 'pending' | สถานะคำขอ: `'pending'`, `'approved'`, `'rejected'` |
 | `approved_by` | BIGINT | FOREIGN KEY, NULLABLE | ผู้อนุมัติ/ปฏิเสธ (อ้างอิง `users.id`) |
 | `approved_at` | TIMESTAMP | NULLABLE | วันเวลาที่ดำเนินการอนุมัติ/ปฏิเสธ |
