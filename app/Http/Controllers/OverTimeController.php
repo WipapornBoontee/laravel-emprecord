@@ -17,16 +17,36 @@ class OverTimeController extends Controller
             $perPage = 10;
         }
 
-        $pendingRequests = Overtime::with('user')
+        $pendingRequests = Overtime::with(['user.department', 'user.position'])
             ->where('status', 'pending')
             ->orderBy('created_at', 'desc')
             ->get();
+
+        // แนบข้อมูล Attendance และชั่วโมงสะสมในสัปดาห์สำหรับแต่ละคำขอ
+        foreach ($pendingRequests as $otReq) {
+            $otReq->attendance = Attendance::where('user_id', $otReq->user_id)
+                ->where('date', $otReq->date)
+                ->first();
+
+            $startOfWeek = \Carbon\Carbon::parse($otReq->date)->startOfWeek()->format('Y-m-d');
+            $endOfWeek = \Carbon\Carbon::parse($otReq->date)->endOfWeek()->format('Y-m-d');
+            $otReq->weekly_approved_hours = Overtime::where('user_id', $otReq->user_id)
+                ->whereBetween('date', [$startOfWeek, $endOfWeek])
+                ->where('status', 'approved')
+                ->sum('hours');
+        }
             
-        $handledRequests = Overtime::with(['user', 'hr'])
+        $handledRequests = Overtime::with(['user.department', 'user.position', 'hr'])
             ->whereIn('status', ['approved', 'rejected'])
             ->orderBy('updated_at', 'desc')
             ->paginate($perPage)
             ->withQueryString();
+
+        foreach ($handledRequests as $otReq) {
+            $otReq->attendance = Attendance::where('user_id', $otReq->user_id)
+                ->where('date', $otReq->date)
+                ->first();
+        }
 
         return view('overtime.overtime', compact('pendingRequests', 'handledRequests', 'perPage'));
     }
