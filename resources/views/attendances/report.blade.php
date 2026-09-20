@@ -264,7 +264,7 @@
     </div>
 
     <!-- 2. Segmented Pill Tabs for Report Types (UX Upgrade) -->
-    <div class="col-12 screen-only">
+    <div class="col-12">
         <div class="report-nav-tabs">
             <a href="{{ route('attendances.report', array_filter(['date' => $date, 'department_id' => $departmentId, 'report_type' => 'all']), false) }}" 
                class="report-nav-pill {{ ($reportType ?? 'all') === 'all' && empty($status) ? 'active' : '' }}">
