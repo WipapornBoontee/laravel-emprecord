@@ -44,6 +44,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/attendance/checkin', [\App\Http\Controllers\AttendanceController::class, 'checkIn'])->name('attendances.checkin.process');
     Route::post('/attendance/checkout', [\App\Http\Controllers\AttendanceController::class, 'checkOut'])->name('attendances.checkout.process');
     Route::get('/attendance/my-history', [\App\Http\Controllers\AttendanceController::class, 'myHistory'])->name('attendances.my-history');
+    Route::post('/attendance/adjustments', [\App\Http\Controllers\AttendanceAdjustmentController::class, 'store'])->name('attendances.adjustments.store');
 
     // Overtime Routes (ระบบล่วงเวลา สำหรับพนักงาน)
     Route::get('/overtime/show', [\App\Http\Controllers\OverTimeController::class, 'overtime'])->name('overtime.show');
@@ -109,6 +110,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/attendance/report', [\App\Http\Controllers\AttendanceController::class, 'report'])->name('attendances.report');
         Route::get('/attendance/report/print', [\App\Http\Controllers\AttendanceController::class, 'printReport'])->name('attendances.report.print');
         Route::get('/attendance/report/export-monthly', [\App\Http\Controllers\AttendanceController::class, 'exportMonthlySummaryCsv'])->name('attendances.report.export-monthly');
+
+        // ศูนย์พิจารณาอนุมัติคำขอปรับเวลาทำงานย้อนหลัง (Attendance Adjustments)
+        Route::get('/attendance/adjustments', [\App\Http\Controllers\AttendanceAdjustmentController::class, 'index'])->name('attendances.adjustments.index');
+        Route::post('/attendance/adjustments/{adjustment}/approve', [\App\Http\Controllers\AttendanceAdjustmentController::class, 'approve'])->name('attendances.adjustments.approve');
+        Route::post('/attendance/adjustments/{adjustment}/reject', [\App\Http\Controllers\AttendanceAdjustmentController::class, 'reject'])->name('attendances.adjustments.reject');
     });
 
     // หน้ารายละเอียดโปรไฟล์พนักงาน (เข้าถึงได้ตามสิทธิ์ที่ Controller ตรวจสอบ)

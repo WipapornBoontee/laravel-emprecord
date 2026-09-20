@@ -49,10 +49,19 @@
                     </div>
                 </div>
                 <div class="d-flex flex-wrap align-items-center gap-2">
+                    <button type="button" class="btn btn-primary rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2 shadow-sm"
+                        data-bs-toggle="modal" data-bs-target="#requestAdjustmentModal"
+                        style="background: var(--primary-gradient); border: none; font-weight: 600;">
+                        <i class="bi bi-clock-history"></i>
+                        <span>ขอปรับเวลาทำงานย้อนหลัง</span>
+                    </button>
                     <a href="{{ route('attendances.checkin', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2 text-decoration-none">
                         <i class="bi bi-fingerprint me-1 text-primary"></i> หน้าลงเวลาประจำวัน
                     </a>
                     @if(auth()->user()->hasRole('Admin') || auth()->user()->hasRole('HR'))
+                        <a href="{{ route('attendances.adjustments.index', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2 text-decoration-none">
+                            <i class="bi bi-check2-circle me-1 text-warning"></i> พิจารณาคำขอปรับเวลา
+                        </a>
                         <a href="{{ route('attendances.report', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2 text-decoration-none">
                             <i class="bi bi-file-earmark-bar-graph-fill me-1 text-success"></i> รายงานสรุปเวลาทำงาน
                         </a>
@@ -64,6 +73,29 @@
             </div>
         </div>
     </div>
+
+    <!-- Status Alerts -->
+    @if(session('success'))
+        <div class="col-12">
+            <div class="alert alert-success alert-dismissible fade show rounded-4 border-0 d-flex align-items-center gap-2 p-3 shadow-sm mb-0" 
+                style="background: rgba(16, 185, 129, 0.12); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2) !important;">
+                <i class="bi bi-check-circle-fill fs-5"></i>
+                <div class="fw-semibold">{{ session('success') }}</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="col-12">
+            <div class="alert alert-danger alert-dismissible fade show rounded-4 border-0 d-flex align-items-center gap-2 p-3 shadow-sm mb-0"
+                style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2) !important;">
+                <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                <div class="fw-semibold">{{ session('error') }}</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    @endif
 
     <!-- Mini Stat Cards -->
     <div class="col-sm-3">
@@ -241,6 +273,63 @@
                     {{ $attendances->links() }}
                 </div>
             @endif
+        </div>
+    </div>
+</div>
+
+<!-- Modal สำหรับยื่นคำขอปรับเวลาทำงานย้อนหลัง -->
+<div class="modal fade text-start" id="requestAdjustmentModal" tabindex="-1" aria-labelledby="requestAdjustmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content form-card p-3 border-0 shadow-lg" style="background: var(--surface-bg); border: 1px solid var(--surface-border); border-radius: 20px;">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-theme d-flex align-items-center gap-2" id="requestAdjustmentModalLabel">
+                    <i class="bi bi-clock-history text-primary"></i> ขอปรับปรุงเวลาลงเวลาย้อนหลัง
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('attendances.adjustments.store', [], false) }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body">
+                    <p class="text-muted small mb-3">
+                        สำหรับกรณีลืมสแกนเวลา หรือติดภารกิจงานนอกสถานที่ โดยต้องผ่านการพิจารณาอนุมัติจากฝ่ายบุคคล
+                    </p>
+
+                    <div class="mb-3">
+                        <label for="target_date" class="form-label small fw-semibold text-theme">วันที่ต้องการขอปรับเวลา <span class="text-danger">*</span></label>
+                        <input type="date" name="target_date" id="target_date" class="form-control filter-input" 
+                            max="{{ date('Y-m-d') }}" required value="{{ date('Y-m-d') }}">
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label for="requested_check_in" class="form-label small fw-semibold text-theme">เวลาเข้างานจริง</label>
+                            <input type="time" name="requested_check_in" id="requested_check_in" class="form-control filter-input" value="09:00">
+                        </div>
+                        <div class="col-6">
+                            <label for="requested_check_out" class="form-label small fw-semibold text-theme">เวลาเลิกงานจริง</label>
+                            <input type="time" name="requested_check_out" id="requested_check_out" class="form-control filter-input" value="18:00">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="reason" class="form-label small fw-semibold text-theme">เหตุผลความจำเป็น <span class="text-danger">*</span></label>
+                        <textarea name="reason" id="reason" rows="3" class="form-control filter-input" 
+                            placeholder="ระบุเหตุผล เช่น ลืมกดลงเวลา, เดินทางไปพบลูกค้านอกสถานที่..." required></textarea>
+                    </div>
+
+                    <div class="mb-2">
+                        <label for="attachment" class="form-label small fw-semibold text-theme">เอกสาร/หลักฐานแนบ (ถ้ามี)</label>
+                        <input type="file" name="attachment" id="attachment" class="form-control filter-input" accept=".jpg,.jpeg,.png,.pdf">
+                        <span class="text-muted small" style="font-size: 0.75rem;">รองรับ JPG, PNG, PDF ขนาดไม่เกิน 5MB</span>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-outline-secondary rounded-3 px-3" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="submit" class="btn btn-primary rounded-3 px-4" style="background: var(--primary-gradient); border: none; font-weight: 600;">
+                        <i class="bi bi-send-fill me-1"></i> ส่งคำขอปรับเวลา
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
