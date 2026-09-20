@@ -111,6 +111,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/attendance/report', [\App\Http\Controllers\AttendanceController::class, 'report'])->name('attendances.report');
         Route::get('/attendance/report/print', [\App\Http\Controllers\AttendanceController::class, 'printReport'])->name('attendances.report.print');
         Route::get('/attendance/report/export-monthly', [\App\Http\Controllers\AttendanceController::class, 'exportMonthlySummaryCsv'])->name('attendances.report.export-monthly');
+        Route::get('/attendance/monthly-export', [\App\Http\Controllers\AttendanceController::class, 'exportMonthlySummaryCsv']);
 
         // ศูนย์พิจารณาอนุมัติคำขอปรับเวลาทำงานย้อนหลัง (Attendance Adjustments)
         Route::get('/attendance/adjustments', [\App\Http\Controllers\AttendanceAdjustmentController::class, 'index'])->name('attendances.adjustments.index');
