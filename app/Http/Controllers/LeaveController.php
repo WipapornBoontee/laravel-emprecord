@@ -67,7 +67,10 @@ class LeaveController extends Controller
         // หากยังไม่มีการจัดสรรยอดคงเหลือ ให้ดึง LeaveType ทั้งหมด
         $leaveTypes = LeaveType::all();
 
-        return view('leaves.create', compact('leaveBalances', 'leaveTypes'));
+        // ดึงวันหยุดบริษัทสำหรับ JavaScript คำนวณวันลาจริงหน้าบ้าน
+        $companyHolidays = \App\Models\CompanyHoliday::all(['name', 'holiday_date', 'is_recurring']);
+
+        return view('leaves.create', compact('leaveBalances', 'leaveTypes', 'companyHolidays'));
     }
 
     /**
@@ -97,7 +100,35 @@ class LeaveController extends Controller
 
         $start = Carbon::parse($request->start_date);
         $end = Carbon::parse($request->end_date);
-        $daysCount = $start->diffInDays($end) + 1;
+
+        // ดึงรายการวันหยุดนักขัตฤกษ์/วันหยุดบริษัทในช่วงเวลาที่ขอลา
+        $holidayDates = \App\Models\CompanyHoliday::whereBetween('holiday_date', [$start->toDateString(), $end->toDateString()])
+            ->orWhere('is_recurring', true)
+            ->pluck('holiday_date')
+            ->map(fn($d) => Carbon::parse($d)->format('m-d'))
+            ->toArray();
+
+        $daysCount = 0;
+        $current = $start->copy();
+        while ($current->lte($end)) {
+            // ไม่นับวันเสาร์ และวันอาทิตย์
+            $isWeekend = $current->isSaturday() || $current->isSunday();
+            // ตรวจสอบว่าตรงกับวันหยุดนักขัตฤกษ์หรือไม่ (รวมถึง recurring)
+            $isHoliday = in_array($current->format('m-d'), $holidayDates);
+
+            if (!$isWeekend && !$isHoliday) {
+                $daysCount++;
+            }
+            $current->addDay();
+        }
+
+        if ($daysCount === 0) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'start_date' => 'ช่วงวันที่ที่เลือกตรงกับวันหยุดสุดสัปดาห์ (เสาร์-อาทิตย์) หรือวันหยุดนักขัตฤกษ์ทั้งหมด จึงไม่นับเป็นวันลาทำงาน',
+                ]);
+        }
 
         // ตรวจสอบสิทธิ์วันลาคงเหลือในตาราง leave_balances
         $balance = LeaveBalance::firstOrCreate(

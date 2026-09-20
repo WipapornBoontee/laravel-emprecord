@@ -240,22 +240,60 @@
         }
     }
 
-    // คำนวณจำนวนวันลาอัตโนมัติ
+    const companyHolidays = @json($companyHolidays ?? []);
+
+    // คำนวณจำนวนวันลาทำงานจริงอัตโนมัติ (ไม่นับเสาร์-อาทิตย์ และวันหยุดบริษัท)
     function calculateDays() {
         const startInput = document.getElementById('start_date').value;
         const endInput = document.getElementById('end_date').value;
         const daysDisplay = document.getElementById('calculatedDays');
 
         if (startInput && endInput) {
-            const start = new Date(startInput);
-            const end = new Date(endInput);
-            const diffTime = end - start;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            const start = new Date(startInput + 'T00:00:00');
+            const end = new Date(endInput + 'T00:00:00');
 
-            if (diffDays > 0) {
-                daysDisplay.textContent = diffDays + ' วัน';
+            if (start > end) {
+                daysDisplay.textContent = 'ระบุวันที่ผิด';
+                daysDisplay.classList.add('text-danger');
+                return;
+            }
+
+            daysDisplay.classList.remove('text-danger');
+
+            // Set of recurring or specific holiday strings (MM-DD)
+            const holidaySet = new Set();
+            companyHolidays.forEach(h => {
+                const hDate = new Date(h.holiday_date);
+                const mm = String(hDate.getMonth() + 1).padStart(2, '0');
+                const dd = String(hDate.getDate()).padStart(2, '0');
+                holidaySet.add(`${mm}-${dd}`);
+            });
+
+            let count = 0;
+            let current = new Date(start);
+
+            while (current <= end) {
+                const dayOfWeek = current.getDay(); // 0 = Sun, 6 = Sat
+                const mm = String(current.getMonth() + 1).padStart(2, '0');
+                const dd = String(current.getDate()).padStart(2, '0');
+                const key = `${mm}-${dd}`;
+
+                const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+                const isHoliday = holidaySet.has(key);
+
+                if (!isWeekend && !isHoliday) {
+                    count++;
+                }
+
+                current.setDate(current.getDate() + 1);
+            }
+
+            if (count === 0) {
+                daysDisplay.textContent = '0 วัน (วันหยุด)';
+                daysDisplay.classList.add('text-warning');
             } else {
-                daysDisplay.textContent = 'ระบุผิด';
+                daysDisplay.classList.remove('text-warning');
+                daysDisplay.textContent = count + ' วันทำงาน';
             }
         }
     }

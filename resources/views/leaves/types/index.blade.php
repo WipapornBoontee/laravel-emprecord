@@ -58,6 +58,9 @@
                     </div>
                 </div>
                 <div class="d-flex flex-wrap align-items-center gap-2">
+                    <a href="{{ route('settings.holidays.index', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2 text-decoration-none">
+                        <i class="bi bi-calendar-heart-fill me-1 text-danger"></i> ปฏิทินวันหยุดบริษัท
+                    </a>
                     <a href="{{ route('leaves.index', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2 text-decoration-none">
                         <i class="bi bi-calendar2-check-fill me-1 text-primary"></i> ประวัติการลาของฉัน
                     </a>

@@ -135,6 +135,10 @@
                     <a href="{{ route('attendances.my-history', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2 text-decoration-none">
                         <i class="bi bi-clock-history me-1 text-indigo"></i> ประวัติของฉัน
                     </a>
+                    <a href="{{ route('attendances.report.export-monthly', ['month' => date('m', strtotime($date)), 'year' => date('Y', strtotime($date)), 'department_id' => $departmentId], false) }}" class="btn btn-outline-success rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2" title="ดาวน์โหลดไฟล์ CSV/Excel สรุปเวลาทำงานส่งฝ่ายบัญชี">
+                        <i class="bi bi-file-earmark-excel-fill"></i>
+                        <span>Export สรุปส่งบัญชี (CSV)</span>
+                    </a>
                     <a href="{{ route('attendances.report.print', ['date' => $date, 'department_id' => $departmentId, 'status' => $status], false) }}" target="_blank" class="btn btn-primary rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2 shadow-sm" title="เปิดหน้าพิมพ์รายงาน PDF รูปแบบมาตรฐานบริษัท" style="background: var(--primary-gradient); border: none; font-weight: 600;">
                         <i class="bi bi-file-earmark-pdf-fill"></i>
                         <span>พิมพ์รายงาน PDF</span>

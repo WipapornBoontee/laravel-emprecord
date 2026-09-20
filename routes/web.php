@@ -100,9 +100,15 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/leaves-types/{type}', [\App\Http\Controllers\LeaveTypeController::class, 'update'])->name('leaves.types.update');
         Route::delete('/leaves-types/{type}', [\App\Http\Controllers\LeaveTypeController::class, 'destroy'])->name('leaves.types.destroy');
 
-        // สรุปรายงานเวลาทำงานองค์กร (Organization Attendance Report)
+        // จัดการวันหยุดบริษัทและวันหยุดนักขัตฤกษ์ (Company Holidays)
+        Route::get('/settings/holidays', [\App\Http\Controllers\CompanyHolidayController::class, 'index'])->name('settings.holidays.index');
+        Route::post('/settings/holidays', [\App\Http\Controllers\CompanyHolidayController::class, 'store'])->name('settings.holidays.store');
+        Route::delete('/settings/holidays/{holiday}', [\App\Http\Controllers\CompanyHolidayController::class, 'destroy'])->name('settings.holidays.destroy');
+
+        // สรุปรายงานเวลาทำงานองค์กร (Organization Attendance Report & Monthly Payroll Export)
         Route::get('/attendance/report', [\App\Http\Controllers\AttendanceController::class, 'report'])->name('attendances.report');
         Route::get('/attendance/report/print', [\App\Http\Controllers\AttendanceController::class, 'printReport'])->name('attendances.report.print');
+        Route::get('/attendance/report/export-monthly', [\App\Http\Controllers\AttendanceController::class, 'exportMonthlySummaryCsv'])->name('attendances.report.export-monthly');
     });
 
     // หน้ารายละเอียดโปรไฟล์พนักงาน (เข้าถึงได้ตามสิทธิ์ที่ Controller ตรวจสอบ)
