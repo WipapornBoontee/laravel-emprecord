@@ -372,7 +372,7 @@
         <a href="{{ route('attendances.report', array_filter(['date' => $date, 'department_id' => $departmentId, 'status' => 'on_time']), false) }}" 
            class="kpi-stat-card {{ $status === 'on_time' ? 'is-active' : '' }}">
             <div class="kpi-icon-wrapper" style="background: rgba(16, 185, 129, 0.12); color: #10b981;">
-                <i class="bi bi-clock-check-fill"></i>
+                <i class="bi bi-check-circle-fill"></i>
             </div>
             <span class="text-muted small d-block mb-1">เข้างานตรงเวลา</span>
             <h3 class="fw-bold mb-0 text-success">{{ number_format($onTimeCount) }} <span class="fs-6 fw-normal text-muted">คน</span></h3>
