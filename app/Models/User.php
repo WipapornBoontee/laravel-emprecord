@@ -30,7 +30,6 @@ class User extends Authenticatable
         'role',
         'department_id',
         'position_id',
-        'salary',
         'start_date',
         'status',
     ];

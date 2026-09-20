@@ -113,7 +113,6 @@ class EmployeeController extends Controller
             'position_id' => ['nullable', 'exists:positions,id'],
             'start_date' => ['nullable', 'date'],
             'status' => ['required', Rule::in(['active', 'resigned'])],
-            'salary' => ['nullable', 'numeric', 'min:0'],
             'id_card' => ['nullable', 'string', 'max:20'],
         ], [
             'emp_code.required' => 'กรุณาระบุรหัสพนักงาน',
@@ -135,6 +134,8 @@ class EmployeeController extends Controller
         $validated['start_date'] = !empty($validated['start_date']) ? $validated['start_date'] : null;
         $validated['phone'] = !empty($validated['phone']) ? $validated['phone'] : null;
         $validated['address'] = !empty($validated['address']) ? $validated['address'] : null;
+        $validated['id_card'] = !empty($validated['id_card']) ? $validated['id_card'] : '-';
+        unset($validated['salary']);
 
         // สร้างข้อมูลพนักงาน
         $employee = User::create($validated);
@@ -271,7 +272,6 @@ class EmployeeController extends Controller
             'position_id' => ['nullable', 'exists:positions,id'],
             'start_date' => ['nullable', 'date'],
             'status' => ['required', Rule::in(['active', 'resigned'])],
-            'salary' => ['nullable', 'numeric', 'min:0'],
             'id_card' => ['nullable', 'string', 'max:20'],
         ], [
             'emp_code.required' => 'กรุณาระบุรหัสพนักงาน',
@@ -291,6 +291,10 @@ class EmployeeController extends Controller
         $validated['start_date'] = !empty($validated['start_date']) ? $validated['start_date'] : null;
         $validated['phone'] = !empty($validated['phone']) ? $validated['phone'] : null;
         $validated['address'] = !empty($validated['address']) ? $validated['address'] : null;
+        if (isset($validated['id_card']) && empty($validated['id_card'])) {
+            $validated['id_card'] = $employee->id_card ?? '-';
+        }
+        unset($validated['salary']);
 
         // อัปเดตรหัสผ่านเฉพาะเมื่อมีการกรอกค่าใหม่
         if (!empty($validated['password'])) {
