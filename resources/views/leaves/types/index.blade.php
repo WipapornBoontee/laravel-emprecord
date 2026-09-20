@@ -178,7 +178,7 @@
                                         <!-- Edit Modal Trigger -->
                                         <button type="button" class="btn btn-outline-warning btn-sm rounded-3 py-1 px-2"
                                             data-bs-toggle="modal" data-bs-target="#editTypeModal{{ $type->id }}" title="แก้ไข">
-                                            <i class="bi bi-pencil"></i>
+                                            <i class="bi bi-pencil-square"></i>
                                         </button>
 
                                         <!-- Delete Form -->
@@ -192,44 +192,11 @@
                                                 </button>
                                             </form>
                                         @else
-                                            <span class="badge bg-secondary-subtle text-muted" title="ไม่สามารถลบได้เนื่องจากมีคำขอผูกอยู่">
+                                            <button type="button" class="btn btn-outline-secondary btn-sm rounded-3 py-1 px-2 disabled opacity-50" 
+                                                title="ไม่สามารถลบได้เนื่องจากมีคำขอลาผูกอยู่">
                                                 <i class="bi bi-lock-fill"></i>
-                                            </span>
+                                            </button>
                                         @endif
-                                    </div>
-
-                                    <!-- Edit Modal -->
-                                    <div class="modal fade text-start" id="editTypeModal{{ $type->id }}" tabindex="-1" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered">
-                                            <div class="modal-content form-card p-3 border-0">
-                                                <div class="modal-header border-0">
-                                                    <h5 class="modal-title fw-bold text-theme">
-                                                        <i class="bi bi-pencil-square text-warning me-2"></i>แก้ไขประเภทการลา
-                                                    </h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <form action="{{ route('leaves.types.update', $type, false) }}" method="POST">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <div class="modal-body">
-                                                        <div class="mb-3">
-                                                            <label class="form-label small fw-semibold text-theme">ชื่อประเภทการลา <span class="text-danger">*</span></label>
-                                                            <input type="text" name="name" class="form-control form-control-custom" 
-                                                                value="{{ $type->name }}" required>
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label class="form-label small fw-semibold text-theme">โควตาเริ่มต้นต่อปี (วัน) <span class="text-danger">*</span></label>
-                                                            <input type="number" name="default_days" class="form-control form-control-custom" 
-                                                                value="{{ $type->default_days }}" min="0" max="365" required>
-                                                        </div>
-                                                    </div>
-                                                    <div class="modal-footer border-0">
-                                                        <button type="button" class="btn btn-outline-secondary rounded-3" data-bs-dismiss="modal">ยกเลิก</button>
-                                                        <button type="submit" class="btn btn-warning rounded-3">บันทึกการแก้ไข</button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
                                     </div>
                                 </td>
                             </tr>
@@ -244,4 +211,42 @@
         </div>
     </div>
 </div>
+
+<!-- Modals Section (ย้ายออกมานอกตาราง เพื่อแก้ปัญหา Backdrop และ Form Submission บัค) -->
+@foreach($leaveTypes as $type)
+    <div class="modal fade text-start" id="editTypeModal{{ $type->id }}" tabindex="-1" aria-labelledby="editTypeModalLabel{{ $type->id }}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content form-card border-0 shadow-lg p-3">
+                <div class="modal-header border-bottom border-theme pb-3">
+                    <h5 class="modal-title fw-bold text-theme d-flex align-items-center gap-2" id="editTypeModalLabel{{ $type->id }}">
+                        <i class="bi bi-pencil-square text-warning"></i>
+                        <span>แก้ไขประเภทการลา: {{ $type->name }}</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('leaves.types.update', $type, false) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-theme">ชื่อประเภทการลา <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control form-control-custom" 
+                                value="{{ old('name', $type->name) }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-theme">โควตาเริ่มต้นต่อปี (วัน) <span class="text-danger">*</span></label>
+                            <input type="number" name="default_days" class="form-control form-control-custom" 
+                                value="{{ old('default_days', $type->default_days) }}" min="0" max="365" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top border-theme pt-2">
+                        <button type="button" class="btn btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">ยกเลิก</button>
+                        <button type="submit" class="btn btn-warning rounded-pill px-4 fw-semibold">บันทึกการแก้ไข</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+@endforeach
+
 @endsection
