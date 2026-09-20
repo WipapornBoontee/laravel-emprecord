@@ -14,9 +14,9 @@ return new class extends Migration
         if (!Schema::hasTable('company_holidays')) {
             Schema::create('company_holidays', function (Blueprint $table) {
                 $table->id();
-                $table->string('name', 255)->comment('ชื่อวันหยุด เช่น วันสงกรานต์, วันแรงงาน');
-                $table->date('holiday_date')->unique()->comment('วันที่หยุด');
-                $table->boolean('is_recurring')->default(false)->comment('เกิดซ้ำทุกปีหรือไม่');
+                $table->string('name');
+                $table->date('holiday_date')->unique();
+                $table->boolean('is_recurring')->default(false);
                 $table->timestamps();
             });
         }
