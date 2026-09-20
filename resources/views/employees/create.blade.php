@@ -219,6 +219,9 @@
                                 </option>
                             @endforeach
                         </select>
+                        <div id="no-pos-warning" class="text-danger small mt-1 d-none">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i> แผนกนี้ยังไม่มีตำแหน่งงาน ไม่สามารถบันทึกได้ กรุณาไปเพิ่มตำแหน่งงานก่อน
+                        </div>
                     </div>
 
                     <div class="col-md-4">
@@ -242,7 +245,7 @@
                     <a href="{{ route('employees.index', [], false) }}" class="btn btn-cancel-custom d-flex align-items-center gap-2">
                         <i class="bi bi-x-lg"></i> ยกเลิก
                     </a>
-                    <button type="submit" class="btn btn-submit-custom d-flex align-items-center gap-2">
+                    <button type="submit" id="btn-submit-emp" class="btn btn-submit-custom d-flex align-items-center gap-2">
                         <i class="bi bi-check2-circle fs-5"></i> บันทึกข้อมูลพนักงาน
                     </button>
                 </div>
@@ -257,6 +260,8 @@
     document.addEventListener('DOMContentLoaded', function () {
         const deptSelect = document.getElementById('department_id');
         const posSelect = document.getElementById('position_id');
+        const submitBtn = document.getElementById('btn-submit-emp');
+        const warningDiv = document.getElementById('no-pos-warning');
         if (!deptSelect || !posSelect) return;
 
         // เก็บ options ทั้งหมดของตำแหน่งงานไว้
@@ -273,26 +278,72 @@
 
             allPosOptions.forEach(opt => {
                 const optDept = opt.getAttribute('data-department');
-                // แสดงถ้า: ยังไม่เลือกแผนก หรือ ตำแหน่งนั้นสังกัดแผนกที่เลือก หรือ ตำแหน่งทั่วไปที่ไม่ได้ผูกกับแผนกใด
-                if (!selectedDept || optDept === selectedDept || !optDept) {
+                // เงื่อนไข:
+                // 1. ถ้ายังไม่ได้เลือกแผนก -> แสดงตำแหน่งทั้งหมด
+                // 2. ถ้าเลือกแผนกแล้ว -> แสดงเฉพาะตำแหน่งที่ตรงกับแผนกนั้น (optDept === selectedDept) เท่านั้น!
+                if (!selectedDept || (optDept && optDept === selectedDept)) {
                     const cloned = opt.cloneNode(true);
                     if (cloned.value === currentSelectedPos) {
                         cloned.selected = true;
                     }
                     posSelect.appendChild(cloned);
-                    matchCount++;
+                    if (selectedDept) {
+                        matchCount++;
+                    }
                 }
             });
 
-            // หากเลือกแผนกแล้ว แต่ไม่พบตำแหน่งงานใดๆ เลย
+            // หากเลือกแผนกแล้ว แต่ไม่พบตำแหน่งงานใดๆ เลยที่สังกัดแผนกนี้
             if (selectedDept && matchCount === 0) {
                 const noPosOpt = document.createElement('option');
                 noPosOpt.value = '';
-                noPosOpt.textContent = '⚠️ ไม่พบตำแหน่งงานของแผนกนี้';
+                noPosOpt.textContent = '⚠️ ไม่พบตำแหน่งงานของแผนกนี้ (ไม่สามารถบันทึกได้)';
                 noPosOpt.disabled = true;
                 noPosOpt.selected = true;
                 posSelect.appendChild(noPosOpt);
+
+                // ปิดปุ่มบันทึก และแจ้งเตือนสีแดง
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('opacity-50');
+                    submitBtn.setAttribute('title', 'แผนกที่เลือกยังไม่มีตำแหน่งงาน');
+                }
+                if (warningDiv) {
+                    warningDiv.classList.remove('d-none');
+                }
+            } else {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-50');
+                    submitBtn.removeAttribute('title');
+                }
+                if (warningDiv) {
+                    warningDiv.classList.add('d-none');
+                }
             }
+        }
+
+        // ป้องกันการ submit ฟอร์มหากแผนกไม่มีตำแหน่งงาน
+        const form = deptSelect.closest('form');
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                const selectedDept = deptSelect.value;
+                if (selectedDept) {
+                    // ตรวจสอบว่าใน posSelect มี option ที่มีค่าหรือไม่
+                    const validOptions = Array.from(posSelect.options).filter(o => o.value !== '');
+                    if (validOptions.length === 0) {
+                        e.preventDefault();
+                        alert('แผนกที่เลือกยังไม่มีตำแหน่งงาน ไม่สามารถบันทึกข้อมูลพนักงานได้ กรุณาไปเพิ่มตำแหน่งงานของแผนกนี้ก่อน');
+                        return false;
+                    }
+                    if (!posSelect.value) {
+                        e.preventDefault();
+                        alert('กรุณาเลือกตำแหน่งงานของพนักงาน');
+                        posSelect.focus();
+                        return false;
+                    }
+                }
+            });
         }
 
         deptSelect.addEventListener('change', filterPositions);

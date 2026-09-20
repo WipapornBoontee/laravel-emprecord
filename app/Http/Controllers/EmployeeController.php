@@ -128,6 +128,30 @@ class EmployeeController extends Controller
             'id_card.size' => 'เลขบัตรประชาชนต้องมี 13 หลัก',
         ]);
 
+        // ตรวจสอบว่าหากเลือกแผนก แต่แผนกนั้นไม่มีตำแหน่งงาน หรือไม่ได้เลือกตำแหน่งงาน
+        if (!empty($validated['department_id'])) {
+            $deptPositionCount = Position::where('department_id', $validated['department_id'])->where('is_active', true)->count();
+            if ($deptPositionCount === 0) {
+                return back()->withInput()->withErrors([
+                    'department_id' => 'แผนกที่เลือกยังไม่มีตำแหน่งงาน กรุณาสร้างตำแหน่งงานสำหรับแผนกนี้ก่อนเพิ่มพนักงาน'
+                ]);
+            }
+
+            if (empty($validated['position_id'])) {
+                return back()->withInput()->withErrors([
+                    'position_id' => 'กรุณาเลือกตำแหน่งงานที่สังกัดในแผนกนี้'
+                ]);
+            }
+
+            // ตรวจสอบว่าตำแหน่งที่เลือกสังกัดแผนกนี้จริงหรือไม่
+            $pos = Position::find($validated['position_id']);
+            if ($pos && $pos->department_id && $pos->department_id != $validated['department_id']) {
+                return back()->withInput()->withErrors([
+                    'position_id' => 'ตำแหน่งงานที่เลือกไม่ตรงกับแผนกที่ระบุ'
+                ]);
+            }
+        }
+
         $validated['password'] = Hash::make($validated['password']);
         $validated['department_id'] = !empty($validated['department_id']) ? $validated['department_id'] : null;
         $validated['position_id'] = !empty($validated['position_id']) ? $validated['position_id'] : null;
@@ -285,6 +309,29 @@ class EmployeeController extends Controller
             'id_card.required' => 'กรุณากรอกเลขบัตรประชาชน',
             'id_card.size' => 'เลขบัตรประชาชนต้องมี 13 หลัก',
         ]);
+
+        // ตรวจสอบว่าหากเลือกแผนก แต่แผนกนั้นไม่มีตำแหน่งงาน หรือไม่ได้เลือกตำแหน่งงาน
+        if (!empty($validated['department_id'])) {
+            $deptPositionCount = Position::where('department_id', $validated['department_id'])->where('is_active', true)->count();
+            if ($deptPositionCount === 0) {
+                return back()->withInput()->withErrors([
+                    'department_id' => 'แผนกที่เลือกยังไม่มีตำแหน่งงาน กรุณาสร้างตำแหน่งงานสำหรับแผนกนี้ก่อน'
+                ]);
+            }
+
+            if (empty($validated['position_id'])) {
+                return back()->withInput()->withErrors([
+                    'position_id' => 'กรุณาเลือกตำแหน่งงานที่สังกัดในแผนกนี้'
+                ]);
+            }
+
+            $pos = Position::find($validated['position_id']);
+            if ($pos && $pos->department_id && $pos->department_id != $validated['department_id']) {
+                return back()->withInput()->withErrors([
+                    'position_id' => 'ตำแหน่งงานที่เลือกไม่ตรงกับแผนกที่ระบุ'
+                ]);
+            }
+        }
 
         $validated['department_id'] = !empty($validated['department_id']) ? $validated['department_id'] : null;
         $validated['position_id'] = !empty($validated['position_id']) ? $validated['position_id'] : null;
