@@ -229,14 +229,12 @@
                 <table class="table table-custom mb-0">
                     <thead>
                         <tr>
-                            <th>พนักงาน</th>
+                            <th>ชื่อพนักงาน</th>
                             <th>ประเภทการลา</th>
-                            <th>ช่วงวันที่ลา</th>
                             <th>จำนวนวัน</th>
-                            <th>เอกสารแนบ</th>
-                            <th>เหตุผลการขอลา</th>
                             <th>สถานะ</th>
-                            <th class="text-end" style="width: 180px;">ดำเนินการ</th>
+                            <th class="text-center" style="width: 130px;">รายละเอียด</th>
+                            <th class="text-end" style="width: 170px;">ดำเนินการ</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -263,32 +261,12 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <div class="fw-semibold">
-                                        {{ \Carbon\Carbon::parse($leave->start_date)->format('d/m/Y') }}
-                                        <span class="text-muted mx-1">-</span>
-                                        {{ \Carbon\Carbon::parse($leave->end_date)->format('d/m/Y') }}
-                                    </div>
-                                    <span class="text-muted small">ยื่นเมื่อ {{ $leave->created_at->format('d/m/Y H:i') }}</span>
-                                </td>
-                                <td>
                                     <span class="badge bg-primary-subtle text-primary fw-bold px-2 py-1 fs-6">
                                         {{ $leave->days_count }} วัน
                                     </span>
-                                </td>
-                                 <td style="max-width: 250px;">
-                                    @if($leave->attachment_url)
-                                        <button type="button" 
-                                            class="btn btn-sm btn-outline-info rounded-pill px-2 py-1 view-attachment-btn" 
-                                            data-url="{{ $leave->attachment_url }}"
-                                            data-title="เอกสารแนบ - {{ $leave->user->name }} ({{ $leave->leaveType->name ?? 'การลา' }})">
-                                            <i class="bi bi-paperclip me-1"></i>ดูเอกสารแนบ
-                                        </button>
-                                    @else
-                                        <span class="text-muted small">-</span>
-                                    @endif
-                                </td>
-                                <td style="max-width: 250px;">
-                                    <div class="small" title="{{ $leave->reason }}">{{ $leave->reason }}</div>
+                                    <div class="small text-muted mt-1">
+                                        {{ \Carbon\Carbon::parse($leave->start_date)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($leave->end_date)->format('d/m/Y') }}
+                                    </div>
                                 </td>
                                 <td>
                                     @if($leave->status === 'approved')
@@ -296,20 +274,26 @@
                                             <i class="bi bi-check-circle-fill me-1"></i>อนุมัติแล้ว
                                         </span>
                                         @if($leave->approver)
-                                            <div class="small text-muted mt-1">โดย {{ $leave->approver->name }}</div>
+                                            <div class="small text-muted mt-1" style="font-size: 0.75rem;">โดย {{ $leave->approver->name }}</div>
                                         @endif
                                     @elseif($leave->status === 'rejected')
                                         <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">
                                             <i class="bi bi-x-circle-fill me-1"></i>ปฏิเสธ
                                         </span>
                                         @if($leave->remark)
-                                            <div class="small text-muted mt-1 fst-italic">"{{ $leave->remark }}"</div>
+                                            <div class="small text-muted mt-1 fst-italic" style="font-size: 0.75rem;">"{{ Str::limit($leave->remark, 20) }}"</div>
                                         @endif
                                     @else
                                         <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-1">
                                             <i class="bi bi-hourglass-split me-1"></i>รออนุมัติ
                                         </span>
                                     @endif
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-outline-info btn-sm rounded-pill px-3 py-1 d-inline-flex align-items-center gap-1"
+                                        data-bs-toggle="modal" data-bs-target="#leaveDetailModal{{ $leave->id }}">
+                                        <i class="bi bi-eye"></i> ดูข้อมูล
+                                    </button>
                                 </td>
                                 <td class="text-end">
                                     @if($leave->status === 'pending')
@@ -344,7 +328,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center py-5 text-muted">
+                                <td colspan="6" class="text-center py-5 text-muted">
                                     <i class="bi bi-inbox fs-1 d-block mb-2 opacity-50"></i>
                                     <span>ไม่พบรายการคำขอลาตามเงื่อนไข</span>
                                 </td>
@@ -365,6 +349,153 @@
 
 <!-- Render Modals Outside Table to Fix Backdrop Issue -->
 @foreach($leaveRequests as $leave)
+    <!-- Leave Detail Modal -->
+    <div class="modal fade text-start" id="leaveDetailModal{{ $leave->id }}" tabindex="-1" aria-labelledby="leaveDetailModalLabel{{ $leave->id }}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content form-card border-0 shadow-lg">
+                <div class="modal-header border-bottom border-theme pb-3">
+                    <h5 class="modal-title fw-bold text-theme d-flex align-items-center gap-2" id="leaveDetailModalLabel{{ $leave->id }}">
+                        <i class="bi bi-info-circle text-primary fs-5"></i>
+                        รายละเอียดคำขอลา #{{ $leave->id }}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <!-- Employee Profile Section -->
+                    <div class="d-flex align-items-center gap-3 p-3 rounded-3 mb-4" style="background: rgba(0,0,0,0.02); border: 1px solid var(--surface-border, rgba(0,0,0,0.08));">
+                        <div class="avatar-circle" style="width: 48px; height: 48px; font-size: 1.2rem;">
+                            {{ mb_substr($leave->user->name ?? '?', 0, 1) }}
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="fw-bold mb-1 text-theme">{{ $leave->user->name ?? 'ไม่พบข้อมูล' }}</h6>
+                            <div class="text-muted small d-flex flex-wrap gap-2 align-items-center">
+                                <span>รหัส: <code>{{ $leave->user->emp_code ?? '-' }}</code></span>
+                                <span>•</span>
+                                <span>แผนก: <strong>{{ $leave->user->department->name ?? 'ไม่ระบุ' }}</strong></span>
+                                <span>•</span>
+                                <span>ตำแหน่ง: <strong>{{ $leave->user->position->name ?? 'ไม่ระบุ' }}</strong></span>
+                            </div>
+                        </div>
+                        <div>
+                            @if($leave->status === 'approved')
+                                <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill">
+                                    <i class="bi bi-check-circle-fill me-1"></i>อนุมัติแล้ว
+                                </span>
+                            @elseif($leave->status === 'rejected')
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill">
+                                    <i class="bi bi-x-circle-fill me-1"></i>ปฏิเสธแล้ว
+                                </span>
+                            @else
+                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-2 rounded-pill">
+                                    <i class="bi bi-hourglass-split me-1"></i>รอการอนุมัติ
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Leave Info Grid -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-sm-6">
+                            <div class="p-3 rounded-3 h-100" style="background: rgba(0,0,0,0.015); border: 1px solid var(--surface-border, rgba(0,0,0,0.05));">
+                                <span class="text-muted small d-block mb-1">ประเภทการลา</span>
+                                <span class="badge bg-secondary-subtle text-secondary px-2 py-1 fs-6">
+                                    {{ $leave->leaveType->name ?? '-' }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="p-3 rounded-3 h-100" style="background: rgba(0,0,0,0.015); border: 1px solid var(--surface-border, rgba(0,0,0,0.05));">
+                                <span class="text-muted small d-block mb-1">จำนวนวันลา</span>
+                                <span class="text-primary fw-bold fs-5">{{ $leave->days_count }}</span>
+                                <span class="text-muted small"> วัน</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="p-3 rounded-3 h-100" style="background: rgba(0,0,0,0.015); border: 1px solid var(--surface-border, rgba(0,0,0,0.05));">
+                                <span class="text-muted small d-block mb-1">ช่วงวันที่ลา</span>
+                                <div class="fw-semibold text-theme">
+                                    <i class="bi bi-calendar-event text-muted me-1"></i>
+                                    {{ \Carbon\Carbon::parse($leave->start_date)->format('d/m/Y') }} ถึง {{ \Carbon\Carbon::parse($leave->end_date)->format('d/m/Y') }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="p-3 rounded-3 h-100" style="background: rgba(0,0,0,0.015); border: 1px solid var(--surface-border, rgba(0,0,0,0.05));">
+                                <span class="text-muted small d-block mb-1">วันที่ยื่นคำขอ</span>
+                                <div class="fw-semibold text-theme">
+                                    <i class="bi bi-clock-history text-muted me-1"></i>
+                                    {{ $leave->created_at ? $leave->created_at->format('d/m/Y H:i น.') : '-' }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reason -->
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-muted">เหตุผลการลา</label>
+                        <div class="p-3 rounded-3 text-theme" style="background: rgba(0,0,0,0.02); border: 1px solid var(--surface-border, rgba(0,0,0,0.05));">
+                            {{ $leave->reason ?: 'ไม่ได้ระบุเหตุผล' }}
+                        </div>
+                    </div>
+
+                    <!-- Attachment -->
+                    @if($leave->attachment_url)
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">เอกสาร / หลักฐานแนบ</label>
+                            <div>
+                                <button type="button" 
+                                    class="btn btn-outline-secondary btn-sm rounded-pill px-3 py-1 view-attachment-btn d-inline-flex align-items-center gap-1"
+                                    data-url="{{ $leave->attachment_url }}"
+                                    data-title="เอกสารแนบ - {{ $leave->user->name ?? '' }} ({{ $leave->leaveType->name ?? '' }})">
+                                    <i class="bi bi-paperclip"></i> ดูเอกสารแนบ
+                                </button>
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- Approver Details if processed -->
+                    @if($leave->status !== 'pending')
+                        <div class="p-3 rounded-3 mt-3" style="background: rgba(0,0,0,0.02); border-left: 4px solid {{ $leave->status === 'approved' ? '#198754' : '#dc3545' }};">
+                            <div class="small fw-bold {{ $leave->status === 'approved' ? 'text-success' : 'text-danger' }} mb-1">
+                                {{ $leave->status === 'approved' ? 'ข้อมูลการอนุมัติ' : 'ข้อมูลการปฏิเสธ' }}
+                            </div>
+                            <div class="small text-muted">
+                                <span>โดย: <strong>{{ $leave->approver->name ?? 'ระบบ' }}</strong></span>
+                                @if($leave->approved_at)
+                                    <span class="ms-2">• เมื่อ: {{ \Carbon\Carbon::parse($leave->approved_at)->format('d/m/Y H:i น.') }}</span>
+                                @endif
+                            </div>
+                            @if($leave->remark)
+                                <div class="small mt-1 text-secondary">
+                                    <strong>หมายเหตุ:</strong> {{ $leave->remark }}
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+                </div>
+                <div class="modal-footer border-top border-theme pt-2 d-flex justify-content-between">
+                    <button type="button" class="btn btn-sm btn-secondary rounded-pill px-3" data-bs-dismiss="modal">ปิดหน้าต่าง</button>
+                    @if($leave->status === 'pending' && Auth::id() !== $leave->user_id)
+                        <div class="d-flex gap-2">
+                            <form action="{{ route('leaves.approvals.approve', $leave, false) }}" method="POST" class="d-inline">
+                                @csrf
+                                <button type="submit" class="btn btn-sm btn-success rounded-pill px-3"
+                                    onclick="return confirm('ยืนยันอนุมัติคำขอลาของ {{ $leave->user->name }} (จำนวน {{ $leave->days_count }} วัน)?');">
+                                    <i class="bi bi-check-lg me-1"></i>อนุมัติ
+                                </button>
+                            </form>
+                            <button type="button" class="btn btn-sm btn-danger rounded-pill px-3" 
+                                data-bs-dismiss="modal"
+                                data-bs-toggle="modal" data-bs-target="#rejectModal{{ $leave->id }}">
+                                <i class="bi bi-x-lg me-1"></i>ปฏิเสธ
+                            </button>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
     @if($leave->status === 'pending')
         <!-- Reject Modal -->
         <div class="modal fade text-start" id="rejectModal{{ $leave->id }}" tabindex="-1" aria-hidden="true">
