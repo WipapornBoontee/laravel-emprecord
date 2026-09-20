@@ -42,7 +42,12 @@ class LeaveApprovalController extends Controller
             });
         }
 
-        $leaveRequests = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+        $perPage = (int) $request->input('per_page', 10);
+        if (!in_array($perPage, [5, 10, 25, 50])) {
+            $perPage = 10;
+        }
+
+        $leaveRequests = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
         $departments = Department::orderBy('name')->get();
 
         // สรุปสถิติภาพรวม
@@ -58,7 +63,8 @@ class LeaveApprovalController extends Controller
             'search',
             'pendingCount',
             'approvedCount',
-            'rejectedCount'
+            'rejectedCount',
+            'perPage'
         ));
     }
 

@@ -13,18 +13,23 @@ class DepartmentController extends Controller
      */
     public function index(Request $request)
     {
+        $search = $request->input('search');
         $perPage = (int) $request->input('per_page', 10);
         if (!in_array($perPage, [5, 10, 25, 50])) {
             $perPage = 10;
         }
 
-        $departments = Department::withCount('users')
-            ->with(['users.position'])
-            ->orderBy('name')
+        $query = Department::withCount('users')->with(['users.position']);
+
+        if (!empty($search)) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        $departments = $query->orderBy('name')
             ->paginate($perPage)
             ->withQueryString();
 
-        return view('departments.index', compact('departments', 'perPage'));
+        return view('departments.index', compact('departments', 'perPage', 'search'));
     }
 
     /**
@@ -105,19 +110,29 @@ class DepartmentController extends Controller
      */
     public function positions(Request $request)
     {
+        $search = $request->input('search');
         $perPage = (int) $request->input('per_page', 10);
         if (!in_array($perPage, [5, 10, 25, 50])) {
             $perPage = 10;
         }
 
         $departments = Department::where('is_active', true)->orderBy('name')->get();
-        $positions = Position::with(['department'])
-            ->withCount('users')
-            ->orderBy('name')
+        $query = Position::with(['department'])->withCount('users');
+
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhereHas('department', function ($dq) use ($search) {
+                      $dq->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $positions = $query->orderBy('name')
             ->paginate($perPage)
             ->withQueryString();
 
-        return view('departments.positions', compact('positions', 'departments', 'perPage'));
+        return view('departments.positions', compact('positions', 'departments', 'perPage', 'search'));
     }
 
     /**

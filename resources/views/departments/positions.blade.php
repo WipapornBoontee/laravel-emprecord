@@ -145,20 +145,32 @@
     <!-- Positions List Table -->
     <div class="col-lg-8">
         <div class="dept-card overflow-hidden">
-            <div class="p-4 border-bottom border-theme d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div class="p-3 px-4 border-bottom border-theme d-flex flex-wrap align-items-center justify-content-between gap-3">
                 <div>
-                    <h5 class="fw-bold mb-0 text-theme">รายชื่อตำแหน่งงานทั้งหมด({{ $positions->total() }} ตำแหน่ง)</h5>
+                    <h5 class="fw-bold mb-0 text-theme">รายชื่อตำแหน่งงานทั้งหมด ({{ $positions->total() }} ตำแหน่ง)</h5>
                     <small class="text-muted">จัดการสถานะการใช้งาน ดูรายชื่อพนักงาน และแก้ไขข้อมูลตำแหน่ง</small>
                 </div>
-                <!-- Rows Per Page Selector -->
-                <form action="{{ route('departments.positions', [], false) }}" method="GET" class="d-flex align-items-center gap-2 m-0">
-                    <label for="per_page_select_pos" class="small text-muted mb-0 text-nowrap">แสดงต่อหน้า:</label>
-                    <select name="per_page" id="per_page_select_pos" class="form-select form-select-sm form-control-custom py-1" style="width: 85px;" onchange="this.form.submit()">
-                        <option value="5" {{ ($perPage ?? 10) == 5 ? 'selected' : '' }}>5</option>
-                        <option value="10" {{ ($perPage ?? 10) == 10 ? 'selected' : '' }}>10</option>
-                        <option value="25" {{ ($perPage ?? 10) == 25 ? 'selected' : '' }}>25</option>
-                        <option value="50" {{ ($perPage ?? 10) == 50 ? 'selected' : '' }}>50</option>
-                    </select>
+
+                <!-- Search & Rows Per Page Controls -->
+                <form action="{{ route('departments.positions', [], false) }}" method="GET" class="d-flex flex-wrap align-items-center gap-2 m-0">
+                    <div class="input-group input-group-sm" style="width: 200px;">
+                        <span class="input-group-text bg-transparent border-theme text-muted"><i class="bi bi-search"></i></span>
+                        <input type="text" name="search" class="form-control form-control-custom py-1" placeholder="ค้นหาตำแหน่ง/แผนก..." value="{{ $search ?? '' }}">
+                    </div>
+                    @if(!empty($search))
+                        <a href="{{ route('departments.positions', ['per_page' => $perPage], false) }}" class="btn btn-sm btn-outline-secondary" title="ล้างการค้นหา">
+                            <i class="bi bi-x-lg"></i>
+                        </a>
+                    @endif
+                    <div class="d-flex align-items-center gap-1 ms-sm-2">
+                        <label for="per_page_select_pos" class="small text-muted mb-0 text-nowrap">แสดง:</label>
+                        <select name="per_page" id="per_page_select_pos" class="form-select form-select-sm form-control-custom py-1" style="width: 80px;" onchange="this.form.submit()">
+                            <option value="5" {{ ($perPage ?? 10) == 5 ? 'selected' : '' }}>5</option>
+                            <option value="10" {{ ($perPage ?? 10) == 10 ? 'selected' : '' }}>10</option>
+                            <option value="25" {{ ($perPage ?? 10) == 25 ? 'selected' : '' }}>25</option>
+                            <option value="50" {{ ($perPage ?? 10) == 50 ? 'selected' : '' }}>50</option>
+                        </select>
+                    </div>
                 </form>
             </div>
 

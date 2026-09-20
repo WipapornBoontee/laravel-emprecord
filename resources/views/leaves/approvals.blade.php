@@ -206,6 +206,25 @@
     <!-- Approvals Table -->
     <div class="col-12">
         <div class="approval-card overflow-hidden">
+            <div class="p-3 px-4 border-bottom border-theme d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <div class="fw-bold text-theme">
+                    <i class="bi bi-table me-1 text-primary"></i> รายการคำขอลา ({{ $leaveRequests->total() }} รายการ)
+                </div>
+                <!-- Rows Per Page Selector -->
+                <form action="{{ route('leaves.approvals', [], false) }}" method="GET" class="d-flex align-items-center gap-2 m-0">
+                    <input type="hidden" name="status" value="{{ $status }}">
+                    <input type="hidden" name="department_id" value="{{ $departmentId }}">
+                    <input type="hidden" name="search" value="{{ $search }}">
+                    <label for="per_page_select_leave" class="small text-muted mb-0 text-nowrap">แสดงต่อหน้า:</label>
+                    <select name="per_page" id="per_page_select_leave" class="form-select form-select-sm filter-input py-1" style="width: 85px;" onchange="this.form.submit()">
+                        <option value="5" {{ ($perPage ?? 10) == 5 ? 'selected' : '' }}>5</option>
+                        <option value="10" {{ ($perPage ?? 10) == 10 ? 'selected' : '' }}>10</option>
+                        <option value="25" {{ ($perPage ?? 10) == 25 ? 'selected' : '' }}>25</option>
+                        <option value="50" {{ ($perPage ?? 10) == 50 ? 'selected' : '' }}>50</option>
+                    </select>
+                </form>
+            </div>
+
             <div class="table-responsive">
                 <table class="table table-custom mb-0">
                     <thead>
@@ -298,7 +317,7 @@
                                             <!-- กรณีคำขอลาของตนเอง (Self-Request) ห้ามอนุมัติตัวเอง -->
                                             <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1" 
                                                 title="คุณไม่สามารถอนุมัติคำขอลาของตนเองได้ ต้องรอให้ Admin ดำเนินการ">
-                                                <i class="bi bi-lock-fill me-1"></i>รอ Admin อนุมัติ (คำขอของคุณ)
+                                                <i class="bi bi-lock-fill me-1"></i>รออนุมัติ (คำขอของคุณ)
                                             </span>
                                         @else
                                             <div class="d-inline-flex align-items-center gap-1">
