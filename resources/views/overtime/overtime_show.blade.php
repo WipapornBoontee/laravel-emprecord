@@ -125,14 +125,18 @@
                         <div class="ot-month-badge">
                             <i class="bi bi-calendar-event me-2"></i>เดือน {{ Carbon\Carbon::create()->month((int)$month)->translatedFormat('F') }} {{ $year }}
                         </div>
-                        @if($hasCheckedInToday)
-                            <a href="{{ route('overtime.create') }}" class="btn btn-light text-primary fw-bold rounded-pill px-4 shadow-sm" style="border: 2px solid rgba(255,255,255,0.5);">
-                                <i class="bi bi-plus-circle-fill me-2"></i> ขอทำ OT
-                            </a>
-                        @else
+                        @if(!$hasCheckedInToday)
                             <button type="button" class="btn btn-light text-muted fw-bold rounded-pill px-4 shadow-sm" style="border: 2px solid rgba(255,255,255,0.5); opacity: 0.7;" disabled title="ต้องสแกนเข้างานก่อนถึงจะขอ OT ได้">
                                 <i class="bi bi-plus-circle-fill me-2"></i> ขอทำ OT
                             </button>
+                        @elseif(isset($hasAnyOTToday) && $hasAnyOTToday)
+                            <button type="button" class="btn btn-light text-muted fw-bold rounded-pill px-4 shadow-sm" style="border: 2px solid rgba(255,255,255,0.5); opacity: 0.7;" disabled title="คุณได้ขอ OT สำหรับวันนี้ไปแล้ว">
+                                <i class="bi bi-check-circle-fill me-2"></i> ขอทำ OT ไปแล้ว
+                            </button>
+                        @else
+                            <a href="{{ route('overtime.create') }}" class="btn btn-light text-primary fw-bold rounded-pill px-4 shadow-sm" style="border: 2px solid rgba(255,255,255,0.5);">
+                                <i class="bi bi-plus-circle-fill me-2"></i> ขอทำ OT
+                            </a>
                         @endif
                     </div>
                 </div>
@@ -199,11 +203,11 @@
                                             @if($detail['status'] == 'pending')
                                                 <td colspan="2" class="text-muted">รอการอนุมัติจาก HR</td>
                                                 <td><span class="badge bg-secondary">รออนุมัติ</span></td>
-                                            @elseif($detail['status'] == 'rejected')
+                                            <!-- @elseif($detail['status'] == 'rejected')
                                                 <td colspan="2" class="text-danger">ถูกปฏิเสธ: {{ $detail['hr_reject_reason'] }}</td>
-                                                <td><span class="badge bg-danger">ไม่อนุมัติ</span></td>
+                                                <td><span class="badge bg-danger">ไม่อนุมัติ</span></td> -->
                                             @else
-                                                <td class="text-muted">17:30 น. - <span class="badge {{ $detail['check_out'] ? 'bg-danger-subtle text-danger' : 'bg-secondary' }} px-2 py-1">{{ $detail['check_out'] ? $detail['check_out'].' น.' : 'ยังไม่สแกนออก' }}</span></td>
+                                                <td class="text-muted">17:00 น. - <span class="badge {{ $detail['check_out'] ? 'bg-danger-subtle text-danger' : 'bg-secondary' }} px-2 py-1">{{ $detail['check_out'] ? $detail['check_out'].' น.' : 'ยังไม่สแกนออก' }}</span></td>
                                                 <td>
                                                     @if($detail['check_out'])
                                                         <div class="fw-bold text-primary">{{ $detail['ot_hours'] }} ชม.</div>
