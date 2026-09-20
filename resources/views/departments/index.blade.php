@@ -188,7 +188,7 @@
                                         <!-- ดูสมาชิก (View) -->
                                         <button type="button" class="btn btn-outline-info btn-sm rounded-3 py-1 px-2" 
                                             data-bs-toggle="modal" data-bs-target="#viewDeptModal{{ $dept->id }}" title="ดูสมาชิกในแผนก">
-                                            <i class="bi bi-eye"></i> ดูข้อมูล
+                                            <i class="bi bi-eye"></i> 
                                         </button>
 
                                         <!-- แก้ไข (Edit) -->
