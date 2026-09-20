@@ -194,6 +194,7 @@
                                         <th>เวลาสแกนเข้า-ออก</th>
                                         <th>ชั่วโมง OT (ได้จริง)</th>
                                         <th>สถานะการทำ OT</th>
+                                        <th>หมายเหตุ</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -203,9 +204,11 @@
                                             @if($detail['status'] == 'pending')
                                                 <td colspan="2" class="text-muted">รอการอนุมัติจาก HR</td>
                                                 <td><span class="badge bg-secondary">รออนุมัติ</span></td>
-                                            <!-- @elseif($detail['status'] == 'rejected')
+                                                <td class="text-muted">-</td>
+                                            @elseif($detail['status'] == 'rejected')
                                                 <td colspan="2" class="text-danger">ถูกปฏิเสธ: {{ $detail['hr_reject_reason'] }}</td>
-                                                <td><span class="badge bg-danger">ไม่อนุมัติ</span></td> -->
+                                                <td><span class="badge bg-danger">ไม่อนุมัติ</span></td>
+                                                <td class="text-muted">-</td>
                                             @else
                                                 <td class="text-muted">17:00 น. - <span class="badge {{ $detail['check_out'] ? 'bg-danger-subtle text-danger' : 'bg-secondary' }} px-2 py-1">{{ $detail['check_out'] ? $detail['check_out'].' น.' : 'ยังไม่สแกนออก' }}</span></td>
                                                 <td>
@@ -226,6 +229,10 @@
                                                         <span class="badge bg-success">ทำเสร็จ</span>
                                                     @else
                                                         <div class="mb-1"><span class="badge bg-warning text-dark">ยังไม่เสร็จ</span></div>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if($detail['check_out'] && $detail['ot_hours'] < $detail['requested_hours'])
                                                         @if($detail['early_checkout_reason'])
                                                             <div class="small text-success"><i class="bi bi-check-circle-fill"></i> แจ้ง HR แล้ว</div>
                                                         @else
@@ -238,6 +245,8 @@
                                                                 </div>
                                                             </form>
                                                         @endif
+                                                    @else
+                                                        <span class="text-muted">-</span>
                                                     @endif
                                                 </td>
                                             @endif
