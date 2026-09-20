@@ -12,9 +12,19 @@ use Illuminate\Support\Facades\Auth;
 class AttendanceController extends Controller
 {
     /**
+     * เวลาเปิดให้ลงเวลาเข้างานได้ล่วงหน้า (30 นาทีก่อนเวลาเริ่มงานมาตรฐาน)
+     */
+    protected string $earliestCheckInTime = '08:30:00';
+
+    /**
      * เวลาเข้างานมาตรฐาน (ก่อนหรือเท่ากับเวลานี้ถือว่าตรงเวลา)
      */
     protected string $standardCheckInTime = '09:00:59';
+
+    /**
+     * เวลาเลิกงานมาตรฐาน (สามารถลงเวลาออกงานได้ตั้งแต่เวลานี้เป็นต้นไป)
+     */
+    protected string $standardCheckOutTime = '17:00:00';
 
     /**
      * หน้าบันทึกเวลาเข้า-ออกงาน (Check-in / Check-out View)
@@ -23,6 +33,16 @@ class AttendanceController extends Controller
     {
         $user = Auth::user();
         $today = Carbon::today()->format('Y-m-d');
+        $now = Carbon::now();
+
+        // ช่วงเวลาที่อนุญาตให้ลงเวลา
+        $earliestCheckIn = Carbon::today()->setTimeFromTimeString($this->earliestCheckInTime);
+        $standardCheckIn = Carbon::today()->setTimeFromTimeString($this->standardCheckInTime);
+        $standardCheckOut = Carbon::today()->setTimeFromTimeString($this->standardCheckOutTime);
+
+        $canCheckIn = $now->gte($earliestCheckIn);
+        $isCheckInLate = $now->gt($standardCheckIn);
+        $canCheckOut = $now->gte($standardCheckOut);
 
         // ตรวจสอบประวัติการลงเวลาของวันนี้
         $todayAttendance = Attendance::with('leaveRequest.leaveType')
@@ -44,7 +64,10 @@ class AttendanceController extends Controller
             'todayAttendance',
             'isLeaveToday',
             'recentAttendances',
-            'today'
+            'today',
+            'canCheckIn',
+            'isCheckInLate',
+            'canCheckOut'
         ));
     }
 
@@ -68,7 +91,13 @@ class AttendanceController extends Controller
             return back()->with('warning', 'คุณได้ทำการบันทึกเวลาเข้างานของวันนี้ไปแล้วเมื่อ ' . $existing->check_in);
         }
 
-        // ประเมินสถานะ: ก่อนหรือเท่ากับ 09:00:59 = ตรงเวลา, หลัง 09:00 = มาสาย
+        // ตรวจสอบว่าถึงเวลาเปิดให้ลงเวลาเข้างานหรือยัง (เปิดล่วงหน้า 30 นาที: 08:30 น.)
+        $earliestCheckIn = Carbon::today()->setTimeFromTimeString($this->earliestCheckInTime);
+        if ($now->lt($earliestCheckIn)) {
+            return back()->with('warning', 'ยังไม่ถึงช่วงเวลาเปิดลงเวลาเข้างาน ระบบเปิดให้บันทึกเวลาเข้างานตั้งแต่เวลา 08:30 น. เป็นต้นไป');
+        }
+
+        // ประเมินสถานะ: 08:30 - 09:00:59 = ตรงเวลา, หลัง 09:00 = มาสาย
         $deadline = Carbon::today()->setTimeFromTimeString($this->standardCheckInTime);
         $status = $now->lte($deadline) ? 'on_time' : 'late';
 
@@ -105,6 +134,12 @@ class AttendanceController extends Controller
 
         if (!empty($attendance->check_out)) {
             return back()->with('info', 'คุณได้บันทึกเวลาเลิกงานของวันนี้ไปแล้วเมื่อ ' . $attendance->check_out);
+        }
+
+        // ตรวจสอบว่าถึงเวลาเลิกงานแล้วหรือยัง (17:00 น. เป็นต้นไป)
+        $standardCheckOut = Carbon::today()->setTimeFromTimeString($this->standardCheckOutTime);
+        if ($now->lt($standardCheckOut)) {
+            return back()->with('warning', 'ยังไม่ถึงเวลาเลิกงาน สามารถบันทึกเวลาออกงานได้ตั้งแต่เวลา 17:00 น. เป็นต้นไป');
         }
 
         $attendance->update([
