@@ -147,7 +147,7 @@
         <div class="dept-card overflow-hidden">
             <div class="p-4 border-bottom border-theme d-flex flex-wrap align-items-center justify-content-between gap-3">
                 <div>
-                    <h5 class="fw-bold mb-0 text-theme">รายชื่อตำแหน่งงานทั้งหมด  test deploy ({{ $positions->total() }} ตำแหน่ง)</h5>
+                    <h5 class="fw-bold mb-0 text-theme">รายชื่อตำแหน่งงานทั้งหมด ({{ $positions->total() }} ตำแหน่ง)</h5>
                     <small class="text-muted">จัดการสถานะการใช้งาน ดูรายชื่อพนักงาน และแก้ไขข้อมูลตำแหน่ง</small>
                 </div>
                 <!-- Rows Per Page Selector -->
