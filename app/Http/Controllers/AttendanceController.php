@@ -239,7 +239,7 @@ class AttendanceController extends Controller
             $reportData = $reportData->where('status', $status);
         }
 
-        $departments = Department::orderBy('name')->get();
+        $departments = Department::where('is_active', true)->orderBy('name')->get();
 
         return compact(
             'reportData',
