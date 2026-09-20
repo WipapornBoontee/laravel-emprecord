@@ -202,13 +202,15 @@
                                         <tr>
                                             <td class="fw-medium">{{ $detail['date'] }}</td>
                                             @if($detail['status'] == 'pending')
-                                                <td colspan="2" class="text-muted">รอการอนุมัติจาก HR</td>
+                                                <td class="text-muted">-</td>
+                                                <td class="text-muted">-</td>
                                                 <td><span class="badge bg-secondary">รออนุมัติ</span></td>
-                                                <td class="text-muted">-</td>
+                                                <td class="text-muted">รอการอนุมัติจาก HR</td>
                                             @elseif($detail['status'] == 'rejected')
-                                                <td colspan="2" class="text-danger">ถูกปฏิเสธ: {{ $detail['hr_reject_reason'] }}</td>
-                                                <td><span class="badge bg-danger">ไม่อนุมัติ</span></td>
                                                 <td class="text-muted">-</td>
+                                                <td class="text-muted">-</td>
+                                                <td><span class="badge bg-danger">ไม่อนุมัติ</span></td>
+                                                <td class="text-danger">{{ $detail['hr_reject_reason'] }}</td>
                                             @else
                                                 <td class="text-muted">17:00 น. - <span class="badge {{ $detail['check_out'] ? 'bg-danger-subtle text-danger' : 'bg-secondary' }} px-2 py-1">{{ $detail['check_out'] ? $detail['check_out'].' น.' : 'ยังไม่สแกนออก' }}</span></td>
                                                 <td>
