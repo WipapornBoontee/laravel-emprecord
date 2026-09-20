@@ -247,12 +247,21 @@ class AttendanceController extends Controller
             ->get()
             ->keyBy('user_id');
 
-        // รวมข้อมูลพนักงานทุกคนกับการลงเวลา (ถ้าไม่มีข้อมูลการลงเวลา ให้ถือเป็น 'absent' = ยังไม่ลงเวลา / ขาดงาน)
-        $allReportData = $allUsers->map(function ($emp) use ($attendances) {
+        // ดึงข้อมูลคำขอ OT ที่ได้รับการอนุมัติในวันที่เลือก
+        $overtimes = \App\Models\Overtime::whereIn('user_id', $allUserIds)
+            ->where('date', $date)
+            ->where('status', 'approved')
+            ->get()
+            ->keyBy('user_id');
+
+        // รวมข้อมูลพนักงานทุกคนกับการลงเวลา และ OT
+        $allReportData = $allUsers->map(function ($emp) use ($attendances, $overtimes) {
             $att = $attendances->get($emp->id);
+            $ot = $overtimes->get($emp->id);
             return [
                 'user' => $emp,
                 'attendance' => $att,
+                'overtime' => $ot,
                 'status' => $att ? $att->status : 'absent',
                 'check_in' => $att ? $att->check_in : null,
                 'check_out' => $att ? $att->check_out : null,
@@ -268,10 +277,18 @@ class AttendanceController extends Controller
         $leaveCount = $allReportData->where('status', 'leave')->count();
         $absentCount = $allReportData->where('status', 'absent')->count();
 
+        // สรุปสถิติ OT ประจำวัน
+        $otCount = $allReportData->filter(fn($r) => !empty($r['overtime']))->count();
+        $totalOtHours = $allReportData->sum(fn($r) => !empty($r['overtime']) ? $r['overtime']->hours : 0);
+
         // กรองตาม status ถ้ามีการเลือก (สำหรับแสดงข้อมูลในตาราง)
         $reportData = $allReportData;
         if (!empty($status)) {
-            $reportData = $reportData->where('status', $status);
+            if ($status === 'overtime') {
+                $reportData = $reportData->filter(fn($r) => !empty($r['overtime']));
+            } else {
+                $reportData = $reportData->where('status', $status);
+            }
         }
 
         $departments = Department::where('is_active', true)->orderBy('name')->get();
@@ -287,7 +304,9 @@ class AttendanceController extends Controller
             'onTimeCount',
             'lateCount',
             'leaveCount',
-            'absentCount'
+            'absentCount',
+            'otCount',
+            'totalOtHours'
         );
     }
 

@@ -199,6 +199,7 @@
                         <option value="late" {{ $status === 'late' ? 'selected' : '' }}>มาสาย (Late)</option>
                         <option value="leave" {{ $status === 'leave' ? 'selected' : '' }}>ลางาน (Leave)</option>
                         <option value="absent" {{ $status === 'absent' ? 'selected' : '' }}>ยังไม่ลงเวลา / ขาดงาน</option>
+                        <option value="overtime" {{ $status === 'overtime' ? 'selected' : '' }}>มีการทำ OT (Overtime)</option>
                     </select>
                 </div>
                 <div class="col-md-1">
@@ -250,10 +251,10 @@
         </a>
     </div>
     <div class="col-6 col-md-4 col-xl-2">
-        <a href="{{ route('attendances.report', array_filter(['date' => $date, 'department_id' => $departmentId, 'status' => 'absent']), false) }}" class="text-decoration-none" title="คลิกเพื่อกรองเฉพาะยังไม่ลงเวลา / ขาดงาน">
-            <div class="stat-card p-3 text-center {{ $status === 'absent' ? 'border-danger' : '' }}">
-                <span class="text-muted small d-block mb-1">ยังไม่ลงเวลา / ขาด</span>
-                <h3 class="fw-bold mb-0 text-danger">{{ number_format($absentCount) }}</h3>
+        <a href="{{ route('attendances.report', array_filter(['date' => $date, 'department_id' => $departmentId, 'status' => 'overtime']), false) }}" class="text-decoration-none" title="คลิกเพื่อกรองเฉพาะคนทำ OT">
+            <div class="stat-card p-3 text-center {{ $status === 'overtime' ? 'border-warning shadow-sm' : '' }}" style="background: rgba(245, 158, 11, 0.05);">
+                <span class="text-warning small d-block mb-1 fw-bold"><i class="bi bi-clock-history me-1"></i>ทำ OT (อนุมัติ)</span>
+                <h3 class="fw-bold mb-0 text-warning">{{ number_format($otCount) }} <span class="fs-6 text-muted fw-normal">({{ number_format($totalOtHours, 1) }} ชม.)</span></h3>
             </div>
         </a>
     </div>
@@ -273,7 +274,7 @@
             </div>
 
             <div class="table-responsive">
-                <table class="table table-custom mb-0">
+                <table class="table table-custom mb-0 align-middle">
                     <thead>
                         <tr>
                             <th style="width: 100px;">รหัสพนักงาน</th>
@@ -281,6 +282,7 @@
                             <th>แผนก / ตำแหน่ง</th>
                             <th>เวลาเข้างาน</th>
                             <th>เวลาเลิกงาน</th>
+                            <th>การทำงานล่วงเวลา (OT)</th>
                             <th>สถานะการเข้างาน</th>
                             <th>หมายเหตุ</th>
                         </tr>
@@ -290,6 +292,7 @@
                             @php
                                 $emp = $row['user'];
                                 $rowStatus = $row['status'];
+                                $ot = $row['overtime'] ?? null;
                             @endphp
                             <tr>
                                 <td>
@@ -329,6 +332,28 @@
                                     @endif
                                 </td>
                                 <td>
+                                    @if($ot)
+                                        @php
+                                            $otBadgeClass = match($ot->ot_type) {
+                                                'holiday' => 'bg-warning-subtle text-warning border-warning',
+                                                'holiday_ot' => 'bg-danger-subtle text-danger border-danger',
+                                                default => 'bg-primary-subtle text-primary border-primary',
+                                            };
+                                        @endphp
+                                        <div>
+                                            <span class="badge {{ $otBadgeClass }} border font-monospace px-2 py-1">
+                                                <i class="bi bi-clock-fill me-1"></i>{{ $ot->hours }} ชม.
+                                            </span>
+                                            <div class="small text-muted mt-1" style="font-size: 0.75rem;">
+                                                {{ $ot->start_time ? substr($ot->start_time, 0, 5) : '' }} - {{ $ot->end_time ? substr($ot->end_time, 0, 5) : '' }}
+                                                <span class="badge bg-secondary-subtle text-secondary" style="font-size: 0.65rem;">{{ $ot->ot_type_label }}</span>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <span class="text-muted small">-</span>
+                                    @endif
+                                </td>
+                                <td>
                                     @if($rowStatus === 'on_time')
                                         <span class="badge bg-success-subtle text-success px-2 py-1">
                                             <i class="bi bi-check-circle-fill me-1"></i>ตรงเวลา
@@ -353,7 +378,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center py-5 text-muted">
+                                <td colspan="8" class="text-center py-5 text-muted">
                                     <i class="bi bi-inbox fs-1 d-block mb-2 opacity-50"></i>
                                     <span>ไม่พบข้อมูลตามเงื่อนไขที่เลือก</span>
                                 </td>
