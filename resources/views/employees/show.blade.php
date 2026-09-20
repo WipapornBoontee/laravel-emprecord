@@ -201,7 +201,7 @@
         <div class="profile-card p-4 mb-4">
             <div class="d-flex align-items-center justify-content-between mb-3">
                 <h5 class="fw-bold mb-0 text-primary d-flex align-items-center gap-2">
-                    <i class="bi bi-clock-history"></i> ประวัติการลาล่าสุด
+                    <i class="bi bi-calendar2-check"></i> ประวัติการลาล่าสุด
                 </h5>
             </div>
             
@@ -242,10 +242,130 @@
                 <p class="text-muted small mb-0 py-3 text-center">ยังไม่มีประวัติการยื่นลา</p>
             @endif
         </div>
+
+        <!-- Recent Overtime Logs -->
+        <div class="profile-card p-4 mb-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h5 class="fw-bold mb-0 text-warning d-flex align-items-center gap-2">
+                    <i class="bi bi-clock-history"></i> ประวัติการทำ OT ล่าสุด (Overtime Logs)
+                </h5>
+                @if(Auth::user()->isAdmin() || Auth::user()->isHr())
+                    <a href="{{ route('overtime.index', [], false) }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                        <i class="bi bi-arrow-right me-1"></i> ดูการอนุมัติ OT
+                    </a>
+                @endif
+            </div>
+            
+            @if($recentOvertimes->count() > 0)
+                <div class="table-responsive">
+                    <table class="table table-sm table-custom mb-0 align-middle">
+                        <thead>
+                            <tr>
+                                <th>วันที่ทำ OT</th>
+                                <th>ประเภท OT</th>
+                                <th>ช่วงเวลา</th>
+                                <th>ชั่วโมงสุทธิ</th>
+                                <th>สถานะ</th>
+                                <th>ผู้อนุมัติ / หมายเหตุ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($recentOvertimes as $ot)
+                                @php
+                                    $otBadgeClass = match($ot->ot_type) {
+                                        'holiday' => 'bg-warning-subtle text-warning border-warning',
+                                        'holiday_ot' => 'bg-danger-subtle text-danger border-danger',
+                                        default => 'bg-primary-subtle text-primary border-primary',
+                                    };
+                                @endphp
+                                <tr>
+                                    <td class="fw-medium">{{ \Carbon\Carbon::parse($ot->date)->format('d/m/Y') }}</td>
+                                    <td>
+                                        <span class="badge {{ $otBadgeClass }} border font-monospace" style="font-size: 0.72rem;">
+                                            {{ $ot->ot_type_label }}
+                                        </span>
+                                    </td>
+                                    <td class="font-monospace small">
+                                        {{ $ot->start_time ? substr($ot->start_time, 0, 5) : '-' }} - {{ $ot->end_time ? substr($ot->end_time, 0, 5) : '-' }}
+                                    </td>
+                                    <td>
+                                        <strong class="text-primary">{{ $ot->hours }}</strong> ชม.
+                                    </td>
+                                    <td>
+                                        @if($ot->status === 'approved')
+                                            <span class="badge bg-success-subtle text-success"><i class="bi bi-check-circle me-1"></i>อนุมัติแล้ว</span>
+                                        @elseif($ot->status === 'rejected')
+                                            <span class="badge bg-danger-subtle text-danger"><i class="bi bi-x-circle me-1"></i>ปฏิเสธ</span>
+                                        @else
+                                            <span class="badge bg-warning-subtle text-warning"><i class="bi bi-hourglass-split me-1"></i>รออนุมัติ</span>
+                                        @endif
+                                    </td>
+                                    <td class="small text-muted">
+                                        @if($ot->status === 'approved')
+                                            <span class="text-success"><i class="bi bi-person-check me-1"></i>{{ $ot->hr->name ?? 'HR' }}</span>
+                                        @elseif($ot->status === 'rejected')
+                                            <span class="text-danger">{{ $ot->hr_reject_reason ?? 'ปฏิเสธคำขอ' }}</span>
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <p class="text-muted small mb-0 py-3 text-center">ยังไม่มีประวัติการทำ OT</p>
+            @endif
+        </div>
     </div>
 
-    <!-- 3. Leave Balances Sidebar -->
+    <!-- 3. Sidebar: Leave Balances & Overtime Quota -->
     <div class="col-lg-4">
+        <!-- Overtime Limit & Quota Card -->
+        <div class="profile-card p-4 mb-4">
+            <h5 class="fw-bold mb-3 text-warning d-flex align-items-center gap-2">
+                <i class="bi bi-speedometer2"></i> ข้อมูลชั่วโมง OT & ลิมิตกฎหมาย
+            </h5>
+
+            <div class="quota-card mb-3" style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.25);">
+                <div class="d-flex align-items-center justify-content-between mb-1">
+                    <span class="fw-bold text-dark"><i class="bi bi-calendar-week me-1 text-warning"></i>สัปดาห์นี้ (Weekly Limit)</span>
+                    <span class="badge bg-warning-subtle text-warning border border-warning fw-bold fs-6">
+                        {{ number_format($weeklyApprovedOtHours, 1) }} / 36.0 ชม.
+                    </span>
+                </div>
+                @php
+                    $weeklyOtPercent = min(100, ($weeklyApprovedOtHours / 36) * 100);
+                @endphp
+                <div class="progress my-2" style="height: 10px; border-radius: 6px;">
+                    <div class="progress-bar {{ $weeklyOtPercent >= 90 ? 'bg-danger' : ($weeklyOtPercent >= 70 ? 'bg-warning' : 'bg-success') }}" 
+                         role="progressbar" 
+                         style="width: {{ $weeklyOtPercent }}%"></div>
+                </div>
+                <div class="d-flex justify-content-between text-muted small" style="font-size: 0.78rem;">
+                    <span>เหลือโควตาสัปดาห์นี้: <strong>{{ max(0, 36 - $weeklyApprovedOtHours) }}</strong> ชม.</span>
+                    <span>ลิมิตกฎหมาย: 36 ชม.</span>
+                </div>
+            </div>
+
+            <div class="row g-2">
+                <div class="col-6">
+                    <div class="info-tile p-3 text-center">
+                        <div class="info-label text-muted" style="font-size: 0.75rem;">สะสมเดือนนี้</div>
+                        <div class="fw-bold fs-5 text-primary">{{ number_format($monthlyApprovedOtHours, 1) }} <span class="fs-6 fw-normal text-muted">ชม.</span></div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="info-tile p-3 text-center">
+                        <div class="info-label text-muted" style="font-size: 0.75rem;">สะสมทั้งปี {{ date('Y') }}</div>
+                        <div class="fw-bold fs-5 text-success">{{ number_format($yearlyApprovedOtHours, 1) }} <span class="fs-6 fw-normal text-muted">ชม.</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leave Balances Card -->
         <div class="profile-card p-4 mb-4">
             <h5 class="fw-bold mb-3 text-primary d-flex align-items-center gap-2">
                 <i class="bi bi-pie-chart-fill"></i> สิทธิ์วันลาคงเหลือ (ปี {{ date('Y') }})
