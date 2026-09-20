@@ -69,6 +69,11 @@ class LeaveApprovalController extends Controller
      */
     public function approve(Request $request, LeaveRequest $leaveRequest)
     {
+        // ป้องกันไม่ให้พนักงานหรือ HR อนุมัติคำขอลาของตนเอง (Self-Approval)
+        if ($leaveRequest->user_id === Auth::id()) {
+            return back()->with('error', 'คุณไม่สามารถอนุมัติคำขอลาของตนเองได้ ต้องให้ผู้ดูแลระบบ (Admin) เป็นผู้อนุมัติ');
+        }
+
         $request->validate([
             'remark' => ['nullable', 'string', 'max:500'],
         ]);
@@ -140,6 +145,11 @@ class LeaveApprovalController extends Controller
      */
     public function reject(Request $request, LeaveRequest $leaveRequest)
     {
+        // ป้องกันไม่ให้พนักงานหรือ HR ปฏิเสธคำขอลาของตนเอง (ต้องให้ Admin ดำเนินการ)
+        if ($leaveRequest->user_id === Auth::id()) {
+            return back()->with('error', 'คุณไม่สามารถปฏิเสธคำขอลาของตนเองได้ ต้องให้ผู้ดูแลระบบ (Admin) เป็นผู้ดำเนินการ');
+        }
+
         $request->validate([
             'remark' => ['nullable', 'string', 'max:500'],
         ]);

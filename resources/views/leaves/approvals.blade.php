@@ -294,24 +294,30 @@
                                 </td>
                                 <td class="text-end">
                                     @if($leave->status === 'pending')
-                                        <div class="d-inline-flex align-items-center gap-1">
-                                            <!-- Approve Form -->
-                                            <form action="{{ route('leaves.approvals.approve', $leave, false) }}" method="POST" class="d-inline">
-                                                @csrf
-                                                <button type="submit" class="btn-approve d-inline-flex align-items-center gap-1"
-                                                    onclick="return confirm('ยืนยันอนุมัติคำขอลาของ {{ $leave->user->name }} (จำนวน {{ $leave->days_count }} วัน)?\nระบบจะทำการตัดยอดวันลาและซิงค์สถานะลงเวลาทำงานทันที');">
-                                                    <i class="bi bi-check-lg"></i> อนุมัติ
+                                        @if(Auth::id() === $leave->user_id)
+                                            <!-- กรณีคำขอลาของตนเอง (Self-Request) ห้ามอนุมัติตัวเอง -->
+                                            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1" 
+                                                title="คุณไม่สามารถอนุมัติคำขอลาของตนเองได้ ต้องรอให้ Admin ดำเนินการ">
+                                                <i class="bi bi-lock-fill me-1"></i>รอ Admin อนุมัติ (คำขอของคุณ)
+                                            </span>
+                                        @else
+                                            <div class="d-inline-flex align-items-center gap-1">
+                                                <!-- Approve Form -->
+                                                <form action="{{ route('leaves.approvals.approve', $leave, false) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    <button type="submit" class="btn-approve d-inline-flex align-items-center gap-1"
+                                                        onclick="return confirm('ยืนยันอนุมัติคำขอลาของ {{ $leave->user->name }} (จำนวน {{ $leave->days_count }} วัน)?\nระบบจะทำการตัดยอดวันลาและซิงค์สถานะลงเวลาทำงานทันที');">
+                                                        <i class="bi bi-check-lg"></i> อนุมัติ
+                                                    </button>
+                                                </form>
+
+                                                <!-- Reject Modal Trigger -->
+                                                <button type="button" class="btn-reject d-inline-flex align-items-center gap-1" 
+                                                    data-bs-toggle="modal" data-bs-target="#rejectModal{{ $leave->id }}">
+                                                    <i class="bi bi-x-lg"></i> ปฏิเสธ
                                                 </button>
-                                            </form>
-
-                                            <!-- Reject Modal Trigger -->
-                                            <button type="button" class="btn-reject d-inline-flex align-items-center gap-1" 
-                                                data-bs-toggle="modal" data-bs-target="#rejectModal{{ $leave->id }}">
-                                                <i class="bi bi-x-lg"></i> ปฏิเสธ
-                                            </button>
-                                        </div>
-
-                                        <!-- Reject Modal is at the bottom of the file -->
+                                            </div>
+                                        @endif
                                     @else
                                         <span class="text-muted small">ดำเนินการแล้ว</span>
                                     @endif
