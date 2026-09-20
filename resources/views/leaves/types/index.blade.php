@@ -66,6 +66,29 @@
         </div>
     </div>
 
+    <!-- Status Alerts -->
+    @if(session('success'))
+        <div class="col-12">
+            <div class="alert alert-success alert-dismissible fade show rounded-4 border-0 d-flex align-items-center gap-2 p-3 shadow-sm mb-0" 
+                style="background: rgba(16, 185, 129, 0.12); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2) !important;">
+                <i class="bi bi-check-circle-fill fs-5"></i>
+                <div class="fw-semibold">{{ session('success') }}</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="col-12">
+            <div class="alert alert-danger alert-dismissible fade show rounded-4 border-0 d-flex align-items-center gap-2 p-3 shadow-sm mb-0"
+                style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2) !important;">
+                <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                <div class="fw-semibold">{{ session('error') }}</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    @endif
+
     <!-- Add Leave Type Form -->
     <div class="col-lg-4">
         <div class="type-card p-4">

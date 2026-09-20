@@ -25,15 +25,27 @@ class LeaveTypeController extends Controller
      */
     public function store(Request $request)
     {
+        // ตัดช่องว่างด้านหน้า/ด้านหลัง เพื่อป้องกันกรณีเคาะ spacebar ซ้ำ
+        $request->merge([
+            'name' => is_string($request->input('name')) ? trim($request->input('name')) : $request->input('name'),
+        ]);
+
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:50', 'unique:leave_types,name'],
+            'name' => [
+                'required',
+                'string',
+                'max:50',
+                Rule::unique('leave_types', 'name'),
+            ],
             'default_days' => ['required', 'integer', 'min:0', 'max:365'],
         ], [
             'name.required' => 'กรุณากรอกชื่อประเภทการลา',
-            'name.unique' => 'ประเภทการลานี้มีในระบบแล้ว',
+            'name.unique' => 'ประเภทการลานี้มีในระบบแล้ว (กรุณาใช้ชื่ออื่น)',
+            'name.max' => 'ชื่อประเภทการลาต้องไม่เกิน 50 ตัวอักษร',
             'default_days.required' => 'กรุณาระบุโควตาวันลาเริ่มต้นต่อปี',
             'default_days.integer' => 'จำนวนวันต้องเป็นตัวเลขจำนวนเต็ม',
             'default_days.min' => 'จำนวนวันต้องไม่น้อยกว่า 0',
+            'default_days.max' => 'จำนวนวันต้องไม่เกิน 365 วัน',
         ]);
 
         LeaveType::create($validated);
@@ -46,13 +58,27 @@ class LeaveTypeController extends Controller
      */
     public function update(Request $request, LeaveType $type)
     {
+        // ตัดช่องว่างด้านหน้า/ด้านหลัง เพื่อป้องกันกรณีเคาะ spacebar ซ้ำ
+        $request->merge([
+            'name' => is_string($request->input('name')) ? trim($request->input('name')) : $request->input('name'),
+        ]);
+
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:50', Rule::unique('leave_types', 'name')->ignore($type->id)],
+            'name' => [
+                'required',
+                'string',
+                'max:50',
+                Rule::unique('leave_types', 'name')->ignore($type->id),
+            ],
             'default_days' => ['required', 'integer', 'min:0', 'max:365'],
         ], [
             'name.required' => 'กรุณากรอกชื่อประเภทการลา',
-            'name.unique' => 'ประเภทการลานี้มีในระบบแล้ว',
+            'name.unique' => 'ประเภทการลานี้มีในระบบแล้ว (กรุณาใช้ชื่ออื่น)',
+            'name.max' => 'ชื่อประเภทการลาต้องไม่เกิน 50 ตัวอักษร',
             'default_days.required' => 'กรุณาระบุโควตาวันลาเริ่มต้นต่อปี',
+            'default_days.integer' => 'จำนวนวันต้องเป็นตัวเลขจำนวนเต็ม',
+            'default_days.min' => 'จำนวนวันต้องไม่น้อยกว่า 0',
+            'default_days.max' => 'จำนวนวันต้องไม่เกิน 365 วัน',
         ]);
 
         $type->update($validated);
