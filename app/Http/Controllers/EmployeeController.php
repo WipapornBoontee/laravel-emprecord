@@ -76,7 +76,16 @@ class EmployeeController extends Controller
     public function create()
     {
         $departments = Department::where('is_active', true)->orderBy('name')->get();
-        $positions = Position::where('is_active', true)->orderBy('name')->get();
+        // ดึงเฉพาะตำแหน่งที่เปิดใช้งาน และถ้าสังกัดแผนก แผนกนั้นต้องเปิดใช้งานอยู่ด้วย (is_active = true)
+        $positions = Position::where('is_active', true)
+            ->where(function ($q) {
+                $q->whereNull('department_id')
+                  ->orWhereHas('department', function ($deptQuery) {
+                      $deptQuery->where('is_active', true);
+                  });
+            })
+            ->orderBy('name')
+            ->get();
 
         // หากผู้ใช้คือ HR จะจำกัดให้เลือกได้แค่ role: employee
         $allowedRoles = Auth::user()->isAdmin() 
@@ -247,8 +256,29 @@ class EmployeeController extends Controller
             abort(403, 'ฝ่ายบุคคล (HR) ไม่มีสิทธิ์แก้ไขข้อมูลของผู้ดูแลระบบ (Admin)');
         }
 
-        $departments = Department::orderBy('name')->get();
-        $positions = Position::orderBy('name')->get();
+        // ดึงเฉพาะแผนกที่เปิดใช้งาน (หรือแผนกปัจจุบันของพนักงานที่กำลังแก้ไข)
+        $departments = Department::where('is_active', true)
+            ->when($employee->department_id, function ($q) use ($employee) {
+                $q->orWhere('id', $employee->department_id);
+            })
+            ->orderBy('name')
+            ->get();
+
+        // ดึงเฉพาะตำแหน่งที่เปิดใช้งาน และถ้าสังกัดแผนก แผนกนั้นต้องเปิดใช้งานอยู่ด้วย (หรือตำแหน่งปัจจุบันของพนักงานที่กำลังแก้ไข)
+        $positions = Position::where(function ($query) use ($employee) {
+                $query->where('is_active', true)
+                      ->where(function ($q) {
+                          $q->whereNull('department_id')
+                            ->orWhereHas('department', function ($deptQuery) {
+                                $deptQuery->where('is_active', true);
+                            });
+                      });
+            })
+            ->when($employee->position_id, function ($q) use ($employee) {
+                $q->orWhere('id', $employee->position_id);
+            })
+            ->orderBy('name')
+            ->get();
 
         // หากผู้ใช้คือ HR จะไม่อนุญาตให้เปลี่ยนบทบาทเป้าหมายเป็น Admin
         $allowedRoles = $currentUser->isAdmin()

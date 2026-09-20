@@ -186,6 +186,11 @@
                                         <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
                                             <i class="bi bi-diagram-3 me-1"></i>{{ $pos->department->name }}
                                         </span>
+                                        @if(!$pos->department->is_active)
+                                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle small ms-1" title="แผนกนี้ถูกปิดการใช้งานอยู่ ตำแหน่งนี้จะไม่แสดงในแบบฟอร์มพนักงาน">
+                                                <i class="bi bi-slash-circle me-1"></i>แผนกปิดใช้งาน
+                                            </span>
+                                        @endif
                                     @else
                                         <span class="badge bg-secondary-subtle text-muted">ทุกแผนก</span>
                                     @endif
