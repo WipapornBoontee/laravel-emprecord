@@ -104,6 +104,7 @@ Route::middleware(['auth'])->group(function () {
         // จัดการวันหยุดบริษัทและวันหยุดนักขัตฤกษ์ (Company Holidays)
         Route::get('/settings/holidays', [\App\Http\Controllers\CompanyHolidayController::class, 'index'])->name('settings.holidays.index');
         Route::post('/settings/holidays', [\App\Http\Controllers\CompanyHolidayController::class, 'store'])->name('settings.holidays.store');
+        Route::put('/settings/holidays/{holiday}', [\App\Http\Controllers\CompanyHolidayController::class, 'update'])->name('settings.holidays.update');
         Route::delete('/settings/holidays/{holiday}', [\App\Http\Controllers\CompanyHolidayController::class, 'destroy'])->name('settings.holidays.destroy');
 
         // สรุปรายงานเวลาทำงานองค์กร (Organization Attendance Report & Monthly Payroll Export)
