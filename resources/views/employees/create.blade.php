@@ -188,20 +188,6 @@
                         <input type="text" class="form-control form-control-custom" id="phone" name="phone" 
                             value="{{ old('phone') }}" placeholder="เช่น 081-234-5678">
                     </div>
-                    <div class="col-md-6">
-                        <label for="salary" class="form-label form-label-custom">
-                            ฐานเงินเดือน (บาท) <span class="text-danger">*</span>
-                        </label>
-                        <input type="text" class="form-control form-control-custom" id="salary" name="salary" 
-                            value="{{ old('salary') }}" placeholder="เช่น 50000" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="id_card" class="form-label form-label-custom">
-                            บัตรประชาชน <span class="text-danger">*</span>
-                        </label>
-                        <input type="text" class="form-control form-control-custom" id="id_card" name="id_card" 
-                            value="{{ old('id_card') }}" placeholder="เช่น 1100XXXXXXXXx" maxlength="13" required>
-                    </div>
                 </div>
 
                 <div class="row g-3 mb-4">

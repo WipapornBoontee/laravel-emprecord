@@ -99,8 +99,7 @@
         </div>
     </div>
 
-    @if(Auth::user()->isAdmin())
-    <!-- Add Department Form (เฉพาะ Admin) -->
+    <!-- Add Department Form -->
     <div class="col-lg-4">
         <div class="dept-card p-4">
             <h5 class="fw-bold mb-3 text-primary d-flex align-items-center gap-2">
@@ -130,10 +129,9 @@
             </form>
         </div>
     </div>
-    @endif
 
     <!-- Departments List Table -->
-    <div class="{{ Auth::user()->isAdmin() ? 'col-lg-8' : 'col-12' }}">
+    <div class="col-lg-8">
         <div class="dept-card overflow-hidden">
             <div class="p-4 border-bottom border-theme d-flex align-items-center justify-content-between">
                 <div>
@@ -170,64 +168,50 @@
                                     </button>
                                 </td>
                                 <td class="text-center">
-                                    @if(Auth::user()->isAdmin())
-                                        <form action="{{ route('departments.toggleStatus', $dept, false) }}" method="POST" class="d-inline-flex align-items-center justify-content-center gap-2">
-                                            @csrf
-                                            @method('PATCH')
-                                            <div class="form-check form-switch m-0 d-flex align-items-center gap-2">
-                                                <input class="form-check-input table-switch m-0" type="checkbox" role="switch" 
-                                                    id="switch_dept_{{ $dept->id }}" 
-                                                    onchange="this.form.submit()" 
-                                                    {{ ($dept->is_active ?? true) ? 'checked' : '' }}
-                                                    title="{{ ($dept->is_active ?? true) ? 'คลิกเพื่อปิดใช้งาน' : 'คลิกเพื่อเปิดใช้งาน' }}">
-                                                <label class="form-check-label small fw-semibold cursor-pointer {{ ($dept->is_active ?? true) ? 'text-success' : 'text-muted' }}" for="switch_dept_{{ $dept->id }}">
-                                                    {{ ($dept->is_active ?? true) ? 'เปิด' : 'ปิด' }}
-                                                </label>
-                                            </div>
-                                        </form>
-                                    @else
-                                        @if($dept->is_active ?? true)
-                                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1">
-                                                <i class="bi bi-check-circle-fill me-1"></i>เปิดใช้งาน
-                                            </span>
-                                        @else
-                                            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2 py-1">
-                                                <i class="bi bi-pause-circle-fill me-1"></i>ปิดใช้งาน
-                                            </span>
-                                        @endif
-                                    @endif
+                                    <form action="{{ route('departments.toggleStatus', $dept, false) }}" method="POST" class="d-inline-flex align-items-center justify-content-center gap-2">
+                                        @csrf
+                                        @method('PATCH')
+                                        <div class="form-check form-switch m-0 d-flex align-items-center gap-2">
+                                            <input class="form-check-input table-switch m-0" type="checkbox" role="switch" 
+                                                id="switch_dept_{{ $dept->id }}" 
+                                                onchange="this.form.submit()" 
+                                                {{ ($dept->is_active ?? true) ? 'checked' : '' }}
+                                                title="{{ ($dept->is_active ?? true) ? 'คลิกเพื่อปิดใช้งาน' : 'คลิกเพื่อเปิดใช้งาน' }}">
+                                            <label class="form-check-label small fw-semibold cursor-pointer {{ ($dept->is_active ?? true) ? 'text-success' : 'text-muted' }}" for="switch_dept_{{ $dept->id }}">
+                                                {{ ($dept->is_active ?? true) ? 'เปิด' : 'ปิด' }}
+                                            </label>
+                                        </div>
+                                    </form>
                                 </td>
                                 <td class="text-end">
                                     <div class="d-flex align-items-center justify-content-end gap-1">
-                                        <!-- ดูสมาชิก (View) - ทั้ง Admin และ HR ดูได้ -->
+                                        <!-- ดูสมาชิก (View) -->
                                         <button type="button" class="btn btn-outline-info btn-sm rounded-3 py-1 px-2" 
                                             data-bs-toggle="modal" data-bs-target="#viewDeptModal{{ $dept->id }}" title="ดูสมาชิกในแผนก">
                                             <i class="bi bi-eye"></i> ดูข้อมูล
                                         </button>
 
-                                        @if(Auth::user()->isAdmin())
-                                            <!-- แก้ไข (Edit) - เฉพาะ Admin -->
-                                            <button type="button" class="btn btn-outline-warning btn-sm rounded-3 py-1 px-2" 
-                                                data-bs-toggle="modal" data-bs-target="#editDeptModal{{ $dept->id }}" title="แก้ไขชื่อ/สถานะ">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </button>
+                                        <!-- แก้ไข (Edit) -->
+                                        <button type="button" class="btn btn-outline-warning btn-sm rounded-3 py-1 px-2" 
+                                            data-bs-toggle="modal" data-bs-target="#editDeptModal{{ $dept->id }}" title="แก้ไขชื่อ/สถานะ">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </button>
 
-                                            <!-- ลบ (Delete) - เฉพาะ Admin -->
-                                            @if($dept->users_count === 0)
-                                                <form action="{{ route('departments.destroy', $dept, false) }}" method="POST" class="d-inline"
-                                                    onsubmit="return confirm('ยืนยันลบแผนก {{ $dept->name }}?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-outline-danger btn-sm rounded-3 py-1 px-2" title="ลบแผนก">
-                                                        <i class="bi bi-trash3"></i>
-                                                    </button>
-                                                </form>
-                                            @else
-                                                <button type="button" class="btn btn-outline-secondary btn-sm rounded-3 py-1 px-2 disabled opacity-50" 
-                                                    title="ไม่สามารถลบได้เนื่องจากมีพนักงานสังกัดอยู่">
-                                                    <i class="bi bi-lock-fill"></i>
+                                        <!-- ลบ (Delete) -->
+                                        @if($dept->users_count === 0)
+                                            <form action="{{ route('departments.destroy', $dept, false) }}" method="POST" class="d-inline"
+                                                onsubmit="return confirm('ยืนยันลบแผนก {{ $dept->name }}?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-3 py-1 px-2" title="ลบแผนก">
+                                                    <i class="bi bi-trash3"></i>
                                                 </button>
-                                            @endif
+                                            </form>
+                                        @else
+                                            <button type="button" class="btn btn-outline-secondary btn-sm rounded-3 py-1 px-2 disabled opacity-50" 
+                                                title="ไม่สามารถลบได้เนื่องจากมีพนักงานสังกัดอยู่">
+                                                <i class="bi bi-lock-fill"></i>
+                                            </button>
                                         @endif
                                     </div>
                                 </td>

@@ -76,22 +76,18 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/employees/{employee}', [\App\Http\Controllers\EmployeeController::class, 'update'])->where('employee', '[0-9]+')->name('employees.update');
         Route::delete('/employees/{employee}', [\App\Http\Controllers\EmployeeController::class, 'destroy'])->where('employee', '[0-9]+')->name('employees.destroy');
 
-        // โครงสร้างองค์กร: แผนกและตำแหน่ง (Admin และ HR สามารถดูข้อมูลและสมาชิกได้)
+        // จัดการแผนกและตำแหน่งงานสำหรับบันทึกข้อมูลพนักงาน (Admin และ HR จัดการได้)
         Route::get('/departments', [\App\Http\Controllers\DepartmentController::class, 'index'])->name('departments.index');
+        Route::post('/departments', [\App\Http\Controllers\DepartmentController::class, 'store'])->name('departments.store');
+        Route::put('/departments/{department}', [\App\Http\Controllers\DepartmentController::class, 'update'])->name('departments.update');
+        Route::patch('/departments/{department}/toggle-status', [\App\Http\Controllers\DepartmentController::class, 'toggleStatus'])->name('departments.toggleStatus');
+        Route::delete('/departments/{department}', [\App\Http\Controllers\DepartmentController::class, 'destroy'])->name('departments.destroy');
+
         Route::get('/departments/positions', [\App\Http\Controllers\DepartmentController::class, 'positions'])->name('departments.positions');
-
-        // จัดการโครงสร้างองค์กร (เพิ่ม, แก้ไข, เปิด-ปิดสถานะ, ลบ) -> อนุญาตเฉพาะ Admin เท่านั้น
-        Route::middleware(['role:admin'])->group(function () {
-            Route::post('/departments', [\App\Http\Controllers\DepartmentController::class, 'store'])->name('departments.store');
-            Route::put('/departments/{department}', [\App\Http\Controllers\DepartmentController::class, 'update'])->name('departments.update');
-            Route::patch('/departments/{department}/toggle-status', [\App\Http\Controllers\DepartmentController::class, 'toggleStatus'])->name('departments.toggleStatus');
-            Route::delete('/departments/{department}', [\App\Http\Controllers\DepartmentController::class, 'destroy'])->name('departments.destroy');
-
-            Route::post('/departments/positions', [\App\Http\Controllers\DepartmentController::class, 'storePosition'])->name('departments.positions.store');
-            Route::put('/departments/positions/{position}', [\App\Http\Controllers\DepartmentController::class, 'updatePosition'])->name('departments.positions.update');
-            Route::patch('/departments/positions/{position}/toggle-status', [\App\Http\Controllers\DepartmentController::class, 'togglePositionStatus'])->name('departments.positions.toggleStatus');
-            Route::delete('/departments/positions/{position}', [\App\Http\Controllers\DepartmentController::class, 'destroyPosition'])->name('departments.positions.destroy');
-        });
+        Route::post('/departments/positions', [\App\Http\Controllers\DepartmentController::class, 'storePosition'])->name('departments.positions.store');
+        Route::put('/departments/positions/{position}', [\App\Http\Controllers\DepartmentController::class, 'updatePosition'])->name('departments.positions.update');
+        Route::patch('/departments/positions/{position}/toggle-status', [\App\Http\Controllers\DepartmentController::class, 'togglePositionStatus'])->name('departments.positions.toggleStatus');
+        Route::delete('/departments/positions/{position}', [\App\Http\Controllers\DepartmentController::class, 'destroyPosition'])->name('departments.positions.destroy');
 
         // ศูนย์อนุมัติคำขอลา (Leave Approvals & Quota Management)
         Route::get('/leaves-approvals', [\App\Http\Controllers\LeaveApprovalController::class, 'index'])->name('leaves.approvals');

@@ -113,8 +113,8 @@ class EmployeeController extends Controller
             'position_id' => ['nullable', 'exists:positions,id'],
             'start_date' => ['nullable', 'date'],
             'status' => ['required', Rule::in(['active', 'resigned'])],
-            'salary' => ['required', 'numeric', 'min:0'],
-            'id_card' => ['required', 'string', 'size:13'],
+            'salary' => ['nullable', 'numeric', 'min:0'],
+            'id_card' => ['nullable', 'string', 'max:20'],
         ], [
             'emp_code.required' => 'กรุณาระบุรหัสพนักงาน',
             'emp_code.unique' => 'รหัสพนักงานนี้มีในระบบแล้ว',
@@ -271,8 +271,8 @@ class EmployeeController extends Controller
             'position_id' => ['nullable', 'exists:positions,id'],
             'start_date' => ['nullable', 'date'],
             'status' => ['required', Rule::in(['active', 'resigned'])],
-            'salary' => ['required', 'numeric', 'min:0'],
-            'id_card' => ['required', 'string', 'size:13'],
+            'salary' => ['nullable', 'numeric', 'min:0'],
+            'id_card' => ['nullable', 'string', 'max:20'],
         ], [
             'emp_code.required' => 'กรุณาระบุรหัสพนักงาน',
             'emp_code.unique' => 'รหัสพนักงานนี้มีผู้ใช้งานแล้ว',
