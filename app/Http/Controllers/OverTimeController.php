@@ -93,32 +93,32 @@ class OverTimeController extends Controller
         $month = $request->input('month', date('m'));
         $year = $request->input('year', date('Y'));
 
-        // ดึงข้อมูลคำขอ OT ที่ได้รับการอนุมัติแล้วในเดือนนี้
-        $approvedOvertimes = \App\Models\Overtime::where('user_id', $user->id)
+        // ดึงข้อมูลคำขอ OT ทั้งหมดของ user ในเดือนนี้
+        $overtimes = \App\Models\Overtime::where('user_id', $user->id)
             ->whereYear('date', $year)
             ->whereMonth('date', $month)
-            ->where('status', 'approved')
+            ->orderBy('date', 'asc')
+            ->get();
+
+        // ดึงข้อมูลการเข้า-ออกงานทั้งหมดในเดือนนี้
+        $attendances = \App\Models\Attendance::where('user_id', $user->id)
+            ->whereYear('date', $year)
+            ->whereMonth('date', $month)
             ->get()
             ->keyBy(function($item) {
                 return \Carbon\Carbon::parse($item->date)->format('Y-m-d');
             });
-
-        // ดึงข้อมูลการเข้า-ออกงานเฉพาะวันที่มีการบันทึกเลิกงาน
-        $attendances = \App\Models\Attendance::where('user_id', $user->id)
-            ->whereYear('date', $year)
-            ->whereMonth('date', $month)
-            ->whereNotNull('check_out')
-            ->orderBy('date', 'asc')
-            ->get();
 
         $otStartTime = \Carbon\Carbon::createFromTimeString('17:30:00');
         
         $hasOTToday = false;
         $todayOtHours = 0;
         $todayDateStr = date('Y-m-d');
-        if (isset($approvedOvertimes[$todayDateStr])) {
+        
+        $todayOt = $overtimes->where('date', $todayDateStr)->where('status', 'approved')->first();
+        if ($todayOt) {
             $hasOTToday = true;
-            $todayOtHours = $approvedOvertimes[$todayDateStr]->hours;
+            $todayOtHours = $todayOt->hours;
         }
 
         $hasCheckedInToday = \App\Models\Attendance::where('user_id', $user->id)
@@ -129,39 +129,39 @@ class OverTimeController extends Controller
         $totalOtHours = 0;
         $otDetails = [];
 
-        foreach ($attendances as $att) {
-            $dateKey = $att->date->format('Y-m-d');
+        foreach ($overtimes as $ot) {
+            $dateKey = \Carbon\Carbon::parse($ot->date)->format('Y-m-d');
             
-            // ตรวจสอบว่ามีคำขอ OT ที่ได้รับอนุมัติในวันนี้หรือไม่
-            if (isset($approvedOvertimes[$dateKey])) {
-                $requestedHours = (int) $approvedOvertimes[$dateKey]->hours;
-                $checkOutStr = \Carbon\Carbon::parse($att->check_out)->format('H:i:s');
-                
-                // ถ้าสแกนออกหลัง 17:30 น.
+            $detail = [
+                'date' => \Carbon\Carbon::parse($ot->date)->format('d/m/Y'),
+                'overtime_id' => $ot->id,
+                'status' => $ot->status,
+                'requested_hours' => $ot->hours,
+                'hr_reject_reason' => $ot->hr_reject_reason,
+                'check_out' => null,
+                'ot_hours' => 0,
+                'actual_minutes' => 0,
+                'early_checkout_reason' => $ot->early_checkout_reason
+            ];
+            
+            if ($ot->status == 'approved' && isset($attendances[$dateKey]) && $attendances[$dateKey]->check_out) {
+                $checkOutStr = \Carbon\Carbon::parse($attendances[$dateKey]->check_out)->format('H:i:s');
                 if ($checkOutStr > $otStartTime->format('H:i:s')) {
                     $checkOutTime = \Carbon\Carbon::createFromTimeString($checkOutStr);
                     $diffInMinutes = $otStartTime->diffInMinutes($checkOutTime);
                     
-                    $actualHours = floor($diffInMinutes / 60); // ปัดเศษลงอย่างเข้มงวดตามที่พนักงานควรทราบเวลาออก
-                    
-                    // ให้ชั่วโมง OT ไม่เกินจำนวนที่ขอไว้
-                    $otHours = min($actualHours, $requestedHours);
+                    $actualHours = floor($diffInMinutes / 60);
+                    $otHours = min($actualHours, $ot->hours);
                     
                     if ($otHours >= 0) {
                         $totalOtHours += $otHours;
-                        
-                        $otDetails[] = [
-                            'date' => $att->date->format('d/m/Y'),
-                            'overtime_id' => $approvedOvertimes[$dateKey]->id,
-                            'check_out' => $att->check_out,
-                            'ot_hours' => $otHours,
-                            'actual_minutes' => $diffInMinutes,
-                            'requested_hours' => $requestedHours,
-                            'early_checkout_reason' => $approvedOvertimes[$dateKey]->early_checkout_reason
-                        ];
+                        $detail['check_out'] = $attendances[$dateKey]->check_out;
+                        $detail['ot_hours'] = $otHours;
+                        $detail['actual_minutes'] = $diffInMinutes;
                     }
                 }
             }
+            $otDetails[] = $detail;
         }
 
         return view('overtime.overtime_show', compact(

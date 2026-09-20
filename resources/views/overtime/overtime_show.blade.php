@@ -189,33 +189,54 @@
                                         <th>วันที่</th>
                                         <th>เวลาสแกนเข้า-ออก</th>
                                         <th>ชั่วโมง OT (ได้จริง)</th>
+                                        <th>สถานะการทำ OT</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach($otDetails as $detail)
                                         <tr>
                                             <td class="fw-medium">{{ $detail['date'] }}</td>
-                                            <td class="text-muted">17:00 น. - <span class="badge bg-danger-subtle text-danger px-2 py-1">{{ $detail['check_out'] }} น.</span></td>
-                                            <td>
-                                                <div class="fw-bold text-primary">{{ $detail['ot_hours'] }} ชม.</div>
-                                                <div class="small text-muted mb-1">
-                                                    (ขอไว้ {{ $detail['requested_hours'] }} ชม. | ทำได้ {{ floor($detail['actual_minutes']/60) }} ชม. {{ $detail['actual_minutes']%60 }} นาที)
-                                                </div>
-                                                @if($detail['ot_hours'] < $detail['requested_hours'])
-                                                    @if($detail['early_checkout_reason'])
-                                                        <div class="small text-success"><i class="bi bi-check-circle-fill"></i> แจ้ง HR แล้ว</div>
+                                            @if($detail['status'] == 'pending')
+                                                <td colspan="2" class="text-muted">รอการอนุมัติจาก HR</td>
+                                                <td><span class="badge bg-secondary">รออนุมัติ</span></td>
+                                            @elseif($detail['status'] == 'rejected')
+                                                <td colspan="2" class="text-danger">ถูกปฏิเสธ: {{ $detail['hr_reject_reason'] }}</td>
+                                                <td><span class="badge bg-danger">ไม่อนุมัติ</span></td>
+                                            @else
+                                                <td class="text-muted">17:30 น. - <span class="badge {{ $detail['check_out'] ? 'bg-danger-subtle text-danger' : 'bg-secondary' }} px-2 py-1">{{ $detail['check_out'] ? $detail['check_out'].' น.' : 'ยังไม่สแกนออก' }}</span></td>
+                                                <td>
+                                                    @if($detail['check_out'])
+                                                        <div class="fw-bold text-primary">{{ $detail['ot_hours'] }} ชม.</div>
+                                                        <div class="small text-muted mb-1">
+                                                            (ขอไว้ {{ $detail['requested_hours'] }} ชม. | ทำได้ {{ floor($detail['actual_minutes']/60) }} ชม. {{ $detail['actual_minutes']%60 }} นาที)
+                                                        </div>
                                                     @else
-                                                        <form action="{{ route('overtime.reason') }}" method="POST" class="d-flex align-items-center mt-2">
-                                                            @csrf
-                                                            <input type="hidden" name="overtime_id" value="{{ $detail['overtime_id'] }}">
-                                                            <div class="input-group input-group-sm w-100">
-                                                                <input type="text" name="early_checkout_reason" class="form-control form-control-sm" placeholder="เหตุผลที่กลับก่อน..." required>
-                                                                <button class="btn btn-outline-secondary btn-sm" type="submit"><i class="bi bi-send-fill"></i></button>
-                                                            </div>
-                                                        </form>
+                                                        <div class="fw-bold text-muted">-</div>
+                                                        <div class="small text-muted mb-1">(ขอไว้ {{ $detail['requested_hours'] }} ชม.)</div>
                                                     @endif
-                                                @endif
-                                            </td>
+                                                </td>
+                                                <td>
+                                                    @if(!$detail['check_out'])
+                                                        <span class="badge bg-info">รอสแกนออก</span>
+                                                    @elseif($detail['ot_hours'] >= $detail['requested_hours'])
+                                                        <span class="badge bg-success">ทำเสร็จ</span>
+                                                    @else
+                                                        <div class="mb-1"><span class="badge bg-warning text-dark">ยังไม่เสร็จ</span></div>
+                                                        @if($detail['early_checkout_reason'])
+                                                            <div class="small text-success"><i class="bi bi-check-circle-fill"></i> แจ้ง HR แล้ว</div>
+                                                        @else
+                                                            <form action="{{ route('overtime.reason') }}" method="POST" class="d-flex flex-column align-items-center mt-2">
+                                                                @csrf
+                                                                <input type="hidden" name="overtime_id" value="{{ $detail['overtime_id'] }}">
+                                                                <div class="input-group input-group-sm w-100">
+                                                                    <input type="text" name="early_checkout_reason" class="form-control form-control-sm" placeholder="เหตุผลที่กลับก่อน..." required>
+                                                                    <button class="btn btn-outline-secondary btn-sm" type="submit"><i class="bi bi-send-fill"></i></button>
+                                                                </div>
+                                                            </form>
+                                                        @endif
+                                                    @endif
+                                                </td>
+                                            @endif
                                         </tr>
                                     @endforeach
                                 </tbody>
