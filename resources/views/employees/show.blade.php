@@ -183,12 +183,7 @@
                     <div class="info-tile">
                         <div class="info-label"><i class="bi bi-calendar-event me-1 text-warning"></i>วันที่เริ่มงาน</div>
                         <div class="info-value">
-                            {{ $employee->start_date ? $employee->start_date->format('d F Y') : '-' }}
-                            @if($employee->start_date)
-                                <span class="badge bg-secondary-subtle text-secondary small ms-1">
-                                    ({{ $employee->start_date->diffForHumans() }})
-                                </span>
-                            @endif
+                            {{ $employee->start_date ? $employee->start_date->format('d/m/Y') : '-' }}
                         </div>
                     </div>
                 </div>
