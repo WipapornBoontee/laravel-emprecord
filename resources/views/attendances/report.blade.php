@@ -128,14 +128,16 @@
                         </p>
                     </div>
                 </div>
-                <div class="d-flex align-items-center gap-2">
-                    <a href="{{ route('attendances.report.print', ['date' => $date, 'department_id' => $departmentId, 'status' => $status], false) }}" target="_blank" class="btn btn-primary rounded-3 px-3 py-2 d-flex align-items-center gap-2 shadow-sm" title="เปิดหน้าพิมพ์รายงาน PDF รูปแบบมาตรฐานบริษัท">
-                        <i class="bi bi-file-earmark-pdf-fill fs-5"></i>
-                        <span class="fw-bold">พิมพ์รายงาน PDF</span>
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <a href="{{ route('attendances.checkin', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2 text-decoration-none">
+                        <i class="bi bi-fingerprint me-1 text-primary"></i> หน้าลงเวลา
                     </a>
-                    <a href="{{ route('attendances.checkin', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2 d-flex align-items-center gap-2">
-                        <i class="bi bi-stopwatch"></i>
-                        <span>หน้าลงเวลา</span>
+                    <a href="{{ route('attendances.my-history', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2 text-decoration-none">
+                        <i class="bi bi-clock-history me-1 text-indigo"></i> ประวัติของฉัน
+                    </a>
+                    <a href="{{ route('attendances.report.print', ['date' => $date, 'department_id' => $departmentId, 'status' => $status], false) }}" target="_blank" class="btn btn-primary rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2 shadow-sm" title="เปิดหน้าพิมพ์รายงาน PDF รูปแบบมาตรฐานบริษัท" style="background: var(--primary-gradient); border: none; font-weight: 600;">
+                        <i class="bi bi-file-earmark-pdf-fill"></i>
+                        <span>พิมพ์รายงาน PDF</span>
                     </a>
                 </div>
             </div>
@@ -255,13 +257,15 @@
     <!-- 4. ตารางแสดงผล ด้านล่าง Card สรุปผล (Report Table) -->
     <div class="col-12">
         <div class="report-card overflow-hidden">
-            <div class="p-4 border-bottom border-theme d-flex align-items-center justify-content-between">
-                <h5 class="fw-bold mb-0 text-theme">
-                    <i class="bi bi-table me-2 text-primary"></i>รายการลงเวลาประจำวันที่ {{ \Carbon\Carbon::parse($date)->format('d F Y') }}
-                </h5>
-                <span class="badge bg-secondary-subtle text-secondary px-3 py-2 rounded-pill">
-                    แสดงข้อมูล <strong>{{ count($reportData) }}</strong> คน
-                </span>
+            <div class="p-3 px-4 border-bottom border-theme d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <div class="fw-bold text-theme">
+                    <i class="bi bi-table me-1 text-primary"></i> รายการลงเวลาประจำวันที่ {{ \Carbon\Carbon::parse($date)->format('d F Y') }}
+                </div>
+                <div>
+                    <span class="badge bg-primary-subtle text-primary px-3 py-1 fw-bold">
+                        แสดงข้อมูล {{ count($reportData) }} คน
+                    </span>
+                </div>
             </div>
 
             <div class="table-responsive">

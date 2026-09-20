@@ -40,7 +40,7 @@
         <div class="hero-welcome-card p-4">
             <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="action-icon icon-green">
+                    <div class="action-icon icon-indigo">
                         <i class="bi bi-clock-history"></i>
                     </div>
                     <div>
@@ -48,10 +48,17 @@
                         <p class="text-muted mb-0 small">ตรวจสอบประวัติเวลาเข้างาน-เลิกงาน และสถิติความตรงต่อเวลารายเดือน</p>
                     </div>
                 </div>
-                <div>
-                    <a href="{{ route('attendances.checkin', [], false) }}" class="btn btn-primary rounded-3 px-4 py-2 text-decoration-none d-flex align-items-center gap-2"
-                        style="background: var(--primary-gradient); border: none; font-weight: 600;">
-                        <i class="bi bi-stopwatch-fill"></i> หน้าลงเวลาประจำวัน
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <a href="{{ route('attendances.checkin', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2 text-decoration-none">
+                        <i class="bi bi-fingerprint me-1 text-primary"></i> หน้าลงเวลาประจำวัน
+                    </a>
+                    @if(auth()->user()->hasRole('Admin') || auth()->user()->hasRole('HR'))
+                        <a href="{{ route('attendances.report', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2 text-decoration-none">
+                            <i class="bi bi-file-earmark-bar-graph-fill me-1 text-success"></i> รายงานสรุปเวลาทำงาน
+                        </a>
+                    @endif
+                    <a href="{{ route('leaves.create', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2 text-decoration-none">
+                        <i class="bi bi-calendar-plus me-1 text-warning"></i> ยื่นใบลา
                     </a>
                 </div>
             </div>
@@ -108,6 +115,7 @@
     <div class="col-12">
         <div class="history-card p-4">
             <form method="GET" action="{{ route('attendances.my-history', [], false) }}" class="row g-3">
+                <input type="hidden" name="per_page" value="{{ $perPage ?? 15 }}">
                 <div class="col-md-5">
                     <select name="month" class="form-select filter-input">
                         @for($m = 1; $m <= 12; $m++)
@@ -127,7 +135,7 @@
                 </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-primary w-100 rounded-3 d-flex align-items-center justify-content-center gap-1">
-                        <i class="bi bi-search"></i> แสดงข้อมูล
+                        <i class="bi bi-funnel-fill"></i> แสดงข้อมูล
                     </button>
                 </div>
             </form>
@@ -137,6 +145,25 @@
     <!-- Attendance Table -->
     <div class="col-12">
         <div class="history-card overflow-hidden">
+            <div class="p-3 px-4 border-bottom border-theme d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <div class="fw-bold text-theme">
+                    <i class="bi bi-table me-1 text-primary"></i> รายการประวัติการลงเวลา ({{ $attendances->total() }} รายการ)
+                </div>
+                <!-- Rows Per Page Selector -->
+                <form action="{{ route('attendances.my-history', [], false) }}" method="GET" class="d-flex align-items-center gap-2 m-0">
+                    <input type="hidden" name="month" value="{{ $month }}">
+                    <input type="hidden" name="year" value="{{ $year }}">
+                    <label for="per_page_select_history" class="small text-muted mb-0 text-nowrap">แสดงต่อหน้า:</label>
+                    <select name="per_page" id="per_page_select_history" class="form-select form-select-sm filter-input py-1" style="width: 85px;" onchange="this.form.submit()">
+                        <option value="5" {{ ($perPage ?? 15) == 5 ? 'selected' : '' }}>5</option>
+                        <option value="10" {{ ($perPage ?? 15) == 10 ? 'selected' : '' }}>10</option>
+                        <option value="15" {{ ($perPage ?? 15) == 15 ? 'selected' : '' }}>15</option>
+                        <option value="25" {{ ($perPage ?? 15) == 25 ? 'selected' : '' }}>25</option>
+                        <option value="50" {{ ($perPage ?? 15) == 50 ? 'selected' : '' }}>50</option>
+                    </select>
+                </form>
+            </div>
+
             <div class="table-responsive">
                 <table class="table table-custom mb-0">
                     <thead>

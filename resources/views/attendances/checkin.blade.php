@@ -7,16 +7,19 @@
     .att-card {
         background: var(--surface-bg);
         border: 1px solid var(--surface-border);
-        border-radius: 24px;
+        border-radius: 20px;
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
-        box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.08);
     }
     .live-clock-card {
-        background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%);
+        background: var(--surface-bg);
         border: 1px solid var(--surface-border);
-        border-radius: 24px;
-        padding: 2.5rem;
+        border-radius: 20px;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.08);
+        padding: 2.25rem 2rem;
     }
     .clock-display {
         font-size: 3.5rem;
@@ -29,9 +32,9 @@
         background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         color: white;
         border: none;
-        border-radius: 20px;
-        padding: 1.5rem 2rem;
-        font-size: 1.25rem;
+        border-radius: 16px;
+        padding: 1.25rem 2rem;
+        font-size: 1.15rem;
         font-weight: 700;
         transition: all 0.3s ease;
         box-shadow: 0 10px 25px -8px rgba(16, 185, 129, 0.5);
@@ -42,7 +45,7 @@
         gap: 12px;
     }
     .btn-checkin:hover:not(:disabled) {
-        transform: translateY(-3px);
+        transform: translateY(-2px);
         box-shadow: 0 15px 30px -8px rgba(16, 185, 129, 0.7);
         color: white;
     }
@@ -50,9 +53,9 @@
         background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
         color: white;
         border: none;
-        border-radius: 20px;
-        padding: 1.5rem 2rem;
-        font-size: 1.25rem;
+        border-radius: 16px;
+        padding: 1.25rem 2rem;
+        font-size: 1.15rem;
         font-weight: 700;
         transition: all 0.3s ease;
         box-shadow: 0 10px 25px -8px rgba(245, 158, 11, 0.5);
@@ -63,18 +66,18 @@
         gap: 12px;
     }
     .btn-checkout:hover:not(:disabled) {
-        transform: translateY(-3px);
+        transform: translateY(-2px);
         box-shadow: 0 15px 30px -8px rgba(245, 158, 11, 0.7);
         color: white;
     }
     .btn-disabled {
-        opacity: 0.5;
+        opacity: 0.55;
         cursor: not-allowed;
     }
     .status-box {
         background: var(--badge-bg);
         border: 1px solid var(--surface-border);
-        border-radius: 18px;
+        border-radius: 16px;
         padding: 1.25rem;
     }
     .leave-today-banner {
@@ -87,14 +90,43 @@
 @endpush
 
 @section('content')
-<div class="row g-4 justify-content-center">
-    
-    <!-- 1. Live Clock & Greeting Banner -->
-    <div class="col-lg-10 col-xl-9">
+<div class="row g-4">
+    <!-- Header Banner -->
+    <div class="col-12">
+        <div class="hero-welcome-card p-4">
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="action-icon icon-green">
+                        <i class="bi bi-fingerprint"></i>
+                    </div>
+                    <div>
+                        <h3 class="fw-bold mb-1 gradient-text">ระบบบันทึกเวลาปฏิบัติงาน</h3>
+                        <p class="text-muted mb-0 small">บันทึกเวลาเข้า-ออกงานประจำวัน และตรวจสอบความตรงต่อเวลาแบบ Real-time</p>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <a href="{{ route('attendances.my-history', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2 text-decoration-none">
+                        <i class="bi bi-clock-history me-1 text-primary"></i> ประวัติการลงเวลาของฉัน
+                    </a>
+                    @if(auth()->user()->hasRole('Admin') || auth()->user()->hasRole('HR'))
+                        <a href="{{ route('attendances.report', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2 text-decoration-none">
+                            <i class="bi bi-file-earmark-bar-graph-fill me-1 text-success"></i> รายงานสรุปเวลาทำงาน
+                        </a>
+                    @endif
+                    <a href="{{ route('leaves.create', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2 text-decoration-none">
+                        <i class="bi bi-calendar-plus me-1 text-warning"></i> ยื่นใบลา
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1. Live Clock & Greeting Card -->
+    <div class="col-12">
         <div class="live-clock-card text-center">
             <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3 status-pill">
                 <span class="pulse-dot"></span>
-                <span class="small fw-semibold">ระบบบันทึกเวลาทำงานแบบ Real-time</span>
+                <span class="small fw-semibold text-theme">ระบบบันทึกเวลาทำงานแบบ Real-time</span>
             </div>
             
             <div class="clock-display font-monospace mb-2" id="attendanceLiveClock">
@@ -104,14 +136,14 @@
             <p class="text-muted fs-5 mb-0">
                 <i class="bi bi-calendar3 me-2"></i>{{ date('l, d F Y') }}
                 <span class="mx-2">•</span>
-                <span>เวลาเริ่มงานมาตรฐาน: <strong>09:00 น.</strong></span>
+                <span>เวลาเริ่มงานมาตรฐาน: <strong class="text-theme">09:00 น.</strong></span>
             </p>
         </div>
     </div>
 
     <!-- 2. จุดเชื่อมโยงสำคัญ: หากวันนี้ได้รับอนุมัติการลาแล้ว -->
     @if($isLeaveToday)
-        <div class="col-lg-10 col-xl-9">
+        <div class="col-12">
             <div class="leave-today-banner d-flex align-items-center gap-4">
                 <div class="stat-icon-wrapper icon-indigo flex-shrink-0" style="width: 60px; height: 60px; font-size: 1.8rem;">
                     <i class="bi bi-sun-fill text-warning"></i>
@@ -129,7 +161,7 @@
     @endif
 
     <!-- 3. Today's Attendance Actions -->
-    <div class="col-lg-10 col-xl-9">
+    <div class="col-12">
         <div class="row g-4">
             <!-- Check-in Action Box -->
             <div class="col-md-6">
@@ -237,13 +269,13 @@
     </div>
 
     <!-- 4. Recent Attendance History Table (Past 7 Days) -->
-    <div class="col-lg-10 col-xl-9">
-        <div class="att-card p-4">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-                <h5 class="fw-bold mb-0 text-theme d-flex align-items-center gap-2">
-                    <i class="bi bi-clock-history text-primary"></i> ประวัติการลงเวลา 7 วันล่าสุดของฉัน
-                </h5>
-                <a href="{{ route('attendances.my-history', [], false) }}" class="btn btn-outline-secondary btn-sm rounded-3">
+    <div class="col-12">
+        <div class="att-card overflow-hidden">
+            <div class="p-3 px-4 border-bottom border-theme d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <div class="fw-bold text-theme">
+                    <i class="bi bi-table me-1 text-primary"></i> ประวัติการลงเวลา 7 วันล่าสุดของฉัน
+                </div>
+                <a href="{{ route('attendances.my-history', [], false) }}" class="btn btn-outline-secondary btn-sm rounded-3 px-3 py-1">
                     <i class="bi bi-calendar3 me-1"></i> ดูประวัติทั้งหมดรายเดือน
                 </a>
             </div>

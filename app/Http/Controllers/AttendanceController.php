@@ -128,7 +128,8 @@ class AttendanceController extends Controller
             ->whereYear('date', $year)
             ->whereMonth('date', $month);
 
-        $attendances = $query->orderBy('date', 'desc')->paginate(15)->withQueryString();
+        $perPage = in_array((int) $request->input('per_page'), [5, 10, 15, 25, 50]) ? (int) $request->input('per_page') : 15;
+        $attendances = $query->orderBy('date', 'desc')->paginate($perPage)->withQueryString();
 
         // สรุปสถิติประจำเดือนที่เลือก
         $totalDays = Attendance::where('user_id', $user->id)
@@ -158,6 +159,7 @@ class AttendanceController extends Controller
             'attendances',
             'month',
             'year',
+            'perPage',
             'totalDays',
             'onTimeCount',
             'lateCount',
