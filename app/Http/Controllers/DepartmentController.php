@@ -13,7 +13,7 @@ class DepartmentController extends Controller
      */
     public function index()
     {
-        $departments = Department::withCount('users')->orderBy('name')->get();
+        $departments = Department::withCount('users')->with(['users.position'])->orderBy('name')->get();
         return view('departments.index', compact('departments'));
     }
 
@@ -33,6 +33,37 @@ class DepartmentController extends Controller
 
         return redirect()->to(route('departments.index', [], false))->with('success', 'เพิ่มแผนกใหม่เรียบร้อยแล้ว');
     }
+
+    /**
+     * Update department details
+     */
+     public function update(Request $request, Department $department)
+     {
+         $validated = $request->validate([
+             'name' => ['required', 'string', 'max:100', 'unique:departments,name,' . $department->id],
+             'is_active' => ['nullable', 'boolean'],
+         ], [
+             'name.required' => 'กรุณากรอกชื่อแผนก',
+             'name.unique' => 'ชื่อแผนกนี้มีในระบบแล้ว',
+         ]);
+
+         $validated['is_active'] = $request->has('is_active') ? true : false;
+         $department->update($validated);
+
+         return redirect()->to(route('departments.index', [], false))->with('success', "แก้ไขข้อมูลแผนก {$department->name} เรียบร้อยแล้ว");
+     }
+
+     /**
+      * Toggle department active status
+      */
+     public function toggleStatus(Department $department)
+     {
+         $department->is_active = !$department->is_active;
+         $department->save();
+
+         $statusText = $department->is_active ? 'เปิดใช้งาน' : 'ปิดการใช้งาน';
+         return redirect()->to(route('departments.index', [], false))->with('success', "เปลี่ยนสถานะแผนก {$department->name} เป็น {$statusText} เรียบร้อยแล้ว");
+     }
 
     /**
      * Delete a department

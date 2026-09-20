@@ -122,17 +122,21 @@
     <div class="col-lg-8">
         <div class="dept-card overflow-hidden">
             <div class="p-4 border-bottom border-theme d-flex align-items-center justify-content-between">
-                <h5 class="fw-bold mb-0 text-theme">รายชื่อแผนกทั้งหมด ({{ $departments->count() }} แผนก)</h5>
+                <div>
+                    <h5 class="fw-bold mb-0 text-theme">รายชื่อแผนกทั้งหมด ({{ $departments->count() }} แผนก)</h5>
+                    <small class="text-muted">จัดการสถานะการใช้งาน ดูรายชื่อสมาชิก และแก้ไขข้อมูล</small>
+                </div>
             </div>
 
             <div class="table-responsive">
                 <table class="table table-custom mb-0">
                     <thead>
                         <tr>
-                            <th style="width: 70px;">#</th>
+                            <th style="width: 60px;">#</th>
                             <th>ชื่อแผนก</th>
-                            <th style="width: 150px;">จำนวนพนักงาน</th>
-                            <th class="text-end" style="width: 100px;">จัดการ</th>
+                            <th style="width: 130px;">จำนวนพนักงาน</th>
+                            <th style="width: 140px;" class="text-center">สถานะ</th>
+                            <th class="text-end" style="width: 150px;">จัดการ</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -143,30 +147,65 @@
                                     <i class="bi bi-folder2-open text-primary me-2"></i>{{ $dept->name }}
                                 </td>
                                 <td>
-                                    <span class="badge bg-info-subtle text-info px-2 py-1">
+                                    <button type="button" 
+                                        class="badge bg-info-subtle text-info border-0 px-2 py-1 cursor-pointer" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#viewDeptModal{{ $dept->id }}"
+                                        title="คลิกเพื่อดูรายชื่อพนักงาน">
                                         <i class="bi bi-people me-1"></i>{{ $dept->users_count }} คน
-                                    </span>
+                                    </button>
+                                </td>
+                                <td class="text-center">
+                                    <form action="{{ route('departments.toggleStatus', $dept, false) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('PATCH')
+                                        @if($dept->is_active ?? true)
+                                            <button type="submit" class="btn btn-sm btn-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0 fw-semibold" title="คลิกเพื่อปิดการใช้งาน">
+                                                <i class="bi bi-check-circle-fill me-1"></i>เปิดใช้งาน
+                                            </button>
+                                        @else
+                                            <button type="submit" class="btn btn-sm btn-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2 py-0 fw-semibold" title="คลิกเพื่อเปิดใช้งาน">
+                                                <i class="bi bi-pause-circle-fill me-1"></i>ปิดใช้งาน
+                                            </button>
+                                        @endif
+                                    </form>
                                 </td>
                                 <td class="text-end">
-                                    @if($dept->users_count === 0)
-                                        <form action="{{ route('departments.destroy', $dept, false) }}" method="POST" class="d-inline"
-                                            onsubmit="return confirm('ยืนยันลบแผนก {{ $dept->name }}?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-3 py-1 px-2" title="ลบแผนก">
-                                                <i class="bi bi-trash3"></i>
+                                    <div class="d-flex align-items-center justify-content-end gap-1">
+                                        <!-- ดูสมาชิก (View) -->
+                                        <button type="button" class="btn btn-outline-info btn-sm rounded-3 py-1 px-2" 
+                                            data-bs-toggle="modal" data-bs-target="#viewDeptModal{{ $dept->id }}" title="ดูสมาชิกในแผนก">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+
+                                        <!-- แก้ไข (Edit) -->
+                                        <button type="button" class="btn btn-outline-warning btn-sm rounded-3 py-1 px-2" 
+                                            data-bs-toggle="modal" data-bs-target="#editDeptModal{{ $dept->id }}" title="แก้ไขชื่อ/สถานะ">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </button>
+
+                                        <!-- ลบ (Delete) -->
+                                        @if($dept->users_count === 0)
+                                            <form action="{{ route('departments.destroy', $dept, false) }}" method="POST" class="d-inline"
+                                                onsubmit="return confirm('ยืนยันลบแผนก {{ $dept->name }}?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-3 py-1 px-2" title="ลบแผนก">
+                                                    <i class="bi bi-trash3"></i>
+                                                </button>
+                                            </form>
+                                        @else
+                                            <button type="button" class="btn btn-outline-secondary btn-sm rounded-3 py-1 px-2 disabled opacity-50" 
+                                                title="ไม่สามารถลบได้เนื่องจากมีพนักงานสังกัดอยู่">
+                                                <i class="bi bi-lock-fill"></i>
                                             </button>
-                                        </form>
-                                    @else
-                                        <span class="badge bg-secondary-subtle text-muted" title="ไม่สามารถลบได้เนื่องจากมีพนักงานสังกัดอยู่">
-                                            <i class="bi bi-lock-fill"></i> ไม่ว่าง
-                                        </span>
-                                    @endif
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="text-center py-4 text-muted">ยังไม่มีข้อมูลแผนก</td>
+                                <td colspan="5" class="text-center py-4 text-muted">ยังไม่มีข้อมูลแผนก</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -175,4 +214,116 @@
         </div>
     </div>
 </div>
+
+<!-- Modals Section -->
+@foreach($departments as $dept)
+    <!-- Modal: ดูสมาชิกในแผนก (View Members) -->
+    <div class="modal fade" id="viewDeptModal{{ $dept->id }}" tabindex="-1" aria-labelledby="viewDeptModalLabel{{ $dept->id }}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content form-card border-0 shadow-lg">
+                <div class="modal-header border-bottom border-theme pb-3">
+                    <h5 class="modal-title fw-bold text-theme d-flex align-items-center gap-2" id="viewDeptModalLabel{{ $dept->id }}">
+                        <i class="bi bi-building text-primary"></i>
+                        <span>สมาชิกในแผนก: {{ $dept->name }}</span>
+                        <span class="badge bg-primary-subtle text-primary fs-6">{{ $dept->users_count }} คน</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    @if($dept->users->count() > 0)
+                        <div class="table-responsive" style="max-height: 400px;">
+                            <table class="table table-custom mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>รหัส / ชื่อพนักงาน</th>
+                                        <th>อีเมล</th>
+                                        <th>ตำแหน่ง</th>
+                                        <th class="text-center">บทบาท</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($dept->users as $u)
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <div class="avatar-circle-sm bg-primary-subtle text-primary fw-bold d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; border-radius: 50%;">
+                                                        {{ mb_substr($u->name, 0, 1) }}
+                                                    </div>
+                                                    <div>
+                                                        <div class="fw-semibold text-theme">{{ $u->name }}</div>
+                                                        <small class="text-muted">{{ $u->employee_id ?? '-' }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="small text-muted">{{ $u->email }}</td>
+                                            <td>
+                                                <span class="badge bg-secondary-subtle text-theme">
+                                                    {{ $u->position->name ?? 'ไม่ระบุ' }}
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-light-subtle border border-secondary-subtle text-uppercase text-secondary" style="font-size: 0.72rem;">
+                                                    {{ $u->role }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="text-center py-5 text-muted">
+                            <i class="bi bi-people fs-1 opacity-50 d-block mb-2"></i>
+                            <span>ยังไม่มีพนักงานสังกัดในแผนกนี้</span>
+                        </div>
+                    @endif
+                </div>
+                <div class="modal-footer border-top border-theme pt-2">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">ปิด</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: แก้ไขแผนก (Edit Department) -->
+    <div class="modal fade" id="editDeptModal{{ $dept->id }}" tabindex="-1" aria-labelledby="editDeptModalLabel{{ $dept->id }}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content form-card border-0 shadow-lg">
+                <div class="modal-header border-bottom border-theme pb-3">
+                    <h5 class="modal-title fw-bold text-theme d-flex align-items-center gap-2" id="editDeptModalLabel{{ $dept->id }}">
+                        <i class="bi bi-pencil-square text-warning"></i>
+                        <span>แก้ไขแผนก: {{ $dept->name }}</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('departments.update', $dept, false) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-theme">ชื่อแผนก <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control form-control-custom" 
+                                value="{{ old('name', $dept->name) }}" required>
+                        </div>
+                        <div class="mb-2">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="is_active_{{ $dept->id }}" 
+                                    name="is_active" value="1" {{ ($dept->is_active ?? true) ? 'checked' : '' }}>
+                                <label class="form-check-label fw-semibold text-theme small" for="is_active_{{ $dept->id }}">
+                                    เปิดใช้งานแผนกนี้ (Active)
+                                </label>
+                            </div>
+                            <small class="text-muted d-block mt-1">หากปิดการใช้งาน แผนกนี้จะไม่แสดงในตัวเลือกเพิ่ม/ย้ายพนักงานใหม่</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top border-theme pt-2">
+                        <button type="button" class="btn btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">ยกเลิก</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4">บันทึกการแก้ไข</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+@endforeach
+
 @endsection

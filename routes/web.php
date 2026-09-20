@@ -79,6 +79,8 @@ Route::middleware(['auth'])->group(function () {
         // จัดการโครงสร้างองค์กร (แผนก และ ตำแหน่งงาน)
         Route::get('/departments', [\App\Http\Controllers\DepartmentController::class, 'index'])->name('departments.index');
         Route::post('/departments', [\App\Http\Controllers\DepartmentController::class, 'store'])->name('departments.store');
+        Route::put('/departments/{department}', [\App\Http\Controllers\DepartmentController::class, 'update'])->name('departments.update');
+        Route::patch('/departments/{department}/toggle-status', [\App\Http\Controllers\DepartmentController::class, 'toggleStatus'])->name('departments.toggleStatus');
         Route::delete('/departments/{department}', [\App\Http\Controllers\DepartmentController::class, 'destroy'])->name('departments.destroy');
         Route::get('/departments/positions', [\App\Http\Controllers\DepartmentController::class, 'positions'])->name('departments.positions');
         Route::post('/departments/positions', [\App\Http\Controllers\DepartmentController::class, 'storePosition'])->name('departments.positions.store');
