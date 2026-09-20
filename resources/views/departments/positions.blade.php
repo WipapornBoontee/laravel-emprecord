@@ -124,16 +124,16 @@
                         placeholder="เช่น Software Developer, HR Officer" required value="{{ old('name') }}">
                 </div>
                 <div class="mb-3">
-                    <label for="department_id" class="form-label fw-semibold small text-theme">แผนกที่สังกัด</label>
-                    <select name="department_id" id="department_id" class="form-select form-control-custom">
-                        <option value="">-- ไม่ระบุแผนก (ตำแหน่งทั่วไป) --</option>
+                    <label for="department_id" class="form-label fw-semibold small text-theme">แผนกที่สังกัด <span class="text-danger">*</span></label>
+                    <select name="department_id" id="department_id" class="form-select form-control-custom" required>
+                        <option value="">-- กรุณาเลือกแผนกที่สังกัด --</option>
                         @foreach($departments as $dept)
                             <option value="{{ $dept->id }}" {{ old('department_id') == $dept->id ? 'selected' : '' }}>
                                 {{ $dept->name }}
                             </option>
                         @endforeach
                     </select>
-                    <small class="text-muted">เลือกแผนกเพื่อให้แสดงเฉพาะเมื่อเลือกแผนกนี้</small>
+                    <small class="text-muted">ทุกตำแหน่งงานต้องสังกัดแผนกใดแผนกหนึ่งอย่างชัดเจน</small>
                 </div>
                 <button type="submit" class="btn btn-submit-custom w-100 d-flex align-items-center justify-content-center gap-2">
                     <i class="bi bi-check-lg"></i> บันทึกตำแหน่งงาน
@@ -366,9 +366,9 @@
                                 value="{{ old('name', $pos->name) }}" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-semibold small text-theme">แผนกที่สังกัด</label>
-                            <select name="department_id" class="form-select form-control-custom">
-                                <option value="">-- ไม่ระบุแผนก (ตำแหน่งทั่วไป) --</option>
+                            <label class="form-label fw-semibold small text-theme">แผนกที่สังกัด <span class="text-danger">*</span></label>
+                            <select name="department_id" class="form-select form-control-custom" required>
+                                <option value="">-- กรุณาเลือกแผนกที่สังกัด --</option>
                                 @foreach($departments as $dept)
                                     <option value="{{ $dept->id }}" {{ old('department_id', $pos->department_id) == $dept->id ? 'selected' : '' }}>
                                         {{ $dept->name }}

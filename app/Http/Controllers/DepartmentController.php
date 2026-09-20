@@ -126,10 +126,19 @@ class DepartmentController extends Controller
     public function storePosition(Request $request)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:100'],
-            'department_id' => ['nullable', 'exists:departments,id'],
+            'department_id' => ['required', 'exists:departments,id'],
+            'name' => [
+                'required',
+                'string',
+                'max:100',
+                \Illuminate\Validation\Rule::unique('positions', 'name')->where(function ($query) use ($request) {
+                    return $query->where('department_id', $request->input('department_id'));
+                }),
+            ],
         ], [
             'name.required' => 'กรุณากรอกชื่อตำแหน่งงาน',
+            'name.unique' => 'ตำแหน่งงานนี้มีอยู่แล้วในแผนกที่เลือก',
+            'department_id.required' => 'กรุณาระบุแผนกที่ตำแหน่งงานนี้สังกัด',
             'department_id.exists' => 'แผนกงานที่เลือกไม่ถูกต้อง',
         ]);
 
@@ -144,11 +153,20 @@ class DepartmentController extends Controller
     public function updatePosition(Request $request, Position $position)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:100'],
-            'department_id' => ['nullable', 'exists:departments,id'],
+            'department_id' => ['required', 'exists:departments,id'],
+            'name' => [
+                'required',
+                'string',
+                'max:100',
+                \Illuminate\Validation\Rule::unique('positions', 'name')->where(function ($query) use ($request) {
+                    return $query->where('department_id', $request->input('department_id'));
+                })->ignore($position->id),
+            ],
             'is_active' => ['nullable', 'boolean'],
         ], [
             'name.required' => 'กรุณากรอกชื่อตำแหน่งงาน',
+            'name.unique' => 'ตำแหน่งงานนี้มีอยู่แล้วในแผนกที่เลือก',
+            'department_id.required' => 'กรุณาระบุแผนกที่ตำแหน่งงานนี้สังกัด',
             'department_id.exists' => 'แผนกงานที่เลือกไม่ถูกต้อง',
         ]);
 
