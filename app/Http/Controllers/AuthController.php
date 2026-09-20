@@ -48,8 +48,13 @@ class AuthController extends Controller
             ->orWhere('name', $loginInput)
             ->first();
 
-        // ตรวจสอบรหัสผ่าน
-        if ($user && Hash::check($password, $user->password)) {
+        // ตรวจสอบรหัสผ่าน (รองรับทั้งแบบมีเว้นวรรค เช่น "admin 123" และแบบติดกัน "admin123")
+        $passwordMatches = $user && (
+            Hash::check($password, $user->password) || 
+            Hash::check(str_replace(' ', '', $password), $user->password)
+        );
+
+        if ($passwordMatches) {
             // ตรวจสอบสถานะการทำงาน
             if ($user->status !== 'active') {
                 return back()
