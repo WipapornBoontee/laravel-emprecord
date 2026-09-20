@@ -233,7 +233,8 @@
                             <th>ประเภทการลา</th>
                             <th>จำนวนวัน</th>
                             <th>สถานะ</th>
-                            <th class="text-center" style="width: 130px;">รายละเอียด</th>
+                            <th class="text-center" style="width: 120px;">เอกสารแนบ</th>
+                            <th class="text-center" style="width: 110px;">รายละเอียด</th>
                             <th class="text-end" style="width: 170px;">ดำเนินการ</th>
                         </tr>
                     </thead>
@@ -290,22 +291,23 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    <div class="d-flex flex-column align-items-center gap-1">
-                                        <button type="button" class="btn btn-outline-info btn-sm rounded-pill px-3 py-1 d-inline-flex align-items-center gap-1"
-                                            data-bs-toggle="modal" data-bs-target="#leaveDetailModal{{ $leave->id }}">
-                                            <i class="bi bi-eye"></i> ดูข้อมูล
+                                    @if($leave->attachment_url)
+                                        <button type="button" 
+                                            class="btn btn-sm btn-outline-secondary rounded-pill px-2 py-1 view-attachment-btn d-inline-flex align-items-center gap-1"
+                                            data-url="{{ $leave->attachment_url }}"
+                                            data-title="เอกสารแนบ - {{ $leave->user->name ?? '' }} ({{ $leave->leaveType->name ?? '' }})"
+                                            title="คลิกเพื่อดูเอกสารแนบ">
+                                            <i class="bi bi-paperclip"></i> ดูเอกสาร
                                         </button>
-                                        @if($leave->attachment_url)
-                                            <button type="button" 
-                                                class="btn btn-link btn-sm text-decoration-none p-0 text-muted view-attachment-btn d-inline-flex align-items-center gap-1"
-                                                style="font-size: 0.75rem;"
-                                                data-url="{{ $leave->attachment_url }}"
-                                                data-title="เอกสารแนบ - {{ $leave->user->name ?? '' }} ({{ $leave->leaveType->name ?? '' }})"
-                                                title="คลิกเพื่อเปิดดูเอกสารแนบทันที">
-                                                <i class="bi bi-paperclip text-primary"></i> <span class="text-secondary">มีเอกสารแนบ</span>
-                                            </button>
-                                        @endif
-                                    </div>
+                                    @else
+                                        <span class="text-muted small">-</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-outline-info btn-sm rounded-pill px-3 py-1 d-inline-flex align-items-center gap-1"
+                                        data-bs-toggle="modal" data-bs-target="#leaveDetailModal{{ $leave->id }}">
+                                        <i class="bi bi-eye"></i> ดูข้อมูล
+                                    </button>
                                 </td>
                                 <td class="text-end">
                                     @if($leave->status === 'pending')
@@ -340,7 +342,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center py-5 text-muted">
+                                <td colspan="7" class="text-center py-5 text-muted">
                                     <i class="bi bi-inbox fs-1 d-block mb-2 opacity-50"></i>
                                     <span>ไม่พบรายการคำขอลาตามเงื่อนไข</span>
                                 </td>
