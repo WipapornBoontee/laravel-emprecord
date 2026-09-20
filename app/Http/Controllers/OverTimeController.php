@@ -67,6 +67,14 @@ class OverTimeController extends Controller
             return back()->withInput()->with('error', 'คุณต้องสแกนเข้างานก่อนจึงจะสามารถขอทำ OT ได้');
         }
 
+        $existingOTToday = \App\Models\Overtime::where('user_id', $request->user_id)
+            ->where('date', $todayDateStr)
+            ->exists();
+
+        if ($existingOTToday) {
+            return back()->withInput()->with('error', 'คุณได้ขอ OT สำหรับวันนี้ไปแล้ว ไม่สามารถขอซ้ำได้');
+        }
+
         // หาจุดเริ่มต้นและสิ้นสุดของสัปดาห์ (วันจันทร์ ถึง วันอาทิตย์)
         $startOfWeek = \Carbon\Carbon::parse($request->date)->startOfWeek()->format('Y-m-d');
         $endOfWeek = \Carbon\Carbon::parse($request->date)->endOfWeek()->format('Y-m-d');
@@ -120,6 +128,8 @@ class OverTimeController extends Controller
             $hasOTToday = true;
             $todayOtHours = $todayOt->hours;
         }
+        
+        $hasAnyOTToday = $overtimes->where('date', $todayDateStr)->isNotEmpty();
 
         $hasCheckedInToday = \App\Models\Attendance::where('user_id', $user->id)
             ->where('date', $todayDateStr)
@@ -165,7 +175,7 @@ class OverTimeController extends Controller
         }
 
         return view('overtime.overtime_show', compact(
-            'month', 'year', 'otDetails', 'totalOtHours', 'hasOTToday', 'todayOtHours', 'hasCheckedInToday'
+            'month', 'year', 'otDetails', 'totalOtHours', 'hasOTToday', 'todayOtHours', 'hasCheckedInToday', 'hasAnyOTToday'
         ));
     }
 
