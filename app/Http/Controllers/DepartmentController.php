@@ -84,8 +84,9 @@ class DepartmentController extends Controller
      */
     public function positions()
     {
-        $positions = Position::withCount('users')->with(['users.department'])->orderBy('name')->get();
-        return view('departments.positions', compact('positions'));
+        $departments = Department::where('is_active', true)->orderBy('name')->get();
+        $positions = Position::with(['department'])->withCount('users')->orderBy('name')->get();
+        return view('departments.positions', compact('positions', 'departments'));
     }
 
     /**
@@ -94,10 +95,11 @@ class DepartmentController extends Controller
     public function storePosition(Request $request)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:100', 'unique:positions,name'],
+            'name' => ['required', 'string', 'max:100'],
+            'department_id' => ['nullable', 'exists:departments,id'],
         ], [
             'name.required' => 'กรุณากรอกชื่อตำแหน่งงาน',
-            'name.unique' => 'ชื่อตำแหน่งนี้มีในระบบแล้ว',
+            'department_id.exists' => 'แผนกงานที่เลือกไม่ถูกต้อง',
         ]);
 
         Position::create($validated);
@@ -111,11 +113,12 @@ class DepartmentController extends Controller
     public function updatePosition(Request $request, Position $position)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:100', 'unique:positions,name,' . $position->id],
+            'name' => ['required', 'string', 'max:100'],
+            'department_id' => ['nullable', 'exists:departments,id'],
             'is_active' => ['nullable', 'boolean'],
         ], [
             'name.required' => 'กรุณากรอกชื่อตำแหน่งงาน',
-            'name.unique' => 'ชื่อตำแหน่งนี้มีในระบบแล้ว',
+            'department_id.exists' => 'แผนกงานที่เลือกไม่ถูกต้อง',
         ]);
 
         $validated['is_active'] = $request->has('is_active') ? true : false;

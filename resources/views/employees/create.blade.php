@@ -212,7 +212,9 @@
                         <select class="form-select form-control-custom" id="position_id" name="position_id">
                             <option value="">-- ไม่ระบุตำแหน่ง --</option>
                             @foreach($positions as $pos)
-                                <option value="{{ $pos->id }}" {{ old('position_id') == $pos->id ? 'selected' : '' }}>
+                                <option value="{{ $pos->id }}" 
+                                    data-department="{{ $pos->department_id ?? '' }}"
+                                    {{ old('position_id') == $pos->id ? 'selected' : '' }}>
                                     {{ $pos->name }}
                                 </option>
                             @endforeach
@@ -249,4 +251,40 @@
 
     </div>
 </div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const deptSelect = document.getElementById('department_id');
+        const posSelect = document.getElementById('position_id');
+        if (!deptSelect || !posSelect) return;
+
+        // เก็บ options ทั้งหมดของตำแหน่งงานไว้
+        const allPosOptions = Array.from(posSelect.querySelectorAll('option')).slice(1); // ข้าม option แรก ("-- ไม่ระบุตำแหน่ง --")
+
+        function filterPositions() {
+            const selectedDept = deptSelect.value;
+            const currentSelectedPos = posSelect.value;
+
+            // รีเซ็ตตัวเลือกใน dropdown ตำแหน่ง
+            posSelect.innerHTML = '<option value="">-- ไม่ระบุตำแหน่ง --</option>';
+
+            allPosOptions.forEach(opt => {
+                const optDept = opt.getAttribute('data-department');
+                // แสดงถ้า: ยังไม่เลือกแผนก หรือ ตำแหน่งนั้นสังกัดแผนกที่เลือก หรือ ตำแหน่งทั่วไปที่ไม่ได้ผูกกับแผนกใด
+                if (!selectedDept || optDept === selectedDept || !optDept) {
+                    const cloned = opt.cloneNode(true);
+                    if (cloned.value === currentSelectedPos) {
+                        cloned.selected = true;
+                    }
+                    posSelect.appendChild(cloned);
+                }
+            });
+        }
+
+        deptSelect.addEventListener('change', filterPositions);
+        filterPositions(); // รันตอนโหลดหน้าแรกเผื่อมี old input
+    });
+</script>
+@endpush
 @endsection

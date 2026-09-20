@@ -123,6 +123,18 @@
                     <input type="text" name="name" id="name" class="form-control form-control-custom" 
                         placeholder="เช่น Software Developer, HR Officer" required value="{{ old('name') }}">
                 </div>
+                <div class="mb-3">
+                    <label for="department_id" class="form-label fw-semibold small text-theme">แผนกที่สังกัด</label>
+                    <select name="department_id" id="department_id" class="form-select form-control-custom">
+                        <option value="">-- ไม่ระบุแผนก (ตำแหน่งทั่วไป) --</option>
+                        @foreach($departments as $dept)
+                            <option value="{{ $dept->id }}" {{ old('department_id') == $dept->id ? 'selected' : '' }}>
+                                {{ $dept->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <small class="text-muted">เลือกแผนกเพื่อให้แสดงเฉพาะเมื่อเลือกแผนกนี้</small>
+                </div>
                 <button type="submit" class="btn btn-submit-custom w-100 d-flex align-items-center justify-content-center gap-2">
                     <i class="bi bi-check-lg"></i> บันทึกตำแหน่งงาน
                 </button>
@@ -144,11 +156,12 @@
                 <table class="table table-custom mb-0">
                     <thead>
                         <tr>
-                            <th style="width: 60px;">#</th>
+                            <th style="width: 50px;">#</th>
                             <th>ชื่อตำแหน่ง</th>
-                            <th style="width: 130px;">จำนวนพนักงาน</th>
-                            <th style="width: 140px;" class="text-center">สถานะ</th>
-                            <th class="text-end" style="width: 150px;">จัดการ</th>
+                            <th>แผนกที่สังกัด</th>
+                            <th style="width: 110px;">จำนวนคน</th>
+                            <th style="width: 120px;" class="text-center">สถานะ</th>
+                            <th class="text-end" style="width: 140px;">จัดการ</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -157,6 +170,15 @@
                                 <td class="text-muted">{{ $index + 1 }}</td>
                                 <td class="fw-bold text-theme">
                                     <i class="bi bi-award-fill text-warning me-2"></i>{{ $pos->name }}
+                                </td>
+                                <td>
+                                    @if($pos->department)
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                                            <i class="bi bi-diagram-3 me-1"></i>{{ $pos->department->name }}
+                                        </span>
+                                    @else
+                                        <span class="badge bg-secondary-subtle text-muted">ทุกแผนก</span>
+                                    @endif
                                 </td>
                                 <td>
                                     <button type="button" 
@@ -317,6 +339,17 @@
                             <label class="form-label fw-semibold small text-theme">ชื่อตำแหน่งงาน <span class="text-danger">*</span></label>
                             <input type="text" name="name" class="form-control form-control-custom" 
                                 value="{{ old('name', $pos->name) }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-theme">แผนกที่สังกัด</label>
+                            <select name="department_id" class="form-select form-control-custom">
+                                <option value="">-- ไม่ระบุแผนก (ตำแหน่งทั่วไป) --</option>
+                                @foreach($departments as $dept)
+                                    <option value="{{ $dept->id }}" {{ old('department_id', $pos->department_id) == $dept->id ? 'selected' : '' }}>
+                                        {{ $dept->name }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="mb-2">
                             <div class="form-check form-switch">

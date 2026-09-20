@@ -75,8 +75,8 @@ class EmployeeController extends Controller
      */
     public function create()
     {
-        $departments = Department::orderBy('name')->get();
-        $positions = Position::orderBy('name')->get();
+        $departments = Department::where('is_active', true)->orderBy('name')->get();
+        $positions = Position::where('is_active', true)->orderBy('name')->get();
 
         // หากผู้ใช้คือ HR จะจำกัดให้เลือกได้แค่ role: employee
         $allowedRoles = Auth::user()->isAdmin() 
