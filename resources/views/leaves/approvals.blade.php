@@ -234,7 +234,7 @@
                             <th>จำนวนวัน</th>
                             <th>สถานะ</th>
                             <th class="text-center" style="width: 120px;">เอกสารแนบ</th>
-                            <th class="text-center" style="width: 110px;">รายละเอียด</th>
+                            <th class="text-center" style="width: 90px;">รายละเอียด</th>
                             <th class="text-end" style="width: 170px;">ดำเนินการ</th>
                         </tr>
                     </thead>
@@ -304,9 +304,11 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    <button type="button" class="btn btn-outline-info btn-sm rounded-pill px-3 py-1 d-inline-flex align-items-center gap-1"
-                                        data-bs-toggle="modal" data-bs-target="#leaveDetailModal{{ $leave->id }}">
-                                        <i class="bi bi-eye"></i> ดูข้อมูล
+                                    <button type="button" class="btn btn-outline-info btn-sm rounded-circle p-0 d-inline-flex align-items-center justify-content-center"
+                                        style="width: 32px; height: 32px;"
+                                        data-bs-toggle="modal" data-bs-target="#leaveDetailModal{{ $leave->id }}"
+                                        title="ดูรายละเอียดคำขอลา">
+                                        <i class="bi bi-eye"></i>
                                     </button>
                                 </td>
                                 <td class="text-end">
