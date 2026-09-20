@@ -5,14 +5,17 @@
 @push('styles')
 <style>
     .ot-card {
-        background: #ffffff;
-        border: none;
+        background: var(--surface-bg);
+        border: 1px solid var(--surface-border);
         border-radius: 20px;
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         overflow: hidden;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
     }
     .ot-header {
-        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        background: var(--primary-gradient);
         padding: 20px 25px;
         color: white;
         border-radius: 20px 20px 0 0;
@@ -32,8 +35,8 @@
         font-size: 0.95rem;
     }
     .ot-stat-card {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
+        background: var(--badge-bg);
+        border: 1px solid var(--surface-border);
         border-radius: 12px;
         padding: 15px;
         text-align: center;
@@ -43,10 +46,10 @@
     .ot-stat-card:hover {
         transform: translateY(-3px);
         box-shadow: 0 10px 20px rgba(0,0,0,0.04);
-        border-color: #cbd5e1;
+        border-color: var(--card-hover-border);
     }
     .ot-stat-title {
-        color: #64748b;
+        color: var(--text-muted);
         font-weight: 600;
         font-size: 0.85rem;
         text-transform: uppercase;
@@ -73,13 +76,13 @@
         width: 100%;
     }
     .ot-table th {
-        background-color: #f1f5f9;
-        color: #475569;
+        background-color: var(--badge-bg);
+        color: var(--text-muted);
         font-weight: 600;
         text-transform: uppercase;
         font-size: 0.8rem;
         padding: 12px 10px;
-        border-bottom: 2px solid #e2e8f0;
+        border-bottom: 2px solid var(--surface-border);
     }
     .ot-table th:first-child { border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
     .ot-table th:last-child { border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
@@ -87,20 +90,20 @@
     .ot-table td {
         padding: 12px 10px;
         vertical-align: middle;
-        border-bottom: 1px solid #f1f5f9;
-        color: #334155;
+        border-bottom: 1px solid var(--surface-border);
+        color: var(--text-main);
         font-size: 0.9rem;
     }
     .ot-table tr:hover td {
-        background-color: #f8fafc;
+        background-color: var(--badge-bg);
     }
     .ot-empty-state {
         padding: 40px 20px;
         text-align: center;
-        background: #f8fafc;
+        background: var(--badge-bg);
         border-radius: 16px;
-        border: 1px dashed #cbd5e1;
-        color: #64748b;
+        border: 1px dashed var(--surface-border);
+        color: var(--text-muted);
     }
 </style>
 @endpush

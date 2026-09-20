@@ -5,15 +5,18 @@
 @push('styles')
 <style>
     .ot-card {
-        background: #ffffff;
-        border: none;
+        background: var(--surface-bg);
+        border: 1px solid var(--surface-border);
         border-radius: 20px;
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         overflow: hidden;
         margin-bottom: 2rem;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
     }
     .ot-header {
-        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        background: var(--primary-gradient);
         padding: 20px 25px;
         color: white;
         border-radius: 20px 20px 0 0;
@@ -24,7 +27,11 @@
         gap: 10px;
     }
     .ot-header.handled {
-        background: linear-gradient(135deg, #334155 0%, #0f172a 100%);
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    }
+    :root[data-bs-theme="dark"] .ot-header.handled {
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%);
+        border-bottom: 1px solid var(--surface-border);
     }
     .ot-table {
         border-collapse: separate;
@@ -32,30 +39,30 @@
         width: 100%;
     }
     .ot-table th {
-        background-color: #f1f5f9;
-        color: #475569;
+        background-color: var(--badge-bg);
+        color: var(--text-muted);
         font-weight: 600;
         text-transform: uppercase;
         font-size: 0.8rem;
         padding: 12px 10px;
-        border-bottom: 2px solid #e2e8f0;
+        border-bottom: 2px solid var(--surface-border);
         text-align: center;
     }
     .ot-table td {
         padding: 12px 10px;
         vertical-align: middle;
-        border-bottom: 1px solid #f1f5f9;
-        color: #334155;
+        border-bottom: 1px solid var(--surface-border);
+        color: var(--text-main);
         font-size: 0.9rem;
         text-align: center;
     }
     .ot-empty-state {
         padding: 40px 20px;
         text-align: center;
-        background: #f8fafc;
+        background: var(--badge-bg);
         border-radius: 16px;
-        border: 1px dashed #cbd5e1;
-        color: #64748b;
+        border: 1px dashed var(--surface-border);
+        color: var(--text-muted);
     }
 </style>
 @endpush
@@ -187,7 +194,7 @@
                     <!-- Rows Per Page Selector -->
                     <form action="{{ route('overtime.index', [], false) }}" method="GET" class="d-flex align-items-center gap-2 m-0">
                         <label for="per_page_select_ot" class="small text-white-50 mb-0 text-nowrap">แสดงต่อหน้า:</label>
-                        <select name="per_page" id="per_page_select_ot" class="form-select form-select-sm bg-white text-dark py-1" style="width: 80px;" onchange="this.form.submit()">
+                        <select name="per_page" id="per_page_select_ot" class="form-select form-select-sm bg-dark text-white border-secondary py-1" style="width: 80px;" onchange="this.form.submit()">
                             <option value="5" {{ ($perPage ?? 10) == 5 ? 'selected' : '' }}>5</option>
                             <option value="10" {{ ($perPage ?? 10) == 10 ? 'selected' : '' }}>10</option>
                             <option value="25" {{ ($perPage ?? 10) == 25 ? 'selected' : '' }}>25</option>
