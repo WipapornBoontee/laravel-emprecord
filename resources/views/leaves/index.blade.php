@@ -184,9 +184,14 @@
                                 </td>
                                  <td style="max-width: 250px;">
                                     @if($leave->attachment_url)
-                                        <a href="{{ $leave->attachment_url }}" target="_blank" class="badge bg-info-subtle text-info border border-info-subtle mt-1 text-decoration-none">
+                                        <button type="button" 
+                                            class="btn btn-sm btn-outline-info rounded-pill px-2 py-1 view-attachment-btn" 
+                                            data-url="{{ $leave->attachment_url }}"
+                                            data-title="เอกสารแนบ - {{ $leave->user->name }} ({{ $leave->leaveType->name ?? 'การลา' }})">
                                             <i class="bi bi-paperclip me-1"></i>ดูเอกสารแนบ
-                                        </a>
+                                        </button>
+                                    @else
+                                        <span class="text-muted small">-</span>
                                     @endif
                                 </td>
                                 <td>
@@ -208,14 +213,18 @@
                                     @if($leave->approver)
                                         <!-- <div class="small fw-semibold">{{ $leave->approver->name }}</div> -->
                                         <!-- <span class="text-muted small">{{ $leave->approved_at ? \Carbon\Carbon::parse($leave->approved_at)->format('d/m/Y H:i') : '' }}</span> -->
-                                        @if($leave->remark)
-                                            <div class="text-muted small fst-italic">"{{ $leave->remark }}"</div>
-                                        @endif
+                                    @endif
+                                    @if($leave->status === 'rejected' && $leave->remark)
+                                        <div class="small text-danger mt-1">
+                                            <strong>เหตุผล:</strong> {{ $leave->remark }}
+                                        </div>
+                                    @elseif($leave->remark)
+                                        <div class="text-muted small fst-italic">"{{ $leave->remark }}"</div>
                                     @else
                                         <span class="text-muted small">-</span>
                                     @endif
                                 </td>
-                                <td class="text-end">
+                                <td class="text-center">
                                     @if($leave->status === 'pending')
                                         <form action="{{ route('leaves.cancel', $leave, false) }}" method="POST" class="d-inline"
                                             onsubmit="return confirm('คุณต้องการยกเลิกคำขอนี้ใช่หรือไม่?');">
@@ -232,7 +241,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="text-center py-5 text-muted">
+                                <td colspan="9" class="text-center py-5 text-muted">
                                     <i class="bi bi-calendar-x fs-1 d-block mb-2 opacity-50"></i>
                                     <span>ยังไม่มีประวัติการยื่นคำขอลา</span>
                                 </td>
@@ -250,4 +259,81 @@
         </div>
     </div>
 </div>
+
+<!-- Modal สำหรับแสดงเอกสารแนบ -->
+<div class="modal fade" id="attachmentPreviewModal" tabindex="-1" aria-labelledby="attachmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content form-card border-0 shadow-lg">
+            <div class="modal-header border-bottom border-theme pb-3">
+                <h5 class="modal-title fw-bold text-theme d-flex align-items-center gap-2" id="attachmentModalLabel">
+                    <i class="bi bi-file-earmark-text text-primary fs-5"></i>
+                    <span id="modalAttachmentTitle">เอกสารแนบการลา</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-3 text-center" style="min-height: 300px; background: rgba(0,0,0,0.03);">
+                <div id="attachmentImageWrapper" class="d-none">
+                    <img id="attachmentImage" src="" alt="เอกสารแนบ" class="img-fluid rounded shadow-sm" style="max-height: 70vh; object-fit: contain;">
+                </div>
+                <div id="attachmentPdfWrapper" class="d-none" style="height: 70vh;">
+                    <iframe id="attachmentPdf" src="" style="width: 100%; height: 100%; border: none; border-radius: 8px;"></iframe>
+                </div>
+            </div>
+            <div class="modal-footer border-top border-theme pt-2 d-flex justify-content-between">
+                <a id="attachmentDownloadBtn" href="" target="_blank" download class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                    <i class="bi bi-box-arrow-up-right me-1"></i>เปิดในแท็บใหม่ / ดาวน์โหลด
+                </a>
+                <button type="button" class="btn btn-sm btn-secondary rounded-pill px-3" data-bs-dismiss="modal">ปิดหน้าต่าง</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const previewModalEl = document.getElementById('attachmentPreviewModal');
+        if (!previewModalEl) return;
+        const previewModal = new bootstrap.Modal(previewModalEl);
+        const titleEl = document.getElementById('modalAttachmentTitle');
+        const imgWrapper = document.getElementById('attachmentImageWrapper');
+        const imgEl = document.getElementById('attachmentImage');
+        const pdfWrapper = document.getElementById('attachmentPdfWrapper');
+        const pdfEl = document.getElementById('attachmentPdf');
+        const downloadBtn = document.getElementById('attachmentDownloadBtn');
+
+        document.querySelectorAll('.view-attachment-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const url = this.getAttribute('data-url');
+                const title = this.getAttribute('data-title') || 'เอกสารแนบ';
+                
+                titleEl.textContent = title;
+                downloadBtn.href = url;
+
+                const isPdf = url.toLowerCase().split('?')[0].endsWith('.pdf');
+
+                if (isPdf) {
+                    imgWrapper.classList.add('d-none');
+                    imgEl.src = '';
+                    pdfEl.src = url;
+                    pdfWrapper.classList.remove('d-none');
+                } else {
+                    pdfWrapper.classList.add('d-none');
+                    pdfEl.src = '';
+                    imgEl.src = url;
+                    imgWrapper.classList.remove('d-none');
+                }
+
+                previewModal.show();
+            });
+        });
+
+        // Clear preview on hide
+        previewModalEl.addEventListener('hidden.bs.modal', function () {
+            imgEl.src = '';
+            pdfEl.src = '';
+        });
+    });
+</script>
+@endpush
 @endsection
