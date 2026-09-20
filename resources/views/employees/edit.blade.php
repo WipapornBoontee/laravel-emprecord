@@ -278,6 +278,8 @@
             // รีเซ็ตตัวเลือกใน dropdown ตำแหน่ง
             posSelect.innerHTML = '<option value="">-- ไม่ระบุตำแหน่ง --</option>';
 
+            let matchCount = 0;
+
             allPosOptions.forEach(opt => {
                 const optDept = opt.getAttribute('data-department');
                 if (!selectedDept || optDept === selectedDept || !optDept) {
@@ -286,8 +288,19 @@
                         cloned.selected = true;
                     }
                     posSelect.appendChild(cloned);
+                    matchCount++;
                 }
             });
+
+            // หากเลือกแผนกแล้ว แต่ไม่พบตำแหน่งงานใดๆ เลย
+            if (selectedDept && matchCount === 0) {
+                const noPosOpt = document.createElement('option');
+                noPosOpt.value = '';
+                noPosOpt.textContent = '⚠️ ไม่พบตำแหน่งงานของแผนกนี้';
+                noPosOpt.disabled = true;
+                noPosOpt.selected = true;
+                posSelect.appendChild(noPosOpt);
+            }
         }
 
         deptSelect.addEventListener('change', () => filterPositions(false));
