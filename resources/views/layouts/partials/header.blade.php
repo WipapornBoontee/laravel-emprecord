@@ -5,7 +5,7 @@
             <div class="brand-icon d-flex align-items-center justify-content-center">
                 <i class="bi bi-person-badge-fill"></i>
             </div>
-            <span>WB-EMS</span>
+            <span>DayHub</span>
         </a>
 
         <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse"

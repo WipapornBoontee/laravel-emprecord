@@ -13,7 +13,7 @@
             </div>
             <div class="col-md-6 text-center text-md-end">
                 <div class="d-flex align-items-center justify-content-center justify-content-md-end gap-3 text-muted small">
-                    <span>© {{ date('Y') }} WB-PROJECT</span>
+                    <span>© {{ date('Y') }} DayHub</span>
                     <span>•</span>
                     <span class="text-white-50">All rights reserved</span>
                 </div>

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>เข้าสู่ระบบ | LV-PROJECT</title>
+    <title>เข้าสู่ระบบ | DayHub</title>
 
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -273,7 +273,7 @@
                     <i class="bi bi-shield-lock-fill"></i>
                 </div>
                 <h1 class="auth-title mb-1">เข้าสู่ระบบ </h1>
-                <p class="auth-subtitle mb-0">ระบบบริหารจัดการข้อมูลพนักงาน (LV-PROJECT)</p>
+                <p class="auth-subtitle mb-0">ระบบบริหารจัดการข้อมูลพนักงาน (DayHub)</p>
             </div>
 
             <!-- Alerts -->
