@@ -228,6 +228,7 @@ class AttendanceController extends Controller
         $date = $request->input('date', Carbon::today()->format('Y-m-d'));
         $departmentId = $request->input('department_id');
         $status = $request->input('status');
+        $reportType = $request->input('report_type', 'all'); // 'all', 'attendance', 'overtime', 'leave', 'late'
 
         // ดึงพนักงาน active ทั้งหมดตามเงื่อนไขแผนก
         $usersQuery = User::with(['department', 'position'])
@@ -281,8 +282,19 @@ class AttendanceController extends Controller
         $otCount = $allReportData->filter(fn($r) => !empty($r['overtime']))->count();
         $totalOtHours = $allReportData->sum(fn($r) => !empty($r['overtime']) ? $r['overtime']->hours : 0);
 
-        // กรองตาม status ถ้ามีการเลือก (สำหรับแสดงข้อมูลในตาราง)
+        // กรองตามประเภทของรายงาน (Report Type Filter)
         $reportData = $allReportData;
+        if ($reportType === 'attendance') {
+            $reportData = $reportData->whereIn('status', ['on_time', 'late']);
+        } elseif ($reportType === 'overtime') {
+            $reportData = $reportData->filter(fn($r) => !empty($r['overtime']));
+        } elseif ($reportType === 'leave') {
+            $reportData = $reportData->where('status', 'leave');
+        } elseif ($reportType === 'late') {
+            $reportData = $reportData->where('status', 'late');
+        }
+
+        // กรองตาม status ถ้ามีการเลือกเพิ่มเติม
         if (!empty($status)) {
             if ($status === 'overtime') {
                 $reportData = $reportData->filter(fn($r) => !empty($r['overtime']));
@@ -299,6 +311,7 @@ class AttendanceController extends Controller
             'date',
             'departmentId',
             'status',
+            'reportType',
             'totalEmployees',
             'attendedCount',
             'onTimeCount',

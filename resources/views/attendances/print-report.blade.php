@@ -422,25 +422,51 @@
 
             <!-- Report Header Title -->
             <div class="report-header-title">
-                <h2>รายงานสรุปการลงเวลาปฏิบัติงานประจำวัน</h2>
-                <div class="report-subtitle">DAILY ATTENDANCE & TIME RECORDING REPORT</div>
+                <h2>
+                    @if(($reportType ?? 'all') === 'attendance') รายงานสรุปการมาปฏิบัติงาน (Attendance)
+                    @elseif(($reportType ?? '') === 'overtime') รายงานการทำงานล่วงเวลา (Overtime - OT)
+                    @elseif(($reportType ?? '') === 'leave') รายงานการลางาน (Leave Report)
+                    @elseif(($reportType ?? '') === 'late') รายงานการเข้างานสาย (Late Arrival Report)
+                    @else รายงานสรุปการลงเวลาปฏิบัติงานประจำวัน
+                    @endif
+                </h2>
+                <div class="report-subtitle">
+                    @if(($reportType ?? 'all') === 'attendance') ATTENDANCE TIME LOG REPORT
+                    @elseif(($reportType ?? '') === 'overtime') OVERTIME (OT) SUMMARY REPORT
+                    @elseif(($reportType ?? '') === 'leave') LEAVE & TIME-OFF REPORT
+                    @elseif(($reportType ?? '') === 'late') LATE ARRIVAL REPORT
+                    @else DAILY ATTENDANCE & TIME RECORDING REPORT
+                    @endif
+                </div>
             </div>
 
             <!-- Filter Summary Bar -->
             <div class="filter-summary-bar">
                 <div>
-                    <strong>แผนกที่ตรวจสอบ:</strong> 
-                    <span>{{ $departmentId ? ($departments->firstWhere('id', $departmentId)->name ?? 'ทั้งหมด') : 'ทุกแผนก (All Departments)' }}</span>
-                    &nbsp;&bull;&nbsp;
-                    <strong>เงื่อนไขสถานะ:</strong> 
-                    <span>
-                        @if($status === 'on_time') ตรงเวลา (On Time)
-                        @elseif($status === 'late') มาสาย (Late)
-                        @elseif($status === 'leave') ลางานที่ได้รับอนุมัติ (Approved Leave)
-                        @elseif($status === 'absent') ยังไม่ลงเวลา / ขาดงาน
-                        @else ทั้งหมด (All Status)
+                    <strong>ประเภทรายงาน:</strong>
+                    <span style="color: #2563eb; font-weight: 700;">
+                        @if(($reportType ?? 'all') === 'attendance') การเข้า-ออกงาน (Attendance)
+                        @elseif(($reportType ?? '') === 'overtime') การทำ OT (Overtime)
+                        @elseif(($reportType ?? '') === 'leave') การลางาน (Leave)
+                        @elseif(($reportType ?? '') === 'late') การเข้างานสาย (Late)
+                        @else ภาพรวมทั้งหมด (Overall)
                         @endif
                     </span>
+                    &nbsp;&bull;&nbsp;
+                    <strong>แผนกที่ตรวจสอบ:</strong> 
+                    <span>{{ $departmentId ? ($departments->firstWhere('id', $departmentId)->name ?? 'ทั้งหมด') : 'ทุกแผนก (All Departments)' }}</span>
+                    @if(!empty($status))
+                        &nbsp;&bull;&nbsp;
+                        <strong>เงื่อนไขสถานะ:</strong> 
+                        <span>
+                            @if($status === 'on_time') ตรงเวลา (On Time)
+                            @elseif($status === 'late') มาสาย (Late)
+                            @elseif($status === 'leave') ลางาน (Leave)
+                            @elseif($status === 'absent') ยังไม่ลงเวลา / ขาด
+                            @else ทั้งหมด
+                            @endif
+                        </span>
+                    @endif
                 </div>
                 <div>
                     <strong>จำนวนพนักงานในรายงาน:</strong> <strong>{{ count($reportData) }}</strong> คน

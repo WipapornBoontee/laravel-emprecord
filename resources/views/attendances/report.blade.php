@@ -139,7 +139,7 @@
                         <i class="bi bi-file-earmark-excel-fill"></i>
                         <span>Export สรุปส่งบัญชี (CSV)</span>
                     </a>
-                    <a href="{{ route('attendances.report.print', ['date' => $date, 'department_id' => $departmentId, 'status' => $status], false) }}" target="_blank" class="btn btn-primary rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2 shadow-sm" title="เปิดหน้าพิมพ์รายงาน PDF รูปแบบมาตรฐานบริษัท" style="background: var(--primary-gradient); border: none; font-weight: 600;">
+                    <a href="{{ route('attendances.report.print', ['date' => $date, 'department_id' => $departmentId, 'status' => $status, 'report_type' => $reportType], false) }}" target="_blank" class="btn btn-primary rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2 shadow-sm" title="เปิดหน้าพิมพ์รายงาน PDF รูปแบบมาตรฐานบริษัท" style="background: var(--primary-gradient); border: none; font-weight: 600;">
                         <i class="bi bi-file-earmark-pdf-fill"></i>
                         <span>พิมพ์รายงาน PDF</span>
                     </a>
@@ -152,7 +152,14 @@
     <div class="col-12 print-only mb-3">
         <div class="d-flex justify-content-between align-items-end border-bottom pb-2">
             <div>
-                <h3 class="fw-bold mb-1">รายงานสรุปการลงเวลาปฏิบัติงานประจำวัน</h3>
+                <h3 class="fw-bold mb-1">
+                    @if($reportType === 'attendance') รายงานสรุปการมาปฏิบัติงาน (Attendance)
+                    @elseif($reportType === 'overtime') รายงานการทำงานล่วงเวลา (Overtime - OT)
+                    @elseif($reportType === 'leave') รายงานการลางาน (Leave Report)
+                    @elseif($reportType === 'late') รายงานการเข้างานสาย (Late Arrival Report)
+                    @else รายงานสรุปการลงเวลาปฏิบัติงานประจำวัน
+                    @endif
+                </h3>
                 <span class="text-muted small">
                     วันที่ตรวจสอบ: {{ \Carbon\Carbon::parse($date)->format('d/m/Y') }} 
                     @if($departmentId)
@@ -170,13 +177,25 @@
     <div class="col-12 screen-only filter-section">
         <div class="report-card p-4">
             <form method="GET" action="{{ route('attendances.report', [], false) }}" class="row g-3 align-items-end">
-                <div class="col-md-4">
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold text-theme">
+                        <i class="bi bi-file-earmark-text me-1 text-primary"></i> ประเภทของรายงาน
+                    </label>
+                    <select name="report_type" class="form-select filter-input fw-semibold">
+                        <option value="all" {{ ($reportType ?? 'all') === 'all' ? 'selected' : '' }}>📄 รายงานภาพรวมทั้งหมด (Overall)</option>
+                        <option value="attendance" {{ ($reportType ?? '') === 'attendance' ? 'selected' : '' }}>🕒 รายงานการเข้า-ออกงาน (Attendance)</option>
+                        <option value="overtime" {{ ($reportType ?? '') === 'overtime' ? 'selected' : '' }}>⚡ รายงานการทำ OT (Overtime)</option>
+                        <option value="leave" {{ ($reportType ?? '') === 'leave' ? 'selected' : '' }}>🏖️ รายงานการลางาน (Leave)</option>
+                        <option value="late" {{ ($reportType ?? '') === 'late' ? 'selected' : '' }}>⚠️ รายงานการเข้างานสาย (Late)</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
                     <label class="form-label small fw-semibold text-theme">
                         <i class="bi bi-calendar-event me-1"></i> วันที่ตรวจสอบ
                     </label>
                     <input type="date" name="date" class="form-control filter-input" value="{{ $date }}" required>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label small fw-semibold text-theme">
                         <i class="bi bi-diagram-3 me-1"></i> แผนกงาน
                     </label>
@@ -189,17 +208,16 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label class="form-label small fw-semibold text-theme">
-                        <i class="bi bi-funnel me-1"></i> สถานะการลงเวลา
+                        <i class="bi bi-funnel me-1"></i> สถานะย่อย
                     </label>
                     <select name="status" class="form-select filter-input">
-                        <option value="">-- ทุกสถานะ --</option>
+                        <option value="">-- ทั้งหมด --</option>
                         <option value="on_time" {{ $status === 'on_time' ? 'selected' : '' }}>ตรงเวลา (On Time)</option>
                         <option value="late" {{ $status === 'late' ? 'selected' : '' }}>มาสาย (Late)</option>
                         <option value="leave" {{ $status === 'leave' ? 'selected' : '' }}>ลางาน (Leave)</option>
                         <option value="absent" {{ $status === 'absent' ? 'selected' : '' }}>ยังไม่ลงเวลา / ขาดงาน</option>
-                        <option value="overtime" {{ $status === 'overtime' ? 'selected' : '' }}>มีการทำ OT (Overtime)</option>
                     </select>
                 </div>
                 <div class="col-md-1">
