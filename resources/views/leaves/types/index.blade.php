@@ -119,10 +119,19 @@
                     <input type="text" name="name" id="name" class="form-control form-control-custom" 
                         placeholder="เช่น ลาคลอด, ลาฝึกอบรม" required value="{{ old('name') }}">
                 </div>
-                <div class="mb-4">
+                <div class="mb-3">
                     <label for="default_days" class="form-label fw-semibold small text-theme">โควตาเริ่มต้นต่อปี (วัน) <span class="text-danger">*</span></label>
                     <input type="number" name="default_days" id="default_days" class="form-control form-control-custom" 
                         placeholder="เช่น 30 หรือ 6" required min="0" max="365" value="{{ old('default_days', 6) }}">
+                </div>
+                <div class="mb-4">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="store_is_active" 
+                            name="is_active" value="1" {{ old('is_active', '1') ? 'checked' : '' }}>
+                        <label class="form-check-label fw-semibold text-theme small cursor-pointer" for="store_is_active">
+                            เปิดใช้งานประเภทการลานี้ (Active)
+                        </label>
+                    </div>
                 </div>
                 <button type="submit" class="btn btn-submit-custom w-100 d-flex align-items-center justify-content-center gap-2">
                     <i class="bi bi-check-lg"></i> บันทึกประเภทการลา
@@ -153,6 +162,7 @@
                             <th>ประเภทการลา</th>
                             <th>โควตาเริ่มต้น / ปี</th>
                             <th>จำนวนคำขอลาที่ใช้</th>
+                            <th class="text-center" style="width: 140px;">สถานะ</th>
                             <th class="text-end" style="width: 140px;">จัดการ</th>
                         </tr>
                     </thead>
@@ -172,6 +182,22 @@
                                     <span class="text-muted small">
                                         {{ $type->leave_requests_count }} รายการ
                                     </span>
+                                </td>
+                                <td class="text-center">
+                                    <form action="{{ route('leaves.types.toggleStatus', $type, false) }}" method="POST" class="d-inline-flex align-items-center justify-content-center gap-2">
+                                        @csrf
+                                        @method('PATCH')
+                                        <div class="form-check form-switch m-0 d-flex align-items-center gap-2">
+                                            <input class="form-check-input table-switch m-0" type="checkbox" role="switch" 
+                                                id="switch_type_{{ $type->id }}" 
+                                                onchange="this.form.submit()" 
+                                                {{ ($type->is_active ?? true) ? 'checked' : '' }}
+                                                title="{{ ($type->is_active ?? true) ? 'คลิกเพื่อปิดใช้งาน' : 'คลิกเพื่อเปิดใช้งาน' }}">
+                                            <label class="form-check-label small fw-semibold cursor-pointer {{ ($type->is_active ?? true) ? 'text-success' : 'text-muted' }}" for="switch_type_{{ $type->id }}">
+                                                {{ ($type->is_active ?? true) ? 'เปิด' : 'ปิด' }}
+                                            </label>
+                                        </div>
+                                    </form>
                                 </td>
                                 <td class="text-end">
                                     <div class="d-inline-flex align-items-center gap-1">
@@ -202,7 +228,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center py-4 text-muted">ยังไม่มีประเภทการลาในระบบ</td>
+                                <td colspan="6" class="text-center py-4 text-muted">ยังไม่มีประเภทการลาในระบบ</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -237,6 +263,16 @@
                             <label class="form-label small fw-semibold text-theme">โควตาเริ่มต้นต่อปี (วัน) <span class="text-danger">*</span></label>
                             <input type="number" name="default_days" class="form-control form-control-custom" 
                                 value="{{ old('default_days', $type->default_days) }}" min="0" max="365" required>
+                        </div>
+                        <div class="mb-2">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="is_active_{{ $type->id }}" 
+                                    name="is_active" value="1" {{ old('is_active', $type->is_active ?? true) ? 'checked' : '' }}>
+                                <label class="form-check-label fw-semibold text-theme small cursor-pointer" for="is_active_{{ $type->id }}">
+                                    เปิดใช้งานประเภทการลานี้ (Active)
+                                </label>
+                            </div>
+                            <small class="text-muted d-block mt-1">หากปิดการใช้งาน จะไม่สามารถเลือกประเภทการลานี้ในแบบฟอร์มยื่นขอลาได้</small>
                         </div>
                     </div>
                     <div class="modal-footer border-top border-theme pt-2">

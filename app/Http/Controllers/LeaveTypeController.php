@@ -38,6 +38,7 @@ class LeaveTypeController extends Controller
                 Rule::unique('leave_types', 'name'),
             ],
             'default_days' => ['required', 'integer', 'min:0', 'max:365'],
+            'is_active' => ['nullable', 'boolean'],
         ], [
             'name.required' => 'กรุณากรอกชื่อประเภทการลา',
             'name.unique' => 'ประเภทการลานี้มีในระบบแล้ว (กรุณาใช้ชื่ออื่น)',
@@ -47,6 +48,8 @@ class LeaveTypeController extends Controller
             'default_days.min' => 'จำนวนวันต้องไม่น้อยกว่า 0',
             'default_days.max' => 'จำนวนวันต้องไม่เกิน 365 วัน',
         ]);
+
+        $validated['is_active'] = $request->has('is_active') ? (bool)$request->input('is_active') : true;
 
         LeaveType::create($validated);
 
@@ -71,6 +74,7 @@ class LeaveTypeController extends Controller
                 Rule::unique('leave_types', 'name')->ignore($type->id),
             ],
             'default_days' => ['required', 'integer', 'min:0', 'max:365'],
+            'is_active' => ['nullable', 'boolean'],
         ], [
             'name.required' => 'กรุณากรอกชื่อประเภทการลา',
             'name.unique' => 'ประเภทการลานี้มีในระบบแล้ว (กรุณาใช้ชื่ออื่น)',
@@ -81,9 +85,23 @@ class LeaveTypeController extends Controller
             'default_days.max' => 'จำนวนวันต้องไม่เกิน 365 วัน',
         ]);
 
+        $validated['is_active'] = $request->has('is_active');
+
         $type->update($validated);
 
         return redirect()->to(route('leaves.types.index', [], false))->with('success', 'อัปเดตประเภทการลาสำเร็จ');
+    }
+
+    /**
+     * สลับสถานะเปิด/ปิดการใช้งานประเภทการลา (Toggle Active Status)
+     */
+    public function toggleStatus(LeaveType $type)
+    {
+        $type->is_active = !$type->is_active;
+        $type->save();
+
+        $statusText = $type->is_active ? 'เปิดใช้งาน' : 'ปิดการใช้งาน';
+        return redirect()->to(route('leaves.types.index', [], false))->with('success', "เปลี่ยนสถานะประเภทการลา {$type->name} เป็น {$statusText} เรียบร้อยแล้ว");
     }
 
     /**

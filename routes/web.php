@@ -99,6 +99,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/leaves-types', [\App\Http\Controllers\LeaveTypeController::class, 'index'])->name('leaves.types.index');
         Route::post('/leaves-types', [\App\Http\Controllers\LeaveTypeController::class, 'store'])->name('leaves.types.store');
         Route::put('/leaves-types/{type}', [\App\Http\Controllers\LeaveTypeController::class, 'update'])->name('leaves.types.update');
+        Route::patch('/leaves-types/{type}/toggle-status', [\App\Http\Controllers\LeaveTypeController::class, 'toggleStatus'])->name('leaves.types.toggleStatus');
         Route::delete('/leaves-types/{type}', [\App\Http\Controllers\LeaveTypeController::class, 'destroy'])->name('leaves.types.destroy');
 
         // จัดการวันหยุดบริษัทและวันหยุดนักขัตฤกษ์ (Company Holidays)

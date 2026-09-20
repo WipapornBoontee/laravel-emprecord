@@ -8,6 +8,7 @@ use App\Models\LeaveType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class LeaveController extends Controller
 {
@@ -58,14 +59,17 @@ class LeaveController extends Controller
         $user = Auth::user();
         $currentYear = (int) date('Y');
 
-        // ดึงประเภทการลาทั้งหมดพร้อมยอดคงเหลือของพนักงานในปีนี้
-        $leaveBalances = LeaveBalance::with('leaveType')
+        // ดึงประเภทการลาที่เปิดใช้งาน พร้อมยอดคงเหลือของพนักงานในปีนี้
+        $leaveBalances = LeaveBalance::whereHas('leaveType', function ($query) {
+                $query->where('is_active', true);
+            })
+            ->with('leaveType')
             ->where('user_id', $user->id)
             ->where('year', $currentYear)
             ->get();
 
-        // หากยังไม่มีการจัดสรรยอดคงเหลือ ให้ดึง LeaveType ทั้งหมด
-        $leaveTypes = LeaveType::all();
+        // หากยังไม่มีการจัดสรรยอดคงเหลือ ให้ดึง LeaveType ที่เปิดใช้งานทั้งหมด
+        $leaveTypes = LeaveType::where('is_active', true)->get();
 
         // ดึงวันหยุดบริษัทสำหรับ JavaScript คำนวณวันลาจริงหน้าบ้าน
         $companyHolidays = \App\Models\CompanyHoliday::all(['name', 'holiday_date', 'is_recurring']);
@@ -82,14 +86,17 @@ class LeaveController extends Controller
         $currentYear = (int) date('Y');
 
         $request->validate([
-            'leave_type_id' => ['required', 'exists:leave_types,id'],
+            'leave_type_id' => [
+                'required',
+                Rule::exists('leave_types', 'id')->where('is_active', true),
+            ],
             'start_date' => ['required', 'date'],
             'end_date' => ['required', 'date', 'after_or_equal:start_date'],
             'reason' => ['required', 'string', 'max:1000'],
             'attachment' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
         ], [
             'leave_type_id.required' => 'กรุณาเลือกประเภทการลา',
-            'leave_type_id.exists' => 'ประเภทการลาที่เลือกไม่ถูกต้อง',
+            'leave_type_id.exists' => 'ประเภทการลาที่เลือกไม่ถูกต้อง หรือถูกปิดการใช้งานแล้ว',
             'start_date.required' => 'กรุณาระบุวันที่เริ่มต้น',
             'end_date.required' => 'กรุณาระบุวันที่สิ้นสุด',
             'end_date.after_or_equal' => 'วันที่สิ้นสุดต้องไม่น้อยกว่าวันที่เริ่มต้น',
