@@ -57,7 +57,7 @@
                     </a>
                     @if(auth()->user()->hasRole('Admin') || auth()->user()->hasRole('HR'))
                         <a href="{{ route('leaves.approvals', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2 text-decoration-none">
-                            <i class="bi bi-check2-square me-1 text-success"></i> ศูนย์พิจารณาอนุมัติ
+                            <i class="bi bi-check2-square me-1 text-success"></i> พิจารณาอนุมัติ
                         </a>
                     @endif
                     <a href="{{ route('leaves.create', [], false) }}" class="btn btn-apply-leave d-inline-flex align-items-center gap-2">

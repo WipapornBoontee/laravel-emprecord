@@ -90,7 +90,7 @@
                         <i class="bi bi-check2-square"></i>
                     </div>
                     <div>
-                        <h3 class="fw-bold mb-1 gradient-text">ศูนย์พิจารณาอนุมัติคำขอลา</h3>
+                        <h3 class="fw-bold mb-1 gradient-text">พิจารณาอนุมัติคำขอลา</h3>
                         <p class="text-muted mb-0 small">
                             ตรวจสอบและพิจารณาอนุมัติคำขอลาของพนักงานในองค์กร (ระบบจะตัดยอดวันลาและซิงค์การลงเวลาอัตโนมัติ)
                         </p>

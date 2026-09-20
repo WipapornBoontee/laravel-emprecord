@@ -62,7 +62,7 @@
                         <i class="bi bi-gear-fill me-1"></i> ตั้งค่าประเภทวันลา
                     </a>
                     <a href="{{ route('leaves.approvals', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2 text-decoration-none">
-                        <i class="bi bi-check2-square me-1 text-success"></i> ศูนย์พิจารณาอนุมัติ
+                        <i class="bi bi-check2-square me-1 text-success"></i> พิจารณาอนุมัติ
                     </a>
                 </div>
             </div>
