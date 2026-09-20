@@ -84,6 +84,8 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/departments/{department}', [\App\Http\Controllers\DepartmentController::class, 'destroy'])->name('departments.destroy');
         Route::get('/departments/positions', [\App\Http\Controllers\DepartmentController::class, 'positions'])->name('departments.positions');
         Route::post('/departments/positions', [\App\Http\Controllers\DepartmentController::class, 'storePosition'])->name('departments.positions.store');
+        Route::put('/departments/positions/{position}', [\App\Http\Controllers\DepartmentController::class, 'updatePosition'])->name('departments.positions.update');
+        Route::patch('/departments/positions/{position}/toggle-status', [\App\Http\Controllers\DepartmentController::class, 'togglePositionStatus'])->name('departments.positions.toggleStatus');
         Route::delete('/departments/positions/{position}', [\App\Http\Controllers\DepartmentController::class, 'destroyPosition'])->name('departments.positions.destroy');
 
         // ศูนย์อนุมัติคำขอลา (Leave Approvals & Quota Management)

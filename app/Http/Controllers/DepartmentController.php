@@ -84,7 +84,7 @@ class DepartmentController extends Controller
      */
     public function positions()
     {
-        $positions = Position::withCount('users')->orderBy('name')->get();
+        $positions = Position::withCount('users')->with(['users.department'])->orderBy('name')->get();
         return view('departments.positions', compact('positions'));
     }
 
@@ -103,6 +103,37 @@ class DepartmentController extends Controller
         Position::create($validated);
 
         return redirect()->to(route('departments.positions', [], false))->with('success', 'เพิ่มตำแหน่งงานใหม่เรียบร้อยแล้ว');
+    }
+
+    /**
+     * Update position details
+     */
+    public function updatePosition(Request $request, Position $position)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:100', 'unique:positions,name,' . $position->id],
+            'is_active' => ['nullable', 'boolean'],
+        ], [
+            'name.required' => 'กรุณากรอกชื่อตำแหน่งงาน',
+            'name.unique' => 'ชื่อตำแหน่งนี้มีในระบบแล้ว',
+        ]);
+
+        $validated['is_active'] = $request->has('is_active') ? true : false;
+        $position->update($validated);
+
+        return redirect()->to(route('departments.positions', [], false))->with('success', "แก้ไขข้อมูลตำแหน่งงาน {$position->name} เรียบร้อยแล้ว");
+    }
+
+    /**
+     * Toggle position active status
+     */
+    public function togglePositionStatus(Position $position)
+    {
+        $position->is_active = !$position->is_active;
+        $position->save();
+
+        $statusText = $position->is_active ? 'เปิดใช้งาน' : 'ปิดการใช้งาน';
+        return redirect()->to(route('departments.positions', [], false))->with('success', "เปลี่ยนสถานะตำแหน่งงาน {$position->name} เป็น {$statusText} เรียบร้อยแล้ว");
     }
 
     /**

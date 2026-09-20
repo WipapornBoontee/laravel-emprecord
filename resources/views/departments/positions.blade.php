@@ -51,6 +51,18 @@
         background: var(--primary-gradient);
         color: white;
     }
+    .table-switch {
+        cursor: pointer;
+        width: 2.8rem !important;
+        height: 1.45rem !important;
+    }
+    .table-switch:focus {
+        box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .table-switch:checked {
+        background-color: #10b981;
+        border-color: #10b981;
+    }
 </style>
 @endpush
 
@@ -122,17 +134,21 @@
     <div class="col-lg-8">
         <div class="dept-card overflow-hidden">
             <div class="p-4 border-bottom border-theme d-flex align-items-center justify-content-between">
-                <h5 class="fw-bold mb-0 text-theme">รายชื่อตำแหน่งงานทั้งหมด ({{ $positions->count() }} ตำแหน่ง)</h5>
+                <div>
+                    <h5 class="fw-bold mb-0 text-theme">รายชื่อตำแหน่งงานทั้งหมด ({{ $positions->count() }} ตำแหน่ง)</h5>
+                    <small class="text-muted">จัดการสถานะการใช้งาน ดูรายชื่อพนักงาน และแก้ไขข้อมูลตำแหน่ง</small>
+                </div>
             </div>
 
             <div class="table-responsive">
                 <table class="table table-custom mb-0">
                     <thead>
                         <tr>
-                            <th style="width: 70px;">#</th>
+                            <th style="width: 60px;">#</th>
                             <th>ชื่อตำแหน่ง</th>
-                            <th style="width: 150px;">จำนวนพนักงาน</th>
-                            <th class="text-end" style="width: 100px;">จัดการ</th>
+                            <th style="width: 130px;">จำนวนพนักงาน</th>
+                            <th style="width: 140px;" class="text-center">สถานะ</th>
+                            <th class="text-end" style="width: 150px;">จัดการ</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -143,30 +159,66 @@
                                     <i class="bi bi-award-fill text-warning me-2"></i>{{ $pos->name }}
                                 </td>
                                 <td>
-                                    <span class="badge bg-success-subtle text-success px-2 py-1">
+                                    <button type="button" 
+                                        class="badge bg-success-subtle text-success border-0 px-2 py-1 cursor-pointer" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#viewPosModal{{ $pos->id }}"
+                                        title="คลิกเพื่อดูรายชื่อพนักงาน">
                                         <i class="bi bi-people me-1"></i>{{ $pos->users_count }} คน
-                                    </span>
+                                    </button>
+                                </td>
+                                <td class="text-center">
+                                    <form action="{{ route('departments.positions.toggleStatus', $pos, false) }}" method="POST" class="d-inline-flex align-items-center justify-content-center gap-2">
+                                        @csrf
+                                        @method('PATCH')
+                                        <div class="form-check form-switch m-0 d-flex align-items-center gap-2">
+                                            <input class="form-check-input table-switch m-0" type="checkbox" role="switch" 
+                                                id="switch_pos_{{ $pos->id }}" 
+                                                onchange="this.form.submit()" 
+                                                {{ ($pos->is_active ?? true) ? 'checked' : '' }}
+                                                title="{{ ($pos->is_active ?? true) ? 'คลิกเพื่อปิดใช้งาน' : 'คลิกเพื่อเปิดใช้งาน' }}">
+                                            <label class="form-check-label small fw-semibold cursor-pointer {{ ($pos->is_active ?? true) ? 'text-success' : 'text-muted' }}" for="switch_pos_{{ $pos->id }}">
+                                                {{ ($pos->is_active ?? true) ? 'เปิด' : 'ปิด' }}
+                                            </label>
+                                        </div>
+                                    </form>
                                 </td>
                                 <td class="text-end">
-                                    @if($pos->users_count === 0)
-                                        <form action="{{ route('departments.positions.destroy', $pos, false) }}" method="POST" class="d-inline"
-                                            onsubmit="return confirm('ยืนยันลบตำแหน่ง {{ $pos->name }}?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-3 py-1 px-2" title="ลบตำแหน่ง">
-                                                <i class="bi bi-trash3"></i>
+                                    <div class="d-flex align-items-center justify-content-end gap-1">
+                                        <!-- ดูสมาชิก (View) -->
+                                        <button type="button" class="btn btn-outline-info btn-sm rounded-3 py-1 px-2" 
+                                            data-bs-toggle="modal" data-bs-target="#viewPosModal{{ $pos->id }}" title="ดูพนักงานที่ครองตำแหน่งนี้">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+
+                                        <!-- แก้ไข (Edit) -->
+                                        <button type="button" class="btn btn-outline-warning btn-sm rounded-3 py-1 px-2" 
+                                            data-bs-toggle="modal" data-bs-target="#editPosModal{{ $pos->id }}" title="แก้ไขชื่อ/สถานะ">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </button>
+
+                                        <!-- ลบ (Delete) -->
+                                        @if($pos->users_count === 0)
+                                            <form action="{{ route('departments.positions.destroy', $pos, false) }}" method="POST" class="d-inline"
+                                                onsubmit="return confirm('ยืนยันลบตำแหน่ง {{ $pos->name }}?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-3 py-1 px-2" title="ลบตำแหน่ง">
+                                                    <i class="bi bi-trash3"></i>
+                                                </button>
+                                            </form>
+                                        @else
+                                            <button type="button" class="btn btn-outline-secondary btn-sm rounded-3 py-1 px-2 disabled opacity-50" 
+                                                title="ไม่สามารถลบได้เนื่องจากมีพนักงานดำรงตำแหน่งนี้อยู่">
+                                                <i class="bi bi-lock-fill"></i>
                                             </button>
-                                        </form>
-                                    @else
-                                        <span class="badge bg-secondary-subtle text-muted" title="ไม่สามารถลบได้เนื่องจากมีพนักงานดำรงตำแหน่งนี้อยู่">
-                                            <i class="bi bi-lock-fill"></i> ไม่ว่าง
-                                        </span>
-                                    @endif
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="text-center py-4 text-muted">ยังไม่มีข้อมูลตำแหน่งงาน</td>
+                                <td colspan="5" class="text-center py-4 text-muted">ยังไม่มีข้อมูลตำแหน่งงาน</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -175,4 +227,116 @@
         </div>
     </div>
 </div>
+
+<!-- Modals Section -->
+@foreach($positions as $pos)
+    <!-- Modal: ดูสมาชิกในตำแหน่ง (View Members) -->
+    <div class="modal fade" id="viewPosModal{{ $pos->id }}" tabindex="-1" aria-labelledby="viewPosModalLabel{{ $pos->id }}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content form-card border-0 shadow-lg">
+                <div class="modal-header border-bottom border-theme pb-3">
+                    <h5 class="modal-title fw-bold text-theme d-flex align-items-center gap-2" id="viewPosModalLabel{{ $pos->id }}">
+                        <i class="bi bi-award-fill text-warning"></i>
+                        <span>พนักงานในตำแหน่ง: {{ $pos->name }}</span>
+                        <span class="badge bg-success-subtle text-success fs-6">{{ $pos->users_count }} คน</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    @if($pos->users->count() > 0)
+                        <div class="table-responsive" style="max-height: 400px;">
+                            <table class="table table-custom mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>รหัส / ชื่อพนักงาน</th>
+                                        <th>อีเมล</th>
+                                        <th>แผนกสังกัด</th>
+                                        <th class="text-center">บทบาท</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($pos->users as $u)
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <div class="avatar-circle-sm bg-warning-subtle text-warning fw-bold d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; border-radius: 50%;">
+                                                        {{ mb_substr($u->name, 0, 1) }}
+                                                    </div>
+                                                    <div>
+                                                        <div class="fw-semibold text-theme">{{ $u->name }}</div>
+                                                        <small class="text-muted">{{ $u->employee_id ?? '-' }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="small text-muted">{{ $u->email }}</td>
+                                            <td>
+                                                <span class="badge bg-primary-subtle text-primary">
+                                                    {{ $u->department->name ?? 'ไม่ระบุแผนก' }}
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-light-subtle border border-secondary-subtle text-uppercase text-secondary" style="font-size: 0.72rem;">
+                                                    {{ $u->role }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="text-center py-5 text-muted">
+                            <i class="bi bi-people fs-1 opacity-50 d-block mb-2"></i>
+                            <span>ยังไม่มีพนักงานดำรงตำแหน่งนี้</span>
+                        </div>
+                    @endif
+                </div>
+                <div class="modal-footer border-top border-theme pt-2">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">ปิด</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: แก้ไขตำแหน่ง (Edit Position) -->
+    <div class="modal fade" id="editPosModal{{ $pos->id }}" tabindex="-1" aria-labelledby="editPosModalLabel{{ $pos->id }}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content form-card border-0 shadow-lg">
+                <div class="modal-header border-bottom border-theme pb-3">
+                    <h5 class="modal-title fw-bold text-theme d-flex align-items-center gap-2" id="editPosModalLabel{{ $pos->id }}">
+                        <i class="bi bi-pencil-square text-warning"></i>
+                        <span>แก้ไขตำแหน่งงาน: {{ $pos->name }}</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('departments.positions.update', $pos, false) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-theme">ชื่อตำแหน่งงาน <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control form-control-custom" 
+                                value="{{ old('name', $pos->name) }}" required>
+                        </div>
+                        <div class="mb-2">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="is_active_pos_{{ $pos->id }}" 
+                                    name="is_active" value="1" {{ ($pos->is_active ?? true) ? 'checked' : '' }}>
+                                <label class="form-check-label fw-semibold text-theme small" for="is_active_pos_{{ $pos->id }}">
+                                    เปิดใช้งานตำแหน่งนี้ (Active)
+                                </label>
+                            </div>
+                            <small class="text-muted d-block mt-1">หากปิดการใช้งาน ตำแหน่งนี้จะไม่แสดงในตัวเลือกเพิ่ม/ย้ายพนักงานใหม่</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top border-theme pt-2">
+                        <button type="button" class="btn btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">ยกเลิก</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4">บันทึกการแก้ไข</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+@endforeach
+
 @endsection
