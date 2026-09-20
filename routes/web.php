@@ -111,6 +111,7 @@ Route::middleware(['auth'])->group(function () {
         // สรุปรายงานเวลาทำงานองค์กร (Organization Attendance Report & Monthly Payroll Export)
         Route::get('/attendance/report', [\App\Http\Controllers\AttendanceController::class, 'report'])->name('attendances.report');
         Route::get('/attendance/report/print', [\App\Http\Controllers\AttendanceController::class, 'printReport'])->name('attendances.report.print');
+        Route::get('/attendance/report/export-daily', [\App\Http\Controllers\AttendanceController::class, 'exportDailyCsv'])->name('attendances.report.export-daily');
         Route::get('/attendance/report/export-monthly', [\App\Http\Controllers\AttendanceController::class, 'exportMonthlySummaryCsv'])->name('attendances.report.export-monthly');
         Route::get('/attendance/monthly-export', [\App\Http\Controllers\AttendanceController::class, 'exportMonthlySummaryCsv']);
 
