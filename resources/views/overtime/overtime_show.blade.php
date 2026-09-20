@@ -188,12 +188,12 @@
                                                 <td class="text-muted">เริ่ม 17:00 น. - <span class="badge {{ $detail['check_out'] ? 'bg-secondary-subtle text-secondary' : 'bg-secondary' }} px-2 py-1">{{ $detail['check_out'] ? $detail['check_out'].' น.' : 'ยังไม่สแกนออก' }}</span></td>
                                                 <td>
                                                     @if($detail['check_out'])
-                                                        <div class="fw-bold text-primary">{{ $detail['ot_hours'] }} ชม.</div>
-                                                        <div class="small text-muted mb-1">
+                                                        <div class="fw-bold text-primary text-center">{{ $detail['ot_hours'] }} ชม.</div>
+                                                        <div class="small text-muted mb-1 text-center">
                                                             (ขอไว้ {{ $detail['requested_hours'] }} ชม. | ทำได้ {{ floor($detail['actual_minutes']/60) }} ชม. {{ $detail['actual_minutes']%60 }} นาที)
                                                         </div>
                                                     @else
-                                                        <div class="fw-bold text-muted">-</div>
+                                                        <div class="fw-bold text-muted text-center">-</div>
                                                         <div class="small text-muted mb-1">(ขอไว้ {{ $detail['requested_hours'] }} ชม.)</div>
                                                     @endif
                                                 </td>
