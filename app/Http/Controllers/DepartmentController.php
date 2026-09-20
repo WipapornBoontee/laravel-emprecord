@@ -11,10 +11,20 @@ class DepartmentController extends Controller
     /**
      * Display departments listing and manage them
      */
-    public function index()
+    public function index(Request $request)
     {
-        $departments = Department::withCount('users')->with(['users.position'])->orderBy('name')->get();
-        return view('departments.index', compact('departments'));
+        $perPage = (int) $request->input('per_page', 10);
+        if (!in_array($perPage, [5, 10, 25, 50])) {
+            $perPage = 10;
+        }
+
+        $departments = Department::withCount('users')
+            ->with(['users.position'])
+            ->orderBy('name')
+            ->paginate($perPage)
+            ->withQueryString();
+
+        return view('departments.index', compact('departments', 'perPage'));
     }
 
     /**
@@ -82,11 +92,21 @@ class DepartmentController extends Controller
     /**
      * Display positions listing and manage them
      */
-    public function positions()
+    public function positions(Request $request)
     {
+        $perPage = (int) $request->input('per_page', 10);
+        if (!in_array($perPage, [5, 10, 25, 50])) {
+            $perPage = 10;
+        }
+
         $departments = Department::where('is_active', true)->orderBy('name')->get();
-        $positions = Position::with(['department'])->withCount('users')->orderBy('name')->get();
-        return view('departments.positions', compact('positions', 'departments'));
+        $positions = Position::with(['department'])
+            ->withCount('users')
+            ->orderBy('name')
+            ->paginate($perPage)
+            ->withQueryString();
+
+        return view('departments.positions', compact('positions', 'departments', 'perPage'));
     }
 
     /**

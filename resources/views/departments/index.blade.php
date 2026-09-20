@@ -133,11 +133,21 @@
     <!-- Departments List Table -->
     <div class="col-lg-8">
         <div class="dept-card overflow-hidden">
-            <div class="p-4 border-bottom border-theme d-flex align-items-center justify-content-between">
+            <div class="p-4 border-bottom border-theme d-flex flex-wrap align-items-center justify-content-between gap-3">
                 <div>
-                    <h5 class="fw-bold mb-0 text-theme">รายชื่อแผนกทั้งหมด ({{ $departments->count() }} แผนก)</h5>
+                    <h5 class="fw-bold mb-0 text-theme">รายชื่อแผนกทั้งหมด ({{ $departments->total() }} แผนก)</h5>
                     <small class="text-muted">จัดการสถานะการใช้งาน ดูรายชื่อสมาชิก และแก้ไขข้อมูล</small>
                 </div>
+                <!-- Rows Per Page Selector -->
+                <form action="{{ route('departments.index', [], false) }}" method="GET" class="d-flex align-items-center gap-2 m-0">
+                    <label for="per_page_select" class="small text-muted mb-0 text-nowrap">แสดงต่อหน้า:</label>
+                    <select name="per_page" id="per_page_select" class="form-select form-select-sm form-control-custom py-1" style="width: 85px;" onchange="this.form.submit()">
+                        <option value="5" {{ ($perPage ?? 10) == 5 ? 'selected' : '' }}>5</option>
+                        <option value="10" {{ ($perPage ?? 10) == 10 ? 'selected' : '' }}>10</option>
+                        <option value="25" {{ ($perPage ?? 10) == 25 ? 'selected' : '' }}>25</option>
+                        <option value="50" {{ ($perPage ?? 10) == 50 ? 'selected' : '' }}>50</option>
+                    </select>
+                </form>
             </div>
 
             <div class="table-responsive">
@@ -154,7 +164,7 @@
                     <tbody>
                         @forelse($departments as $index => $dept)
                             <tr>
-                                <td class="text-muted">{{ $index + 1 }}</td>
+                                <td class="text-muted">{{ $departments->firstItem() + $index }}</td>
                                 <td class="fw-bold text-theme">
                                     <i class="bi bi-folder2-open text-primary me-2"></i>{{ $dept->name }}
                                 </td>
@@ -224,6 +234,13 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Pagination -->
+            @if($departments->hasPages())
+                <div class="p-3 border-top border-theme d-flex justify-content-center">
+                    {{ $departments->links() }}
+                </div>
+            @endif
         </div>
     </div>
 </div>
