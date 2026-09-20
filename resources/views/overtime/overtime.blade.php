@@ -182,12 +182,22 @@
     <div class="row justify-content-center mt-3">
         <div class="col-lg-12">
             <div class="ot-card fade-in">
-                <div class="ot-header handled">
-                    <h5 class="mb-0 fw-bold"><i class="bi bi-clock-history me-2"></i>ประวัติคำขอที่จัดการแล้ว (Handled)</h5>
+                <div class="ot-header handled d-flex flex-wrap align-items-center justify-content-between gap-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-clock-history me-2"></i>ประวัติคำขอที่จัดการแล้ว (Handled) ({{ $handledRequests->total() }} รายการ)</h5>
+                    <!-- Rows Per Page Selector -->
+                    <form action="{{ route('overtime.index', [], false) }}" method="GET" class="d-flex align-items-center gap-2 m-0">
+                        <label for="per_page_select_ot" class="small text-white-50 mb-0 text-nowrap">แสดงต่อหน้า:</label>
+                        <select name="per_page" id="per_page_select_ot" class="form-select form-select-sm bg-white text-dark py-1" style="width: 80px;" onchange="this.form.submit()">
+                            <option value="5" {{ ($perPage ?? 10) == 5 ? 'selected' : '' }}>5</option>
+                            <option value="10" {{ ($perPage ?? 10) == 10 ? 'selected' : '' }}>10</option>
+                            <option value="25" {{ ($perPage ?? 10) == 25 ? 'selected' : '' }}>25</option>
+                            <option value="50" {{ ($perPage ?? 10) == 50 ? 'selected' : '' }}>50</option>
+                        </select>
+                    </form>
                 </div>
                 
                 <div class="card-body p-4">
-                    @if(count($handledRequests) > 0)
+                    @if($handledRequests->count() > 0)
                         <div class="table-responsive">
                             <table class="ot-table text-center">
                                 <thead>
@@ -220,6 +230,13 @@
                                 </tbody>
                             </table>
                         </div>
+
+                        <!-- Pagination Links -->
+                        @if($handledRequests->hasPages())
+                            <div class="pt-3 border-top border-theme d-flex justify-content-center">
+                                {{ $handledRequests->links() }}
+                            </div>
+                        @endif
                     @else
                         <div class="ot-empty-state">
                             <i class="bi bi-inbox text-muted opacity-50 mb-3" style="font-size: 3rem;"></i>

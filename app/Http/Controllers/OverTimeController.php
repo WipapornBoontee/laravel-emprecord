@@ -10,8 +10,13 @@ use App\Models\Overtime;
 
 class OverTimeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $perPage = (int) $request->input('per_page', 10);
+        if (!in_array($perPage, [5, 10, 25, 50])) {
+            $perPage = 10;
+        }
+
         $pendingRequests = Overtime::with('user')
             ->where('status', 'pending')
             ->orderBy('created_at', 'desc')
@@ -20,9 +25,10 @@ class OverTimeController extends Controller
         $handledRequests = Overtime::with(['user', 'hr'])
             ->whereIn('status', ['approved', 'rejected'])
             ->orderBy('updated_at', 'desc')
-            ->get();
+            ->paginate($perPage)
+            ->withQueryString();
 
-        return view('overtime.overtime', compact('pendingRequests', 'handledRequests'));
+        return view('overtime.overtime', compact('pendingRequests', 'handledRequests', 'perPage'));
     }
 
     public function create()
