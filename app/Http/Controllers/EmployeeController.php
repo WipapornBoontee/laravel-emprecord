@@ -217,7 +217,7 @@ class EmployeeController extends Controller
 
         // ประวัติการลาล่าสุด 5 รายการ
         $recentLeaves = $employee->leaveRequests()
-            ->with('leaveType')
+            ->with(['leaveType', 'approver'])
             ->orderBy('id', 'desc')
             ->limit(5)
             ->get();
@@ -228,7 +228,44 @@ class EmployeeController extends Controller
             ->limit(5)
             ->get();
 
-        return view('employees.show', compact('employee', 'leaveBalances', 'recentLeaves', 'recentAttendances'));
+        // สรุปข้อมูล OT และกฎหมายแรงงาน (Overtime Metrics & Logs)
+        $startOfWeek = \Carbon\Carbon::now()->startOfWeek()->format('Y-m-d');
+        $endOfWeek = \Carbon\Carbon::now()->endOfWeek()->format('Y-m-d');
+        $weeklyApprovedOtHours = \App\Models\Overtime::where('user_id', $employee->id)
+            ->whereBetween('date', [$startOfWeek, $endOfWeek])
+            ->where('status', 'approved')
+            ->sum('hours');
+
+        $startOfMonth = \Carbon\Carbon::now()->startOfMonth()->format('Y-m-d');
+        $endOfMonth = \Carbon\Carbon::now()->endOfMonth()->format('Y-m-d');
+        $monthlyApprovedOtHours = \App\Models\Overtime::where('user_id', $employee->id)
+            ->whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->where('status', 'approved')
+            ->sum('hours');
+
+        $yearlyApprovedOtHours = \App\Models\Overtime::where('user_id', $employee->id)
+            ->whereYear('date', $currentYear)
+            ->where('status', 'approved')
+            ->sum('hours');
+
+        // รายการประวัติ/Logs การทำ OT ล่าสุด 5 รายการ
+        $recentOvertimes = \App\Models\Overtime::with('hr')
+            ->where('user_id', $employee->id)
+            ->orderBy('date', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        return view('employees.show', compact(
+            'employee',
+            'leaveBalances',
+            'recentLeaves',
+            'recentAttendances',
+            'weeklyApprovedOtHours',
+            'monthlyApprovedOtHours',
+            'yearlyApprovedOtHours',
+            'recentOvertimes'
+        ));
     }
 
     /**

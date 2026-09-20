@@ -136,7 +136,9 @@
             <p class="text-muted fs-5 mb-0">
                 <i class="bi bi-calendar3 me-2"></i>{{ date('l, d F Y') }}
                 <span class="mx-2">•</span>
-                <span>เวลาเริ่มงานมาตรฐาน: <strong class="text-theme">09:00 น.</strong></span>
+                <span>เวลาเริ่มงาน: <strong class="text-theme">09:00 น.</strong> (เปิดระบบ <strong class="text-success">08:30 น.</strong>)</span>
+                <span class="mx-2">•</span>
+                <span>เวลาเลิกงาน: <strong class="text-warning">17:00 น.</strong> เป็นต้นไป</span>
             </p>
         </div>
     </div>
@@ -171,7 +173,7 @@
                             <i class="bi bi-box-arrow-in-right fs-1"></i>
                         </div>
                         <h4 class="fw-bold mb-1 text-theme">บันทึกเวลาเข้างาน</h4>
-                        <p class="text-muted small mb-4">เข้างานก่อนหรือเท่ากับ 09:00 น. ถือว่าตรงเวลา</p>
+                        <p class="text-muted small mb-4">เปิดลงเวลา 08:30 น. (เข้างานก่อนหรือเท่ากับ 09:00 น. ถือว่าตรงเวลา)</p>
 
                         @if($todayAttendance && !empty($todayAttendance->check_in))
                             <div class="status-box mb-4">
@@ -201,12 +203,23 @@
                             <button type="button" class="btn btn-checkin btn-disabled" disabled>
                                 <i class="bi bi-check2-circle"></i> เช็คอินเรียบร้อยแล้ว
                             </button>
+                        @elseif(!$canCheckIn)
+                            <button type="button" class="btn btn-secondary btn-disabled w-100 py-3 rounded-4 fw-bold" disabled>
+                                <i class="bi bi-clock-history fs-5 me-2"></i> ยังไม่ถึงเวลาเปิดลงเวลา (เปิด 08:30 น.)
+                            </button>
+                            <small class="text-muted d-block mt-2">ระบบเปิดให้ลงเวลาล่วงหน้า 30 นาทีก่อนเริ่มงาน</small>
                         @else
                             <form action="{{ route('attendances.checkin.process', [], false) }}" method="POST">
                                 @csrf
-                                <button type="submit" class="btn btn-checkin" onclick="return confirm('ยืนยันบันทึกเวลาเข้างาน ณ ขณะนี้?');">
-                                    <i class="bi bi-fingerprint fs-4"></i> กดบันทึกเวลาเข้างาน
-                                </button>
+                                @if($isCheckInLate)
+                                    <button type="submit" class="btn btn-warning w-100 py-3 rounded-4 fw-bold text-dark shadow-sm d-flex align-items-center justify-content-center gap-2" onclick="return confirm('ยืนยันบันทึกเวลาเข้างาน (หลัง 09:00 น. สถานะจะเป็นมาสาย)?');">
+                                        <i class="bi bi-exclamation-triangle-fill fs-4"></i> กดบันทึกเวลาเข้างาน (มาสาย)
+                                    </button>
+                                @else
+                                    <button type="submit" class="btn btn-checkin" onclick="return confirm('ยืนยันบันทึกเวลาเข้างาน ณ ขณะนี้?');">
+                                        <i class="bi bi-fingerprint fs-4"></i> กดบันทึกเวลาเข้างาน (ตรงเวลา)
+                                    </button>
+                                @endif
                             </form>
                         @endif
                     </div>
@@ -221,7 +234,7 @@
                             <i class="bi bi-box-arrow-right fs-1"></i>
                         </div>
                         <h4 class="fw-bold mb-1 text-theme">บันทึกเวลาเลิกงาน</h4>
-                        <p class="text-muted small mb-4">เวลาเลิกงานปกติ 17:00 น. บันทึกเมื่อสิ้นสุดการทำงาน</p>
+                        <p class="text-muted small mb-4">เวลาเลิกงานปกติ 17:00 น. เป็นต้นไป บันทึกเมื่อสิ้นสุดการทำงาน</p>
 
                         @if($todayAttendance && !empty($todayAttendance->check_out))
                             <div class="status-box mb-4">
@@ -236,7 +249,15 @@
                         @elseif($todayAttendance && !empty($todayAttendance->check_in))
                             <div class="status-box mb-4">
                                 <span class="text-muted small d-block mb-1">กำลังปฏิบัติงาน</span>
-                                <span class="fs-5 fw-bold text-primary">พร้อมบันทึกเลิกงานเมื่อเสร็จสิ้นภารกิจ</span>
+                                @if($canCheckOut)
+                                    <span class="fs-5 fw-bold text-success">
+                                        <i class="bi bi-check-circle me-1"></i>ถึงเวลาเลิกงานแล้ว สามารถบันทึกเวลาออกงานได้
+                                    </span>
+                                @else
+                                    <span class="fs-6 fw-semibold text-warning">
+                                        <i class="bi bi-hourglass-split me-1"></i>สามารถลงเวลาออกงานได้ตั้งแต่ 17:00 น. เป็นต้นไป
+                                    </span>
+                                @endif
                             </div>
                         @endif
                     </div>
@@ -254,6 +275,11 @@
                             <button type="button" class="btn btn-checkout btn-disabled" disabled>
                                 <i class="bi bi-check2-all"></i> เช็คเอาท์เรียบร้อยแล้ว
                             </button>
+                        @elseif(!$canCheckOut)
+                            <button type="button" class="btn btn-secondary btn-disabled w-100 py-3 rounded-4 fw-bold" disabled>
+                                <i class="bi bi-hourglass-split fs-5 me-2"></i> ยังไม่ถึงเวลาเลิกงาน (ออกได้ตั้งแต่ 17:00 น.)
+                            </button>
+                            <small class="text-muted d-block mt-2">เปิดให้ลงเวลาเลิกงานตั้งแต่เวลา 17:00 น. เป็นต้นไป</small>
                         @else
                             <form action="{{ route('attendances.checkout.process', [], false) }}" method="POST">
                                 @csrf

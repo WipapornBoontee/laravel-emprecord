@@ -83,7 +83,7 @@
     </div>
 
     <!-- Mini Stat Cards -->
-    <div class="col-sm-4">
+    <div class="col-6 col-md-3">
         <div class="stat-card p-3 d-flex align-items-center justify-content-between">
             <div>
                 <span class="text-muted small">รอการอนุมัติ</span>
@@ -94,7 +94,7 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-4">
+    <div class="col-6 col-md-3">
         <div class="stat-card p-3 d-flex align-items-center justify-content-between">
             <div>
                 <span class="text-muted small">อนุมัติแล้ว</span>
@@ -105,7 +105,7 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-4">
+    <div class="col-6 col-md-3">
         <div class="stat-card p-3 d-flex align-items-center justify-content-between">
             <div>
                 <span class="text-muted small">ไม่อนุมัติ / ปฏิเสธ</span>
@@ -113,6 +113,17 @@
             </div>
             <div class="stat-icon-wrapper icon-purple" style="width: 44px; height: 44px;">
                 <i class="bi bi-x-circle-fill fs-5"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card p-3 d-flex align-items-center justify-content-between">
+            <div>
+                <span class="text-muted small">ยกเลิกแล้ว</span>
+                <h4 class="fw-bold mb-0 text-secondary">{{ number_format($cancelledCount ?? 0) }} <span class="fs-6 text-muted fw-normal">รายการ</span></h4>
+            </div>
+            <div class="stat-icon-wrapper icon-indigo" style="width: 44px; height: 44px; background: rgba(148, 163, 184, 0.15); color: #64748b;">
+                <i class="bi bi-dash-circle-fill fs-5"></i>
             </div>
         </div>
     </div>
@@ -128,6 +139,7 @@
                         <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>รออนุมัติ (Pending)</option>
                         <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>อนุมัติแล้ว (Approved)</option>
                         <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>ปฏิเสธ (Rejected)</option>
+                        <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>ยกเลิกแล้ว (Cancelled)</option>
                     </select>
                 </div>
                 <div class="col-md-5">
@@ -184,7 +196,7 @@
                             <th>เอกสารแนบ</th>
                             <th>สถานะคำขอ</th>
                             <th>การพิจารณา</th>
-                            <th class="text-end" style="width: 100px;">จัดการ</th>
+                            <th class="text-end" style="width: 120px;">จัดการ</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -231,6 +243,10 @@
                                         <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">
                                             <i class="bi bi-x-circle-fill me-1"></i>ไม่อนุมัติ
                                         </span>
+                                    @elseif($leave->status === 'cancelled')
+                                        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1">
+                                            <i class="bi bi-dash-circle-fill me-1"></i>ยกเลิกแล้ว
+                                        </span>
                                     @else
                                         <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-1">
                                             <i class="bi bi-hourglass-split me-1"></i>รออนุมัติ
@@ -246,22 +262,26 @@
                                         <div class="small text-danger mt-1">
                                             <strong>เหตุผล:</strong> {{ $leave->remark }}
                                         </div>
+                                    @elseif($leave->status === 'cancelled')
+                                        <div class="text-muted small fst-italic">ผู้ยื่นคำขอยกเลิก</div>
                                     @elseif($leave->remark)
                                         <div class="text-muted small fst-italic">"{{ $leave->remark }}"</div>
                                     @else
                                         <span class="text-muted small">-</span>
                                     @endif
                                 </td>
-                                <td class="text-center">
+                                <td class="text-end">
                                     @if($leave->status === 'pending')
                                         <form action="{{ route('leaves.cancel', $leave, false) }}" method="POST" class="d-inline"
-                                            onsubmit="return confirm('คุณต้องการยกเลิกคำขอนี้ใช่หรือไม่?');">
+                                            onsubmit="return confirm('คุณต้องการยกเลิกคำขอนี้ใช่หรือไม่? (สถานะจะเปลี่ยนเป็นยกเลิกแล้ว)');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-outline-danger btn-sm rounded-3 py-1 px-2" title="ยกเลิกคำขอ">
-                                                <i class="bi bi-x-lg"></i> ยกเลิก
+                                                <i class="bi bi-x-circle"></i> ยกเลิก
                                             </button>
                                         </form>
+                                    @elseif($leave->status === 'cancelled')
+                                        <span class="badge bg-light text-muted border">ยกเลิกแล้ว</span>
                                     @else
                                         <span class="text-muted small">-</span>
                                     @endif

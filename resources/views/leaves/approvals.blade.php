@@ -109,7 +109,7 @@
     </div>
 
     <!-- Mini Stat Cards -->
-    <div class="col-sm-4">
+    <div class="col-6 col-md-3">
         <div class="stat-card p-3 d-flex align-items-center justify-content-between">
             <div>
                 <span class="text-muted small">รอการอนุมัติ (Pending)</span>
@@ -120,7 +120,7 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-4">
+    <div class="col-6 col-md-3">
         <div class="stat-card p-3 d-flex align-items-center justify-content-between">
             <div>
                 <span class="text-muted small">อนุมัติแล้ว (Approved)</span>
@@ -131,7 +131,7 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-4">
+    <div class="col-6 col-md-3">
         <div class="stat-card p-3 d-flex align-items-center justify-content-between">
             <div>
                 <span class="text-muted small">ไม่อนุมัติ / ปฏิเสธ (Rejected)</span>
@@ -139,6 +139,17 @@
             </div>
             <div class="stat-icon-wrapper icon-purple" style="width: 44px; height: 44px;">
                 <i class="bi bi-x-circle-fill fs-5"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card p-3 d-flex align-items-center justify-content-between">
+            <div>
+                <span class="text-muted small">ยกเลิกแล้ว (Cancelled)</span>
+                <h4 class="fw-bold mb-0 text-secondary">{{ number_format($cancelledCount ?? 0) }} <span class="fs-6 text-muted fw-normal">รายการ</span></h4>
+            </div>
+            <div class="stat-icon-wrapper icon-indigo" style="width: 44px; height: 44px; background: rgba(148, 163, 184, 0.15); color: #64748b;">
+                <i class="bi bi-dash-circle-fill fs-5"></i>
             </div>
         </div>
     </div>
@@ -161,6 +172,11 @@
                 <li class="nav-item">
                     <a class="nav-link {{ $status === 'rejected' ? 'active' : '' }}" href="{{ route('leaves.approvals', ['status' => 'rejected', 'department_id' => $departmentId, 'search' => $search], false) }}">
                         <i class="bi bi-x-circle-fill me-1 text-danger"></i> ปฏิเสธ ({{ $rejectedCount }})
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ $status === 'cancelled' ? 'active' : '' }}" href="{{ route('leaves.approvals', ['status' => 'cancelled', 'department_id' => $departmentId, 'search' => $search], false) }}">
+                        <i class="bi bi-dash-circle-fill me-1 text-secondary"></i> ยกเลิกแล้ว ({{ $cancelledCount ?? 0 }})
                     </a>
                 </li>
                 <li class="nav-item">
@@ -287,6 +303,11 @@
                                         @if($leave->remark)
                                             <div class="small text-muted mt-1 fst-italic" style="font-size: 0.75rem;">"{{ Str::limit($leave->remark, 20) }}"</div>
                                         @endif
+                                    @elseif($leave->status === 'cancelled')
+                                        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1">
+                                            <i class="bi bi-dash-circle-fill me-1"></i>ยกเลิกแล้ว
+                                        </span>
+                                        <div class="small text-muted mt-1 fst-italic" style="font-size: 0.75rem;">ผู้ยื่นคำขอยกเลิก</div>
                                     @else
                                         <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-1">
                                             <i class="bi bi-hourglass-split me-1"></i>รออนุมัติ
@@ -340,6 +361,8 @@
                                                 </button>
                                             </div>
                                         @endif
+                                    @elseif($leave->status === 'cancelled')
+                                        <span class="badge bg-light text-muted border">ผู้ยื่นคำขอยกเลิก</span>
                                     @else
                                         <span class="text-muted small">ดำเนินการแล้ว</span>
                                     @endif

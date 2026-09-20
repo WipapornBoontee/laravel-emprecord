@@ -12,9 +12,19 @@ use Illuminate\Support\Facades\Auth;
 class AttendanceController extends Controller
 {
     /**
+     * เวลาเปิดให้ลงเวลาเข้างานได้ล่วงหน้า (30 นาทีก่อนเวลาเริ่มงานมาตรฐาน)
+     */
+    protected string $earliestCheckInTime = '08:30:00';
+
+    /**
      * เวลาเข้างานมาตรฐาน (ก่อนหรือเท่ากับเวลานี้ถือว่าตรงเวลา)
      */
     protected string $standardCheckInTime = '09:00:59';
+
+    /**
+     * เวลาเลิกงานมาตรฐาน (สามารถลงเวลาออกงานได้ตั้งแต่เวลานี้เป็นต้นไป)
+     */
+    protected string $standardCheckOutTime = '17:00:00';
 
     /**
      * หน้าบันทึกเวลาเข้า-ออกงาน (Check-in / Check-out View)
@@ -23,6 +33,16 @@ class AttendanceController extends Controller
     {
         $user = Auth::user();
         $today = Carbon::today()->format('Y-m-d');
+        $now = Carbon::now();
+
+        // ช่วงเวลาที่อนุญาตให้ลงเวลา
+        $earliestCheckIn = Carbon::today()->setTimeFromTimeString($this->earliestCheckInTime);
+        $standardCheckIn = Carbon::today()->setTimeFromTimeString($this->standardCheckInTime);
+        $standardCheckOut = Carbon::today()->setTimeFromTimeString($this->standardCheckOutTime);
+
+        $canCheckIn = $now->gte($earliestCheckIn);
+        $isCheckInLate = $now->gt($standardCheckIn);
+        $canCheckOut = $now->gte($standardCheckOut);
 
         // ตรวจสอบประวัติการลงเวลาของวันนี้
         $todayAttendance = Attendance::with('leaveRequest.leaveType')
@@ -44,7 +64,10 @@ class AttendanceController extends Controller
             'todayAttendance',
             'isLeaveToday',
             'recentAttendances',
-            'today'
+            'today',
+            'canCheckIn',
+            'isCheckInLate',
+            'canCheckOut'
         ));
     }
 
@@ -68,7 +91,13 @@ class AttendanceController extends Controller
             return back()->with('warning', 'คุณได้ทำการบันทึกเวลาเข้างานของวันนี้ไปแล้วเมื่อ ' . $existing->check_in);
         }
 
-        // ประเมินสถานะ: ก่อนหรือเท่ากับ 09:00:59 = ตรงเวลา, หลัง 09:00 = มาสาย
+        // ตรวจสอบว่าถึงเวลาเปิดให้ลงเวลาเข้างานหรือยัง (เปิดล่วงหน้า 30 นาที: 08:30 น.)
+        $earliestCheckIn = Carbon::today()->setTimeFromTimeString($this->earliestCheckInTime);
+        if ($now->lt($earliestCheckIn)) {
+            return back()->with('warning', 'ยังไม่ถึงช่วงเวลาเปิดลงเวลาเข้างาน ระบบเปิดให้บันทึกเวลาเข้างานตั้งแต่เวลา 08:30 น. เป็นต้นไป');
+        }
+
+        // ประเมินสถานะ: 08:30 - 09:00:59 = ตรงเวลา, หลัง 09:00 = มาสาย
         $deadline = Carbon::today()->setTimeFromTimeString($this->standardCheckInTime);
         $status = $now->lte($deadline) ? 'on_time' : 'late';
 
@@ -105,6 +134,12 @@ class AttendanceController extends Controller
 
         if (!empty($attendance->check_out)) {
             return back()->with('info', 'คุณได้บันทึกเวลาเลิกงานของวันนี้ไปแล้วเมื่อ ' . $attendance->check_out);
+        }
+
+        // ตรวจสอบว่าถึงเวลาเลิกงานแล้วหรือยัง (17:00 น. เป็นต้นไป)
+        $standardCheckOut = Carbon::today()->setTimeFromTimeString($this->standardCheckOutTime);
+        if ($now->lt($standardCheckOut)) {
+            return back()->with('warning', 'ยังไม่ถึงเวลาเลิกงาน สามารถบันทึกเวลาออกงานได้ตั้งแต่เวลา 17:00 น. เป็นต้นไป');
         }
 
         $attendance->update([
@@ -193,6 +228,7 @@ class AttendanceController extends Controller
         $date = $request->input('date', Carbon::today()->format('Y-m-d'));
         $departmentId = $request->input('department_id');
         $status = $request->input('status');
+        $reportType = $request->input('report_type', 'all'); // 'all', 'attendance', 'overtime', 'leave', 'late'
 
         // ดึงพนักงาน active ทั้งหมดตามเงื่อนไขแผนก
         $usersQuery = User::with(['department', 'position'])
@@ -212,12 +248,21 @@ class AttendanceController extends Controller
             ->get()
             ->keyBy('user_id');
 
-        // รวมข้อมูลพนักงานทุกคนกับการลงเวลา (ถ้าไม่มีข้อมูลการลงเวลา ให้ถือเป็น 'absent' = ยังไม่ลงเวลา / ขาดงาน)
-        $allReportData = $allUsers->map(function ($emp) use ($attendances) {
+        // ดึงข้อมูลคำขอ OT ที่ได้รับการอนุมัติในวันที่เลือก
+        $overtimes = \App\Models\Overtime::whereIn('user_id', $allUserIds)
+            ->where('date', $date)
+            ->where('status', 'approved')
+            ->get()
+            ->keyBy('user_id');
+
+        // รวมข้อมูลพนักงานทุกคนกับการลงเวลา และ OT
+        $allReportData = $allUsers->map(function ($emp) use ($attendances, $overtimes) {
             $att = $attendances->get($emp->id);
+            $ot = $overtimes->get($emp->id);
             return [
                 'user' => $emp,
                 'attendance' => $att,
+                'overtime' => $ot,
                 'status' => $att ? $att->status : 'absent',
                 'check_in' => $att ? $att->check_in : null,
                 'check_out' => $att ? $att->check_out : null,
@@ -233,10 +278,29 @@ class AttendanceController extends Controller
         $leaveCount = $allReportData->where('status', 'leave')->count();
         $absentCount = $allReportData->where('status', 'absent')->count();
 
-        // กรองตาม status ถ้ามีการเลือก (สำหรับแสดงข้อมูลในตาราง)
+        // สรุปสถิติ OT ประจำวัน
+        $otCount = $allReportData->filter(fn($r) => !empty($r['overtime']))->count();
+        $totalOtHours = $allReportData->sum(fn($r) => !empty($r['overtime']) ? $r['overtime']->hours : 0);
+
+        // กรองตามประเภทของรายงาน (Report Type Filter)
         $reportData = $allReportData;
+        if ($reportType === 'attendance') {
+            $reportData = $reportData->whereIn('status', ['on_time', 'late']);
+        } elseif ($reportType === 'overtime') {
+            $reportData = $reportData->filter(fn($r) => !empty($r['overtime']));
+        } elseif ($reportType === 'leave') {
+            $reportData = $reportData->where('status', 'leave');
+        } elseif ($reportType === 'late') {
+            $reportData = $reportData->where('status', 'late');
+        }
+
+        // กรองตาม status ถ้ามีการเลือกเพิ่มเติม
         if (!empty($status)) {
-            $reportData = $reportData->where('status', $status);
+            if ($status === 'overtime') {
+                $reportData = $reportData->filter(fn($r) => !empty($r['overtime']));
+            } else {
+                $reportData = $reportData->where('status', $status);
+            }
         }
 
         $departments = Department::where('is_active', true)->orderBy('name')->get();
@@ -247,12 +311,15 @@ class AttendanceController extends Controller
             'date',
             'departmentId',
             'status',
+            'reportType',
             'totalEmployees',
             'attendedCount',
             'onTimeCount',
             'lateCount',
             'leaveCount',
-            'absentCount'
+            'absentCount',
+            'otCount',
+            'totalOtHours'
         );
     }
 
@@ -371,7 +438,6 @@ class AttendanceController extends Controller
                     ->whereMonth('date', $month)
                     ->where('status', 'approved')
                     ->sum('hours');
-
                 fputcsv($file, [
                     $index + 1,
                     $emp->emp_code,
@@ -387,6 +453,93 @@ class AttendanceController extends Controller
                     $annualLeave,
                     $otherLeave,
                     number_format($totalOtHours, 1),
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * ส่งออกไฟล์รายงานการลงเวลาตามตัวกรองที่เลือก (Filtered Attendance Daily Report CSV)
+     */
+    public function exportReportCsv(Request $request)
+    {
+        $data = $this->getReportData($request);
+        $date = $data['date'];
+        $reportType = $data['reportType'];
+        $reportData = $data['reportData'];
+
+        $fileName = "attendance_report_{$date}_{$reportType}.csv";
+
+        $headers = [
+            "Content-type"        => "text/csv; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename={$fileName}",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $callback = function () use ($reportData, $date) {
+            $file = fopen('php://output', 'w');
+            // ใส่ UTF-8 BOM เพื่อให้ Microsoft Excel เปิดภาษาไทยได้ถูกต้อง 100%
+            fputs($file, "\xEF\xBB\xBF");
+
+            // Header คอลัมน์รายงานการลงเวลา
+            fputcsv($file, [
+                'ลำดับ',
+                'รหัสพนักงาน',
+                'ชื่อ-นามสกุล',
+                'อีเมล',
+                'แผนก',
+                'ตำแหน่ง',
+                'วันที่',
+                'เวลาเข้างาน',
+                'เวลาเลิกงาน',
+                'ชั่วโมง OT (ชม.)',
+                'ช่วงเวลา OT',
+                'ประเภท OT',
+                'สถานะการลงเวลา',
+                'หมายเหตุ'
+            ]);
+
+            $index = 1;
+            foreach ($reportData as $row) {
+                $emp = $row['user'];
+                $ot = $row['overtime'] ?? null;
+                $rowStatus = $row['status'];
+
+                $statusText = match($rowStatus) {
+                    'on_time' => 'เข้างานตรงเวลา',
+                    'late' => 'มาสาย',
+                    'leave' => 'ลางาน',
+                    'absent' => 'ยังไม่ลงเวลา / ขาดงาน',
+                    default => $rowStatus
+                };
+
+                $otHours = $ot ? $ot->hours : 0;
+                $otRange = $ot && $ot->start_time && $ot->end_time 
+                    ? substr($ot->start_time, 0, 5) . ' - ' . substr($ot->end_time, 0, 5) 
+                    : '-';
+                $otTypeLabel = $ot ? ($ot->ot_type_label ?? $ot->ot_type) : '-';
+
+                fputcsv($file, [
+                    $index++,
+                    $emp->emp_code ?? '-',
+                    $emp->name,
+                    $emp->email ?? '-',
+                    $emp->department->name ?? '-',
+                    $emp->position->name ?? '-',
+                    $date,
+                    $row['check_in'] ? substr($row['check_in'], 0, 5) . ' น.' : '-',
+                    $row['check_out'] ? substr($row['check_out'], 0, 5) . ' น.' : '-',
+                    $otHours > 0 ? number_format($otHours, 1) : '-',
+                    $otRange,
+                    $otTypeLabel,
+                    $statusText,
+                    $row['notes'] ?? '-'
                 ]);
             }
 

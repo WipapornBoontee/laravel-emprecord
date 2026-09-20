@@ -17,82 +17,170 @@ class OverTimeController extends Controller
             $perPage = 10;
         }
 
-        $pendingRequests = Overtime::with('user')
+        $pendingRequests = Overtime::with(['user.department', 'user.position'])
             ->where('status', 'pending')
             ->orderBy('created_at', 'desc')
             ->get();
+
+        // แนบข้อมูล Attendance และชั่วโมงสะสมในสัปดาห์สำหรับแต่ละคำขอ
+        foreach ($pendingRequests as $otReq) {
+            $otReq->attendance = Attendance::where('user_id', $otReq->user_id)
+                ->where('date', $otReq->date)
+                ->first();
+
+            $startOfWeek = \Carbon\Carbon::parse($otReq->date)->startOfWeek()->format('Y-m-d');
+            $endOfWeek = \Carbon\Carbon::parse($otReq->date)->endOfWeek()->format('Y-m-d');
+            $otReq->weekly_approved_hours = Overtime::where('user_id', $otReq->user_id)
+                ->whereBetween('date', [$startOfWeek, $endOfWeek])
+                ->where('status', 'approved')
+                ->sum('hours');
+        }
             
-        $handledRequests = Overtime::with(['user', 'hr'])
+        $handledRequests = Overtime::with(['user.department', 'user.position', 'hr'])
             ->whereIn('status', ['approved', 'rejected'])
             ->orderBy('updated_at', 'desc')
             ->paginate($perPage)
             ->withQueryString();
 
+        foreach ($handledRequests as $otReq) {
+            $otReq->attendance = Attendance::where('user_id', $otReq->user_id)
+                ->where('date', $otReq->date)
+                ->first();
+        }
+
         return view('overtime.overtime', compact('pendingRequests', 'handledRequests', 'perPage'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $user = Auth::user();
         $todayDateStr = date('Y-m-d');
+        $minDateStr = \Carbon\Carbon::today()->subDays(7)->toDateString();
+        $maxDateStr = \Carbon\Carbon::today()->addDays(7)->toDateString();
         
-        $hasCheckedInToday = \App\Models\Attendance::where('user_id', $user->id)
-            ->where('date', $todayDateStr)
-            ->whereNotNull('check_in')
-            ->exists();
+        // ดึงประวัติการลงเวลาของพนักงานย้อนหลัง 7 วัน เพื่อใช้อ้างอิงการทำงานจริง
+        $recentAttendances = \App\Models\Attendance::where('user_id', $user->id)
+            ->where('date', '<=', $todayDateStr)
+            ->where('date', '>=', $minDateStr)
+            ->orderBy('date', 'desc')
+            ->get()
+            ->keyBy(fn($item) => \Carbon\Carbon::parse($item->date)->format('Y-m-d'));
 
-        if (!$hasCheckedInToday) {
-            return redirect()->route('overtime.show', $user->id)->with('error', 'คุณต้องสแกนเข้างานก่อนจึงจะสามารถขอทำ OT ได้');
-        }
+        // วันหยุดบริษัทสำหรับแนะนำประเภท OT
+        $companyHolidays = \App\Models\CompanyHoliday::all(['name', 'holiday_date', 'is_recurring']);
 
-        return view('overtime.overtime_create');
-    }
+        $selectedDate = $request->input('date', $todayDateStr);
 
-    public function overtimeRequest(Request $request)
-    {
-        $request->validate([
-            'user_id' => 'required',
-            'date' => 'required',
-            'hours' => 'required|integer|min:1',
-            'description' => 'required',
-        ]);
-
-        $todayDateStr = date('Y-m-d');
-        $hasCheckedInToday = \App\Models\Attendance::where('user_id', $request->user_id)
-            ->where('date', $todayDateStr)
-            ->whereNotNull('check_in')
-            ->exists();
-
-        if (!$hasCheckedInToday) {
-            return back()->withInput()->with('error', 'คุณต้องสแกนเข้างานก่อนจึงจะสามารถขอทำ OT ได้');
-        }
-
-        $existingOTToday = \App\Models\Overtime::where('user_id', $request->user_id)
-            ->where('date', $todayDateStr)
-            ->exists();
-
-        if ($existingOTToday) {
-            return back()->withInput()->with('error', 'คุณได้ขอ OT สำหรับวันนี้ไปแล้ว ไม่สามารถขอซ้ำได้');
-        }
-
-        // หาจุดเริ่มต้นและสิ้นสุดของสัปดาห์ (วันจันทร์ ถึง วันอาทิตย์)
-        $startOfWeek = \Carbon\Carbon::parse($request->date)->startOfWeek()->format('Y-m-d');
-        $endOfWeek = \Carbon\Carbon::parse($request->date)->endOfWeek()->format('Y-m-d');
-
-        // คำนวณชั่วโมง OT ที่มีอยู่ในสัปดาห์นี้ (เฉพาะที่ยังไม่ถูก reject)
-        $existingOTHours = \App\Models\Overtime::where('user_id', $request->user_id)
+        $startOfWeek = \Carbon\Carbon::parse($selectedDate)->startOfWeek()->format('Y-m-d');
+        $endOfWeek = \Carbon\Carbon::parse($selectedDate)->endOfWeek()->format('Y-m-d');
+        $weeklyApprovedHours = (float) \App\Models\Overtime::where('user_id', $user->id)
             ->whereBetween('date', [$startOfWeek, $endOfWeek])
             ->where('status', '!=', 'rejected')
             ->sum('hours');
 
-        $requestedHours = (int) $request->hours;
+        return view('overtime.overtime_create', compact(
+            'recentAttendances',
+            'companyHolidays',
+            'selectedDate',
+            'minDateStr',
+            'maxDateStr',
+            'weeklyApprovedHours'
+        ));
+    }
 
-        if (($existingOTHours + $requestedHours) > 36) {
-            return back()->withInput()->with('error', 'ไม่สามารถขอทำงานล่วงเวลาได้ เนื่องจากเกิน 36 ชม. OT ต่อสัปดาห์');
+    public function overtimeRequest(Request $request)
+    {
+        $user = Auth::user();
+
+        $minDate = \Carbon\Carbon::today()->subDays(7)->toDateString();
+        $maxDate = \Carbon\Carbon::today()->addDays(7)->toDateString();
+
+        $request->validate([
+            'date' => ['required', 'date', 'after_or_equal:' . $minDate, 'before_or_equal:' . $maxDate],
+            'start_time' => ['required', 'date_format:H:i'],
+            'end_time' => ['required', 'date_format:H:i'],
+            'break_minutes' => ['nullable', 'integer', 'min:0', 'max:240'],
+            'ot_type' => ['required', 'string', 'in:normal,holiday,holiday_ot'],
+            'description' => ['required', 'string', 'max:1000'],
+        ], [
+            'date.required' => 'กรุณาเลือกวันที่ปฏิบัติงาน OT',
+            'date.after_or_equal' => 'สามารถยื่นขอ OT ย้อนหลังได้ไม่เกิน 7 วัน',
+            'date.before_or_equal' => 'สามารถยื่นขอ OT ล่วงหน้าได้ไม่เกิน 7 วัน',
+            'start_time.required' => 'กรุณาระบุเวลาเริ่มต้นทำ OT',
+            'end_time.required' => 'กรุณาระบุเวลาสิ้นสุดทำ OT',
+            'ot_type.required' => 'กรุณาเลือกประเภท OT',
+            'description.required' => 'กรุณาระบุรายละเอียดงานที่ปฏิบัติงานล่วงเวลา',
+        ]);
+
+        $dateStr = $request->date;
+        $isPastOrToday = \Carbon\Carbon::parse($dateStr)->lte(\Carbon\Carbon::today());
+
+        // ถ้าเป็นวันที่ในอดีตหรือวันนี้ ต้องตรวจสอบว่ามีประวัติการเข้างานจริงหรือไม่ (Attendance Verification)
+        if ($isPastOrToday) {
+            $attendance = \App\Models\Attendance::where('user_id', $user->id)
+                ->where('date', $dateStr)
+                ->whereNotNull('check_in')
+                ->first();
+
+            if (!$attendance) {
+                return back()->withInput()->with('error', "ไม่พบประวัติการลงเวลาเข้างานในวันที่ " . \Carbon\Carbon::parse($dateStr)->format('d/m/Y') . " กรุณาตรวจสอบการลงเวลาทำงานก่อนยื่นขอ OT");
+            }
         }
 
-        $overtime = Overtime::create($request->all());
-        return redirect()->route('overtime.show')->with('success', 'ส่งคำขอ OT เรียบร้อยแล้ว');
+        // ตรวจสอบว่าเคยขอ OT วันนี้ไปแล้วหรือไม่ (เฉพาะที่ยังรออนุมัติหรืออนุมัติแล้ว)
+        $existingOT = \App\Models\Overtime::where('user_id', $user->id)
+            ->where('date', $dateStr)
+            ->whereIn('status', ['pending', 'approved'])
+            ->exists();
+
+        if ($existingOT) {
+            return back()->withInput()->with('error', 'คุณได้ยื่นคำขอ OT สำหรับวันที่ ' . \Carbon\Carbon::parse($dateStr)->format('d/m/Y') . ' ไปแล้ว ไม่สามารถขอซ้ำได้');
+        }
+
+        // คำนวณชั่วโมง OT
+        $startTime = \Carbon\Carbon::parse($dateStr . ' ' . $request->start_time);
+        $endTime = \Carbon\Carbon::parse($dateStr . ' ' . $request->end_time);
+
+        // หากเวลาเลิกงานข้ามวัน เช่น เริ่ม 22:00 เลิก 02:00
+        if ($endTime->lte($startTime)) {
+            $endTime->addDay();
+        }
+
+        $diffMinutes = $startTime->diffInMinutes($endTime);
+        $breakMinutes = (int) $request->input('break_minutes', 0);
+        $netMinutes = max(0, $diffMinutes - $breakMinutes);
+        $calculatedHours = round($netMinutes / 60, 1);
+
+        if ($calculatedHours <= 0) {
+            return back()->withInput()->with('error', 'ช่วงเวลาที่ระบุคำนวณแล้วไม่ถึง 30 นาที กรุณาตรวจสอบเวลาเริ่มต้นและสิ้นสุด');
+        }
+
+        // ตรวจสอบลิมิตกฎหมายแรงงาน 36 ชั่วโมงต่อสัปดาห์
+        $startOfWeek = \Carbon\Carbon::parse($dateStr)->startOfWeek()->format('Y-m-d');
+        $endOfWeek = \Carbon\Carbon::parse($dateStr)->endOfWeek()->format('Y-m-d');
+
+        $existingOTHours = \App\Models\Overtime::where('user_id', $user->id)
+            ->whereBetween('date', [$startOfWeek, $endOfWeek])
+            ->where('status', '!=', 'rejected')
+            ->sum('hours');
+
+        if (($existingOTHours + $calculatedHours) > 36) {
+            return back()->withInput()->with('error', "ไม่สามารถขอทำงานล่วงเวลาได้ เนื่องจากชั่วโมง OT สะสมในสัปดาห์นี้จะเกิน 36 ชม. (ปัจจุบันสะสม: {$existingOTHours} ชม. + ขอเพิ่ม: {$calculatedHours} ชม.)");
+        }
+
+        Overtime::create([
+            'user_id' => $user->id,
+            'date' => $dateStr,
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
+            'break_minutes' => $breakMinutes,
+            'ot_type' => $request->ot_type,
+            'hours' => $calculatedHours,
+            'description' => $request->description,
+            'status' => 'pending',
+        ]);
+
+        return redirect()->route('overtime.show')->with('success', "ส่งคำขอทำงานล่วงเวลา (OT) วันที่ " . \Carbon\Carbon::parse($dateStr)->format('d/m/Y') . " จำนวน {$calculatedHours} ชั่วโมง เรียบร้อยแล้ว");
     }
 
     public function overtime(\Illuminate\Http\Request $request)

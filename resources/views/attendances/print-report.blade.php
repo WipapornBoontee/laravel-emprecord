@@ -422,25 +422,51 @@
 
             <!-- Report Header Title -->
             <div class="report-header-title">
-                <h2>รายงานสรุปการลงเวลาปฏิบัติงานประจำวัน</h2>
-                <div class="report-subtitle">DAILY ATTENDANCE & TIME RECORDING REPORT</div>
+                <h2>
+                    @if(($reportType ?? 'all') === 'attendance') รายงานสรุปการมาปฏิบัติงาน (Attendance)
+                    @elseif(($reportType ?? '') === 'overtime') รายงานการทำงานล่วงเวลา (Overtime - OT)
+                    @elseif(($reportType ?? '') === 'leave') รายงานการลางาน (Leave Report)
+                    @elseif(($reportType ?? '') === 'late') รายงานการเข้างานสาย (Late Arrival Report)
+                    @else รายงานสรุปการลงเวลาปฏิบัติงานประจำวัน
+                    @endif
+                </h2>
+                <div class="report-subtitle">
+                    @if(($reportType ?? 'all') === 'attendance') ATTENDANCE TIME LOG REPORT
+                    @elseif(($reportType ?? '') === 'overtime') OVERTIME (OT) SUMMARY REPORT
+                    @elseif(($reportType ?? '') === 'leave') LEAVE & TIME-OFF REPORT
+                    @elseif(($reportType ?? '') === 'late') LATE ARRIVAL REPORT
+                    @else DAILY ATTENDANCE & TIME RECORDING REPORT
+                    @endif
+                </div>
             </div>
 
             <!-- Filter Summary Bar -->
             <div class="filter-summary-bar">
                 <div>
-                    <strong>แผนกที่ตรวจสอบ:</strong> 
-                    <span>{{ $departmentId ? ($departments->firstWhere('id', $departmentId)->name ?? 'ทั้งหมด') : 'ทุกแผนก (All Departments)' }}</span>
-                    &nbsp;&bull;&nbsp;
-                    <strong>เงื่อนไขสถานะ:</strong> 
-                    <span>
-                        @if($status === 'on_time') ตรงเวลา (On Time)
-                        @elseif($status === 'late') มาสาย (Late)
-                        @elseif($status === 'leave') ลางานที่ได้รับอนุมัติ (Approved Leave)
-                        @elseif($status === 'absent') ยังไม่ลงเวลา / ขาดงาน
-                        @else ทั้งหมด (All Status)
+                    <strong>ประเภทรายงาน:</strong>
+                    <span style="color: #2563eb; font-weight: 700;">
+                        @if(($reportType ?? 'all') === 'attendance') การเข้า-ออกงาน (Attendance)
+                        @elseif(($reportType ?? '') === 'overtime') การทำ OT (Overtime)
+                        @elseif(($reportType ?? '') === 'leave') การลางาน (Leave)
+                        @elseif(($reportType ?? '') === 'late') การเข้างานสาย (Late)
+                        @else ภาพรวมทั้งหมด (Overall)
                         @endif
                     </span>
+                    &nbsp;&bull;&nbsp;
+                    <strong>แผนกที่ตรวจสอบ:</strong> 
+                    <span>{{ $departmentId ? ($departments->firstWhere('id', $departmentId)->name ?? 'ทั้งหมด') : 'ทุกแผนก (All Departments)' }}</span>
+                    @if(!empty($status))
+                        &nbsp;&bull;&nbsp;
+                        <strong>เงื่อนไขสถานะ:</strong> 
+                        <span>
+                            @if($status === 'on_time') ตรงเวลา (On Time)
+                            @elseif($status === 'late') มาสาย (Late)
+                            @elseif($status === 'leave') ลางาน (Leave)
+                            @elseif($status === 'absent') ยังไม่ลงเวลา / ขาด
+                            @else ทั้งหมด
+                            @endif
+                        </span>
+                    @endif
                 </div>
                 <div>
                     <strong>จำนวนพนักงานในรายงาน:</strong> <strong>{{ count($reportData) }}</strong> คน
@@ -451,12 +477,13 @@
             <table class="summary-kpi-table">
                 <thead>
                     <tr>
-                        <th style="width: 16.66%;">พนักงานทั้งหมด</th>
-                        <th style="width: 16.66%;">มาปฏิบัติงาน</th>
-                        <th style="width: 16.66%;">เข้างานตรงเวลา</th>
-                        <th style="width: 16.66%;">เข้างานสาย</th>
-                        <th style="width: 16.66%;">ลางาน (อนุมัติ)</th>
-                        <th style="width: 16.66%;">ยังไม่ลงเวลา / ขาด</th>
+                        <th style="width: 14%;">พนักงานทั้งหมด</th>
+                        <th style="width: 14%;">มาปฏิบัติงาน</th>
+                        <th style="width: 14%;">เข้างานตรงเวลา</th>
+                        <th style="width: 14%;">เข้างานสาย</th>
+                        <th style="width: 14%;">ลางาน (อนุมัติ)</th>
+                        <th style="width: 15%;">ยังไม่ลงเวลา / ขาด</th>
+                        <th style="width: 15%; background-color: #fef3c7; color: #92400e;">ทำ OT (อนุมัติแล้ว)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -467,6 +494,9 @@
                         <td style="color: #b45309;">{{ number_format($lateCount) }} <span style="font-size: 8pt; font-weight: normal; color: #64748b;">คน</span></td>
                         <td style="color: #0369a1;">{{ number_format($leaveCount) }} <span style="font-size: 8pt; font-weight: normal; color: #64748b;">คน</span></td>
                         <td style="color: #b91c1c;">{{ number_format($absentCount) }} <span style="font-size: 8pt; font-weight: normal; color: #64748b;">คน</span></td>
+                        <td style="color: #d97706; background-color: #fffbeb;">
+                            {{ number_format($otCount) }} <span style="font-size: 8pt; font-weight: normal; color: #64748b;">คน ({{ number_format($totalOtHours, 1) }} ชม.)</span>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -475,15 +505,16 @@
             <table class="report-table">
                 <thead>
                     <tr>
-                        <th style="width: 35px;">ลำดับ</th>
-                        <th style="width: 85px;">รหัสพนักงาน</th>
-                        <th style="min-width: 160px;" class="text-start">ชื่อ - นามสกุล พนักงาน</th>
-                        <th style="width: 110px;">แผนก</th>
-                        <th style="width: 110px;">ตำแหน่ง</th>
-                        <th style="width: 80px;">เวลาเข้างาน</th>
-                        <th style="width: 80px;">เวลาเลิกงาน</th>
-                        <th style="width: 110px;">สถานะ</th>
-                        <th style="min-width: 110px;">หมายเหตุ</th>
+                        <th style="width: 30px;">ลำดับ</th>
+                        <th style="width: 75px;">รหัสพนักงาน</th>
+                        <th style="min-width: 150px;" class="text-start">ชื่อ - นามสกุล พนักงาน</th>
+                        <th style="width: 100px;">แผนก</th>
+                        <th style="width: 100px;">ตำแหน่ง</th>
+                        <th style="width: 75px;">เวลาเข้า</th>
+                        <th style="width: 75px;">เวลาเลิก</th>
+                        <th style="width: 115px;">การทำ OT</th>
+                        <th style="width: 95px;">สถานะ</th>
+                        <th style="min-width: 90px;">หมายเหตุ</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -491,6 +522,7 @@
                         @php
                             $emp = $row['user'];
                             $rowStatus = $row['status'];
+                            $ot = $row['overtime'] ?? null;
                         @endphp
                         <tr>
                             <td class="text-center font-mono">{{ $index + 1 }}</td>
@@ -515,6 +547,16 @@
                                 @endif
                             </td>
                             <td class="text-center">
+                                @if($ot)
+                                    <strong style="color: #2563eb;">{{ $ot->hours }} ชม.</strong>
+                                    <div style="font-size: 7.5pt; color: #64748b;">
+                                        ({{ $ot->start_time ? substr($ot->start_time, 0, 5) : '' }}-{{ $ot->end_time ? substr($ot->end_time, 0, 5) : '' }})
+                                    </div>
+                                @else
+                                    <span style="color: #94a3b8;">-</span>
+                                @endif
+                            </td>
+                            <td class="text-center">
                                 @if($rowStatus === 'on_time')
                                     <span class="status-badge-corp status-on-time">ตรงเวลา</span>
                                 @elseif($rowStatus === 'late')
@@ -531,7 +573,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="text-center" style="padding: 24px; color: #64748b;">
+                            <td colspan="10" class="text-center" style="padding: 24px; color: #64748b;">
                                 ไม่พบข้อมูลการลงเวลาของพนักงานตามเงื่อนไขที่ระบุ
                             </td>
                         </tr>

@@ -108,9 +108,10 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/settings/holidays/{holiday}', [\App\Http\Controllers\CompanyHolidayController::class, 'update'])->name('settings.holidays.update');
         Route::delete('/settings/holidays/{holiday}', [\App\Http\Controllers\CompanyHolidayController::class, 'destroy'])->name('settings.holidays.destroy');
 
-        // สรุปรายงานเวลาทำงานองค์กร (Organization Attendance Report & Monthly Payroll Export)
+        // สรุปรายงานเวลาทำงานองค์กร (Organization Attendance Report & Filtered CSV Export)
         Route::get('/attendance/report', [\App\Http\Controllers\AttendanceController::class, 'report'])->name('attendances.report');
         Route::get('/attendance/report/print', [\App\Http\Controllers\AttendanceController::class, 'printReport'])->name('attendances.report.print');
+        Route::get('/attendance/report/export-csv', [\App\Http\Controllers\AttendanceController::class, 'exportReportCsv'])->name('attendances.report.export-csv');
         Route::get('/attendance/report/export-monthly', [\App\Http\Controllers\AttendanceController::class, 'exportMonthlySummaryCsv'])->name('attendances.report.export-monthly');
         Route::get('/attendance/monthly-export', [\App\Http\Controllers\AttendanceController::class, 'exportMonthlySummaryCsv']);
 

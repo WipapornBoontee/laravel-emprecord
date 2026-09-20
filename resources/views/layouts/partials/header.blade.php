@@ -33,10 +33,7 @@
                                 <li><a class="dropdown-item py-2" href="{{ route('employees.index', [], false) }}"><i class="bi bi-list-ul me-2 text-primary"></i> รายชื่อพนักงานทั้งหมด</a></li>
                                 <li><a class="dropdown-item py-2" href="{{ route('employees.create', [], false) }}"><i class="bi bi-person-plus-fill me-2 text-success"></i> เพิ่มพนักงานใหม่</a></li>
                                 <li><hr class="dropdown-divider opacity-25"></li>
-                                <li><a class="dropdown-item py-2" href="{{ route('overtime.index', [], false) }}"><i class="bi bi-check2-square me-2 text-warning"></i> อนุมัติคำขอทำ OT</a></li>
-                                <li><hr class="dropdown-divider opacity-25"></li>
                                 <li><a class="dropdown-item py-2" href="{{ route('departments.index', [], false) }}"><i class="bi bi-diagram-3-fill me-2 text-secondary"></i> จัดการแผนกและตำแหน่ง</a></li>
-                             <!-- แสดงผลเฉพาะพนักงาน -->
                             </ul>
                         </li>
                     @endif
@@ -58,29 +55,22 @@
                         </ul>
                     </li>
 
-                   
-
-                    <!-- เมนูระบบลงเวลา (Time Attendance) -->
+                    <!-- เมนูระบบลงเวลาและการทำงานล่วงเวลา (Time Attendance & Overtime) -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link nav-link-custom dropdown-toggle {{ Request::is('attendance*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link nav-link-custom dropdown-toggle {{ Request::is('attendance*') || Request::is('overtime*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-stopwatch-fill me-1"></i> บันทึกเวลา
                         </a>
                         <ul class="dropdown-menu custom-dropdown-menu border-0 shadow-lg">
                             <li><a class="dropdown-item py-2" href="{{ route('attendances.checkin', [], false) }}"><i class="bi bi-fingerprint me-2 text-primary"></i> ลงเวลาเข้า-ออกงาน</a></li>
                             <li><a class="dropdown-item py-2" href="{{ route('attendances.my-history', [], false) }}"><i class="bi bi-calendar3-week me-2 text-info"></i> ประวัติการลงเวลาของฉัน</a></li>
-                            @if(Auth::user()?->isEmployee())
-                                <li><hr class="dropdown-divider opacity-25"></li>
-                                <li>
-                                    <a class="dropdown-item py-2" href="{{ route('overtime.show', [Auth::user()->id] , false) }}">
-                                        <i class="bi bi-wallet-fill me-2 text-success"></i> การทำ(OT)
-                                    </a>
-                                </li>
-                            @endif
+                            <li><hr class="dropdown-divider opacity-25"></li>
+                            <li><a class="dropdown-item py-2" href="{{ route('overtime.show', [], false) }}"><i class="bi bi-clock-history me-2 text-success"></i> ประวัติการทำ OT ของฉัน</a></li>
+                            <li><a class="dropdown-item py-2" href="{{ route('overtime.create', [], false) }}"><i class="bi bi-file-earmark-plus me-2 text-info"></i> ยื่นคำขอทำงานล่วงเวลา (OT)</a></li>
                             @if(Auth::user()->isAdmin() || Auth::user()->isHr())
                                 <li><hr class="dropdown-divider opacity-25"></li>
-                                <li><a class="dropdown-item py-2" href="{{ route('attendances.report', [], false) }}"><i class="bi bi-file-earmark-bar-graph me-2 text-warning"></i> สรุปรายงานเวลาทำงาน (HR/Admin)</a></li>
+                                <li><a class="dropdown-item py-2" href="{{ route('overtime.index', [], false) }}"><i class="bi bi-check2-square me-2 text-warning"></i> อนุมัติคำขอทำ OT (HR/Admin)</a></li>
+                                <li><a class="dropdown-item py-2" href="{{ route('attendances.report', [], false) }}"><i class="bi bi-file-earmark-bar-graph me-2 text-secondary"></i> สรุปรายงานเวลาทำงาน (HR/Admin)</a></li>
                             @endif
-                            
                         </ul>
                     </li>
                 @endauth
