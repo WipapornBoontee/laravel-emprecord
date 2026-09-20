@@ -138,9 +138,9 @@
                     <div class="row g-3 mb-4">
                         <div class="col-12 mb-3">
                             <div class="d-flex flex-column align-items-center justify-content-center">
-                                <div class="salary-header-gradient">
-                    <div class="avatar-wrapper">
-                        <i class="bi bi-person-fill text-center" style="font-size: 2rem; color: var(--text-main);"></i>
+                                <div class="salary-header-gradient text-center d-flex flex-column align-items-center">
+                    <div class="avatar-wrapper rounded-circle d-flex align-items-center justify-content-center mb-3 shadow-sm" style="width: 70px; height: 70px; background-color: var(--badge-bg); border: 2px solid var(--surface-border);">
+                        <i class="bi bi-person-fill" style="font-size: 2.5rem; color: var(--text-main);"></i>
                     </div>
                     <h4 class="fw-bold mb-1">{{ Auth::user()->name }}</h4>
                     <p class="mb-0 opacity-75 small"><i class="bi bi-person-badge me-1"></i>รหัสพนักงาน: {{ Auth::user()->emp_code ?? '-' }}</p>
