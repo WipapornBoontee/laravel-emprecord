@@ -232,146 +232,6 @@
                                 </table>
                             </div>
                         </form>
-                        
-                        <!-- ซ่อน Form อนุมัติเดี่ยวไว้ข้างนอกป้องกัน Form ซ้อน Form -->
-                        @foreach($pendingRequests as $request)
-                            <form id="approve-form-{{ $request->id }}" action="{{ route('overtime.approve', $request->id) }}" method="POST" class="d-none">
-                                @csrf
-                            </form>
-
-                            <!-- Modal ปฏิเสธ -->
-                            <div class="modal fade text-start" id="rejectModal{{ $request->id }}" tabindex="-1" aria-labelledby="rejectModalLabel{{ $request->id }}" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content border-0 shadow">
-                                        <div class="modal-header bg-danger text-white">
-                                            <h5 class="modal-title" id="rejectModalLabel{{ $request->id }}"><i class="bi bi-x-circle-fill me-2"></i>ปฏิเสธคำขอ OT</h5>
-                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <p>ปฏิเสธคำขอของ <strong>{{ $request->user->name }}</strong> วันที่ {{ \Carbon\Carbon::parse($request->date)->format('d/m/Y') }} (จำนวน {{ $request->hours }} ชม.)</p>
-                                        </div>
-                                        <div class="modal-footer d-block">
-                                            <form action="{{ route('overtime.reject', $request->id) }}" method="POST" class="d-flex flex-column w-100">
-                                                @csrf
-                                                <div class="mb-3">
-                                                    <label for="hr_reject_reason_{{ $request->id }}" class="form-label fw-bold text-dark">เหตุผลที่ปฏิเสธ <span class="text-danger">*</span></label>
-                                                    <textarea class="form-control" id="hr_reject_reason_{{ $request->id }}" name="hr_reject_reason" rows="3" required placeholder="กรุณาระบุเหตุผลเพื่อให้พนักงานทราบ..."></textarea>
-                                                </div>
-                                                <div class="d-flex justify-content-end gap-2">
-                                                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">ยกเลิก</button>
-                                                    <button type="submit" class="btn btn-danger">ยืนยันการปฏิเสธ</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Modal ดูรายละเอียดฉบับเต็ม (View Detail Modal) -->
-                            <div class="modal fade text-start" id="otDetailModal{{ $request->id }}" tabindex="-1" aria-labelledby="otDetailModalLabel{{ $request->id }}" aria-hidden="true">
-                                <div class="modal-dialog modal-lg">
-                                    <div class="modal-content border-0 shadow">
-                                        <div class="modal-header bg-primary text-white">
-                                            <h5 class="modal-title fw-bold" id="otDetailModalLabel{{ $request->id }}">
-                                                <i class="bi bi-file-earmark-text-fill me-2"></i>รายละเอียดคำขอทำงานล่วงเวลา (OT)
-                                            </h5>
-                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body p-4">
-                                            <!-- ข้อมูลพนักงาน -->
-                                            <div class="row g-3 mb-3">
-                                                <div class="col-md-6">
-                                                    <div class="ot-detail-card">
-                                                        <div class="small text-muted mb-1"><i class="bi bi-person me-1"></i> ข้อมูลพนักงาน</div>
-                                                        <h6 class="fw-bold text-dark mb-1">{{ $request->user->name }}</h6>
-                                                        <div class="small text-muted">
-                                                            <span>แผนก: <strong>{{ $request->user->department->name ?? '-' }}</strong></span><br>
-                                                            <span>ตำแหน่ง: <strong>{{ $request->user->position->name ?? '-' }}</strong></span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="ot-detail-card">
-                                                        <div class="small text-muted mb-1"><i class="bi bi-speedometer2 me-1"></i> OT สะสมสัปดาห์นี้</div>
-                                                        <h6 class="fw-bold text-primary mb-1">{{ $request->weekly_approved_hours ?? 0 }} / 36.0 ชม.</h6>
-                                                        <div class="progress mt-2" style="height: 6px;">
-                                                            @php
-                                                                $weeklyPercent = min(100, (($request->weekly_approved_hours ?? 0) / 36) * 100);
-                                                            @endphp
-                                                            <div class="progress-bar {{ $weeklyPercent >= 90 ? 'bg-danger' : ($weeklyPercent >= 70 ? 'bg-warning' : 'bg-primary') }}" style="width: {{ $weeklyPercent }}%"></div>
-                                                        </div>
-                                                        <small class="text-muted" style="font-size: 0.75rem;">ขีดจำกัดตามกฎหมายไม่เกิน 36 ชม./สัปดาห์</small>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- เปรียบเทียบข้อมูล OT กับ Attendance จริง -->
-                                            <div class="row g-3 mb-3">
-                                                <div class="col-md-6">
-                                                    <div class="ot-detail-card border-primary">
-                                                        <div class="small fw-bold text-primary mb-2"><i class="bi bi-calendar-event me-1"></i> รายละเอียดที่ยื่นขอ OT</div>
-                                                        <ul class="list-unstyled mb-0 small">
-                                                            <li class="mb-1"><strong>วันที่:</strong> {{ \Carbon\Carbon::parse($request->date)->format('d/m/Y') }}</li>
-                                                            <li class="mb-1"><strong>ประเภท:</strong> <span class="ot-badge-type {{ $typeClass }}">{{ $request->ot_type_label }}</span></li>
-                                                            <li class="mb-1"><strong>เวลา OT:</strong> <span class="ot-time-tag">{{ $request->start_time ? \Carbon\Carbon::parse($request->start_time)->format('H:i') : '-' }} - {{ $request->end_time ? \Carbon\Carbon::parse($request->end_time)->format('H:i') : '-' }}</span></li>
-                                                            <li class="mb-1"><strong>เวลาพัก:</strong> {{ $request->break_minutes ?? 0 }} นาที</li>
-                                                            <li><strong>คำนวณสุทธิ:</strong> <span class="badge bg-primary fs-6">{{ $request->hours }} ชม.</span></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="ot-detail-card border-success">
-                                                        <div class="small fw-bold text-success mb-2"><i class="bi bi-fingerprint me-1"></i> บันทึกเวลาสแกนจริง (Attendance)</div>
-                                                        @if($request->attendance)
-                                                            <ul class="list-unstyled mb-0 small">
-                                                                <li class="mb-1"><strong>เข้างานจริง:</strong> <span class="text-success fw-bold">{{ $request->attendance->check_in ? \Carbon\Carbon::parse($request->attendance->check_in)->format('H:i:s น.') : 'ไม่มีบันทึก' }}</span></li>
-                                                                <li class="mb-1"><strong>ออกงานจริง:</strong> <span class="text-danger fw-bold">{{ $request->attendance->check_out ? \Carbon\Carbon::parse($request->attendance->check_out)->format('H:i:s น.') : 'ยังไม่สแกนออก' }}</span></li>
-                                                                <li class="mb-1"><strong>สถานะการเข้างาน:</strong> {{ $request->attendance->status ?? 'ปกติ' }}</li>
-                                                                <li>
-                                                                    <strong>ความสอดคล้อง:</strong>
-                                                                    @if($request->attendance->check_out)
-                                                                        <span class="badge bg-success-subtle text-success border border-success">สแกนออกตรง/ครอบคลุมเวลา OT</span>
-                                                                    @else
-                                                                        <span class="badge bg-warning-subtle text-warning border border-warning">รอสแกนออกงาน</span>
-                                                                    @endif
-                                                                </li>
-                                                            </ul>
-                                                        @else
-                                                            <div class="text-center py-3 text-muted">
-                                                                <i class="bi bi-exclamation-circle text-warning fs-3 d-block mb-1"></i>
-                                                                <span>ไม่พบประวัติการลงเวลาในระบบในวันนี้</span>
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- รายละเอียดงาน -->
-                                            <div class="ot-detail-card mb-3">
-                                                <div class="small fw-bold text-dark mb-1"><i class="bi bi-card-text me-1"></i> รายละเอียดงานที่ปฏิบัติงานล่วงเวลา:</div>
-                                                <div class="p-2 bg-light rounded text-dark small" style="white-space: pre-line;">{{ $request->description }}</div>
-                                            </div>
-
-                                            @if($request->early_checkout_reason)
-                                                <div class="alert alert-warning py-2 px-3 small mb-0">
-                                                    <strong><i class="bi bi-exclamation-triangle me-1"></i> เหตุผลกลับก่อนเวลาที่พนักงานแจ้ง:</strong>
-                                                    {{ $request->early_checkout_reason }}
-                                                </div>
-                                            @endif
-                                        </div>
-                                        <div class="modal-footer bg-light">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
-                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#rejectModal{{ $request->id }}">
-                                                <i class="bi bi-x-lg me-1"></i> ปฏิเสธ
-                                            </button>
-                                            <button type="button" class="btn btn-success fw-bold" onclick="event.preventDefault(); document.getElementById('approve-form-{{ $request->id }}').submit();">
-                                                <i class="bi bi-check-lg me-1"></i> อนุมัติคำขอนี้
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
                     @else
                         <div class="ot-empty-state">
                             <i class="bi bi-check-circle text-success mb-3" style="font-size: 3rem;"></i>
@@ -503,6 +363,160 @@
         </div>
     </div>
 </div>
+
+<!-- ========================================================================= -->
+<!-- Modals & Standalone Forms for Pending Requests                            -->
+<!-- (Render ไว้ข้างนอก .ot-card เพื่อป้องกัน Bootstrap Backdrop ติด Blur / Overflow) -->
+<!-- ========================================================================= -->
+@if(count($pendingRequests) > 0)
+    @foreach($pendingRequests as $request)
+        @php
+            $att = $request->attendance;
+            $typeClass = match($request->ot_type) {
+                'holiday' => 'ot-badge-holiday',
+                'holiday_ot' => 'ot-badge-holiday-ot',
+                default => 'ot-badge-normal',
+            };
+        @endphp
+
+        <!-- Form อนุมัติเดี่ยว -->
+        <form id="approve-form-{{ $request->id }}" action="{{ route('overtime.approve', $request->id) }}" method="POST" class="d-none">
+            @csrf
+        </form>
+
+        <!-- Modal ปฏิเสธ -->
+        <div class="modal fade text-start" id="rejectModal{{ $request->id }}" tabindex="-1" aria-labelledby="rejectModalLabel{{ $request->id }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg" style="background: var(--surface-bg); border: 1px solid var(--surface-border) !important;">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title fw-bold" id="rejectModalLabel{{ $request->id }}"><i class="bi bi-x-circle-fill me-2"></i>ปฏิเสธคำขอ OT</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <p class="mb-3">ปฏิเสธคำขอของ <strong>{{ $request->user->name }}</strong> วันที่ {{ \Carbon\Carbon::parse($request->date)->format('d/m/Y') }} (จำนวน {{ $request->hours }} ชม.)</p>
+                        <form action="{{ route('overtime.reject', $request->id) }}" method="POST" class="d-flex flex-column w-100">
+                            @csrf
+                            <div class="mb-3">
+                                <label for="hr_reject_reason_{{ $request->id }}" class="form-label fw-bold">เหตุผลที่ปฏิเสธ <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="hr_reject_reason_{{ $request->id }}" name="hr_reject_reason" rows="3" required placeholder="กรุณาระบุเหตุผลเพื่อให้พนักงานทราบ..."></textarea>
+                            </div>
+                            <div class="d-flex justify-content-end gap-2">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                                <button type="submit" class="btn btn-danger fw-bold">ยืนยันการปฏิเสธ</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal ดูรายละเอียดฉบับเต็ม (View Detail Modal) -->
+        <div class="modal fade text-start" id="otDetailModal{{ $request->id }}" tabindex="-1" aria-labelledby="otDetailModalLabel{{ $request->id }}" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg" style="background: var(--surface-bg); border: 1px solid var(--surface-border) !important;">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title fw-bold" id="otDetailModalLabel{{ $request->id }}">
+                            <i class="bi bi-file-earmark-text-fill me-2"></i>รายละเอียดคำขอทำงานล่วงเวลา (OT) #{{ $request->id }}
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <!-- ข้อมูลพนักงาน -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <div class="ot-detail-card">
+                                    <div class="small text-muted mb-1"><i class="bi bi-person me-1"></i> ข้อมูลพนักงาน</div>
+                                    <h6 class="fw-bold mb-1">{{ $request->user->name }}</h6>
+                                    <div class="small text-muted">
+                                        <span>รหัส: <code>{{ $request->user->emp_code ?? '-' }}</code></span><br>
+                                        <span>แผนก: <strong>{{ $request->user->department->name ?? '-' }}</strong></span> | 
+                                        <span>ตำแหน่ง: <strong>{{ $request->user->position->name ?? '-' }}</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="ot-detail-card">
+                                    <div class="small text-muted mb-1"><i class="bi bi-speedometer2 me-1"></i> OT สะสมสัปดาห์นี้</div>
+                                    <h6 class="fw-bold text-primary mb-1">{{ $request->weekly_approved_hours ?? 0 }} / 36.0 ชม.</h6>
+                                    <div class="progress mt-2" style="height: 6px;">
+                                        @php
+                                            $weeklyPercent = min(100, (($request->weekly_approved_hours ?? 0) / 36) * 100);
+                                        @endphp
+                                        <div class="progress-bar {{ $weeklyPercent >= 90 ? 'bg-danger' : ($weeklyPercent >= 70 ? 'bg-warning' : 'bg-primary') }}" style="width: {{ $weeklyPercent }}%"></div>
+                                    </div>
+                                    <small class="text-muted" style="font-size: 0.75rem;">ขีดจำกัดตามกฎหมายไม่เกิน 36 ชม./สัปดาห์</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- เปรียบเทียบข้อมูล OT กับ Attendance จริง -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <div class="ot-detail-card border-primary">
+                                    <div class="small fw-bold text-primary mb-2"><i class="bi bi-calendar-event me-1"></i> รายละเอียดที่ยื่นขอ OT</div>
+                                    <ul class="list-unstyled mb-0 small">
+                                        <li class="mb-2"><strong>วันที่:</strong> {{ \Carbon\Carbon::parse($request->date)->format('d/m/Y') }}</li>
+                                        <li class="mb-2"><strong>ประเภท:</strong> <span class="ot-badge-type {{ $typeClass }}">{{ $request->ot_type_label }}</span></li>
+                                        <li class="mb-2"><strong>เวลา OT:</strong> <span class="ot-time-tag">{{ $request->start_time ? \Carbon\Carbon::parse($request->start_time)->format('H:i') : '-' }} - {{ $request->end_time ? \Carbon\Carbon::parse($request->end_time)->format('H:i') : '-' }}</span></li>
+                                        <li class="mb-2"><strong>เวลาพัก:</strong> {{ $request->break_minutes ?? 0 }} นาที</li>
+                                        <li><strong>คำนวณสุทธิ:</strong> <span class="badge bg-primary fs-6">{{ $request->hours }} ชม.</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="ot-detail-card border-success">
+                                    <div class="small fw-bold text-success mb-2"><i class="bi bi-fingerprint me-1"></i> บันทึกเวลาสแกนจริง (Attendance)</div>
+                                    @if($request->attendance)
+                                        <ul class="list-unstyled mb-0 small">
+                                            <li class="mb-2"><strong>เข้างานจริง:</strong> <span class="text-success fw-bold">{{ $request->attendance->check_in ? \Carbon\Carbon::parse($request->attendance->check_in)->format('H:i:s น.') : 'ไม่มีบันทึก' }}</span></li>
+                                            <li class="mb-2"><strong>ออกงานจริง:</strong> <span class="text-danger fw-bold">{{ $request->attendance->check_out ? \Carbon\Carbon::parse($request->attendance->check_out)->format('H:i:s น.') : 'ยังไม่สแกนออก' }}</span></li>
+                                            <li class="mb-2"><strong>สถานะการเข้างาน:</strong> {{ $request->attendance->status ?? 'ปกติ' }}</li>
+                                            <li>
+                                                <strong>ความสอดคล้อง:</strong>
+                                                @if($request->attendance->check_out)
+                                                    <span class="badge bg-success-subtle text-success border border-success">สแกนออกตรง/ครอบคลุมเวลา OT</span>
+                                                @else
+                                                    <span class="badge bg-warning-subtle text-warning border border-warning">รอสแกนออกงาน</span>
+                                                @endif
+                                            </li>
+                                        </ul>
+                                    @else
+                                        <div class="text-center py-3 text-muted">
+                                            <i class="bi bi-exclamation-circle text-warning fs-3 d-block mb-1"></i>
+                                            <span>ไม่พบประวัติการลงเวลาในระบบในวันนี้</span>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- รายละเอียดงาน -->
+                        <div class="ot-detail-card mb-3">
+                            <div class="small fw-bold mb-1"><i class="bi bi-card-text me-1"></i> รายละเอียดงานที่ปฏิบัติงานล่วงเวลา:</div>
+                            <div class="p-3 rounded small" style="background: var(--badge-bg); border: 1px solid var(--surface-border); white-space: pre-line;">{{ $request->description }}</div>
+                        </div>
+
+                        @if($request->early_checkout_reason)
+                            <div class="alert alert-warning py-2 px-3 small mb-0">
+                                <strong><i class="bi bi-exclamation-triangle me-1"></i> เหตุผลกลับก่อนเวลาที่พนักงานแจ้ง:</strong>
+                                {{ $request->early_checkout_reason }}
+                            </div>
+                        @endif
+                    </div>
+                    <div class="modal-footer" style="border-top: 1px solid var(--surface-border);">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#rejectModal{{ $request->id }}">
+                            <i class="bi bi-x-lg me-1"></i> ปฏิเสธ
+                        </button>
+                        <button type="button" class="btn btn-success fw-bold" onclick="event.preventDefault(); document.getElementById('approve-form-{{ $request->id }}').submit();">
+                            <i class="bi bi-check-lg me-1"></i> อนุมัติคำขอนี้
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
+@endif
 
 @push('scripts')
 <script>
