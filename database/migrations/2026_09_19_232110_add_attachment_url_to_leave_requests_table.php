@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('leave_requests', function (Blueprint $table) {
-            $table->string('attachment_url')->nullable()->after('reason');
-        });
+        if (!Schema::hasColumn('leave_requests', 'attachment_url')) {
+            Schema::table('leave_requests', function (Blueprint $table) {
+                $table->string('attachment_url')->nullable()->after('reason');
+            });
+        }
     }
 
     /**

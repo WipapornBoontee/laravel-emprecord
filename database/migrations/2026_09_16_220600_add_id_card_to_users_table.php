@@ -8,9 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('id_card', 13)->nullable()->after('phone');
-        });
+        if (!Schema::hasColumn('users', 'id_card')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->string('id_card', 13)->nullable()->after('phone');
+            });
+        }
     }
 
     public function down(): void

@@ -28,19 +28,19 @@ class UserRoleSeeder extends Seeder
         $deptOps = Department::firstOrCreate(['name' => 'Operations & Support']);
 
         // 2. สร้างตำแหน่งเริ่มต้น
-        $posAdmin = Position::firstOrCreate(['name' => 'System Administrator']);
-        $posHrMgr = Position::firstOrCreate(['name' => 'HR Manager']);
-        $posHrOff = Position::firstOrCreate(['name' => 'HR Officer']);
-        $posDev = Position::firstOrCreate(['name' => 'Software Developer']);
-        $posFrontend = Position::firstOrCreate(['name' => 'Frontend Engineer']);
-        $posQa = Position::firstOrCreate(['name' => 'QA Engineer']);
-        $posSalesMgr = Position::firstOrCreate(['name' => 'Sales Director']);
-        $posSales = Position::firstOrCreate(['name' => 'Sales Executive']);
-        $posMarketing = Position::firstOrCreate(['name' => 'Marketing Specialist']);
-        $posAccMgr = Position::firstOrCreate(['name' => 'Accounting Manager']);
-        $posAcc = Position::firstOrCreate(['name' => 'Senior Accountant']);
-        $posSupport = Position::firstOrCreate(['name' => 'Customer Support Specialist']);
-        $posOps = Position::firstOrCreate(['name' => 'Operations Officer']);
+        $posAdmin = Position::firstOrCreate(['name' => 'System Administrator'], ['department_id' => $deptIt->id]);
+        $posHrMgr = Position::firstOrCreate(['name' => 'HR Manager'], ['department_id' => $deptHr->id]);
+        $posHrOff = Position::firstOrCreate(['name' => 'HR Officer'], ['department_id' => $deptHr->id]);
+        $posDev = Position::firstOrCreate(['name' => 'Software Developer'], ['department_id' => $deptIt->id]);
+        $posFrontend = Position::firstOrCreate(['name' => 'Frontend Engineer'], ['department_id' => $deptIt->id]);
+        $posQa = Position::firstOrCreate(['name' => 'QA Engineer'], ['department_id' => $deptIt->id]);
+        $posSalesMgr = Position::firstOrCreate(['name' => 'Sales Director'], ['department_id' => $deptSales->id]);
+        $posSales = Position::firstOrCreate(['name' => 'Sales Executive'], ['department_id' => $deptSales->id]);
+        $posMarketing = Position::firstOrCreate(['name' => 'Marketing Specialist'], ['department_id' => $deptSales->id]);
+        $posAccMgr = Position::firstOrCreate(['name' => 'Accounting Manager'], ['department_id' => $deptAcc->id]);
+        $posAcc = Position::firstOrCreate(['name' => 'Senior Accountant'], ['department_id' => $deptAcc->id]);
+        $posSupport = Position::firstOrCreate(['name' => 'Customer Support Specialist'], ['department_id' => $deptOps->id]);
+        $posOps = Position::firstOrCreate(['name' => 'Operations Officer'], ['department_id' => $deptOps->id]);
 
         // 3. สร้างประเภทการลาเริ่มต้น
         $sickLeave = LeaveType::firstOrCreate(

@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('overtimes', function (Blueprint $table) {
-            $table->text('hr_reject_reason')->nullable()->after('early_checkout_reason');
-        });
+        if (!Schema::hasColumn('overtimes', 'hr_reject_reason')) {
+            Schema::table('overtimes', function (Blueprint $table) {
+                $table->text('hr_reject_reason')->nullable()->after('early_checkout_reason');
+            });
+        }
     }
 
     /**
