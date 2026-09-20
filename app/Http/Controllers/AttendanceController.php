@@ -255,4 +255,144 @@ class AttendanceController extends Controller
             'absentCount'
         );
     }
+
+    /**
+     * ส่งออกไฟล์รายงานสรุปเวลาทำงานประจำเดือน (Monthly Payroll CSV Export) สำหรับส่งฝ่ายบัญชี
+     */
+    public function exportMonthlySummaryCsv(Request $request)
+    {
+        $month = $request->input('month', date('m'));
+        $year = $request->input('year', date('Y'));
+        $departmentId = $request->input('department_id');
+
+        $fileName = "attendance_payroll_summary_{$year}_{$month}.csv";
+
+        $headers = [
+            "Content-type"        => "text/csv; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename={$fileName}",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        // คำนวณจำนวนวันทำงานตามปฏิทินในเดือนนั้น (ไม่รวมเสาร์-อาทิตย์ และวันหยุดบริษัท)
+        $startOfMonth = Carbon::createFromDate($year, $month, 1)->startOfMonth();
+        $endOfMonth = $startOfMonth->copy()->endOfMonth();
+
+        $holidayDates = \App\Models\CompanyHoliday::whereBetween('holiday_date', [$startOfMonth->toDateString(), $endOfMonth->toDateString()])
+            ->orWhere('is_recurring', true)
+            ->pluck('holiday_date')
+            ->map(fn($d) => Carbon::parse($d)->format('m-d'))
+            ->toArray();
+
+        $calendarWorkDays = 0;
+        $curr = $startOfMonth->copy();
+        while ($curr->lte($endOfMonth)) {
+            $isWeekend = $curr->isSaturday() || $curr->isSunday();
+            $isHoliday = in_array($curr->format('m-d'), $holidayDates);
+            if (!$isWeekend && !$isHoliday) {
+                $calendarWorkDays++;
+            }
+            $curr->addDay();
+        }
+
+        $callback = function () use ($year, $month, $departmentId, $calendarWorkDays) {
+            $file = fopen('php://output', 'w');
+            // ใส่ UTF-8 BOM เพื่อให้ Microsoft Excel เปิดภาษาไทยได้ถูกต้อง 100%
+            fputs($file, "\xEF\xBB\xBF");
+
+            // Header คอลัมน์สำหรับฝ่ายบัญชี
+            fputcsv($file, [
+                'ลำดับ',
+                'รหัสพนักงาน',
+                'ชื่อ-นามสกุล',
+                'แผนก',
+                'ตำแหน่ง',
+                'วันทำงานตามปฏิทิน',
+                'มาทำงานจริง (วัน)',
+                'มาสาย (ครั้ง)',
+                'ขาดงาน (วัน)',
+                'ลาป่วย (วัน)',
+                'ลากิจ (วัน)',
+                'ลาพักร้อน (วัน)',
+                'ลาอื่นๆ (วัน)',
+                'ชั่วโมง OT รวม (ชม.)'
+            ]);
+
+            $usersQuery = User::with(['department', 'position'])
+                ->where('status', 'active');
+
+            if (!empty($departmentId)) {
+                $usersQuery->where('department_id', $departmentId);
+            }
+
+            $employees = $usersQuery->orderBy('emp_code')->get();
+
+            foreach ($employees as $index => $emp) {
+                // ดึงข้อมูลการลงเวลาของพนักงานในเดือนนี้
+                $attendances = Attendance::where('user_id', $emp->id)
+                    ->whereYear('date', $year)
+                    ->whereMonth('date', $month)
+                    ->get();
+
+                $actualWorkDays = $attendances->whereIn('status', ['on_time', 'late'])->count();
+                $lateCount = $attendances->where('status', 'late')->count();
+                $absentCount = $attendances->where('status', 'absent')->count();
+
+                // สรุปวันลาแต่ละประเภทที่ได้รับการอนุมัติ
+                $leaveRequests = \App\Models\LeaveRequest::with('leaveType')
+                    ->where('user_id', $emp->id)
+                    ->where('status', 'approved')
+                    ->whereYear('start_date', $year)
+                    ->whereMonth('start_date', $month)
+                    ->get();
+
+                $sickLeave = 0;
+                $personalLeave = 0;
+                $annualLeave = 0;
+                $otherLeave = 0;
+
+                foreach ($leaveRequests as $lr) {
+                    $typeName = $lr->leaveType->name ?? '';
+                    if (str_contains($typeName, 'ป่วย')) {
+                        $sickLeave += $lr->days_count;
+                    } elseif (str_contains($typeName, 'กิจ')) {
+                        $personalLeave += $lr->days_count;
+                    } elseif (str_contains($typeName, 'พักร้อน') || str_contains($typeName, 'ประจำปี')) {
+                        $annualLeave += $lr->days_count;
+                    } else {
+                        $otherLeave += $lr->days_count;
+                    }
+                }
+
+                // สรุปชั่วโมง OT ที่ได้รับการอนุมัติ
+                $totalOtHours = \App\Models\Overtime::where('user_id', $emp->id)
+                    ->whereYear('date', $year)
+                    ->whereMonth('date', $month)
+                    ->where('status', 'approved')
+                    ->sum('hours');
+
+                fputcsv($file, [
+                    $index + 1,
+                    $emp->emp_code,
+                    $emp->name,
+                    $emp->department->name ?? '-',
+                    $emp->position->name ?? '-',
+                    $calendarWorkDays,
+                    $actualWorkDays,
+                    $lateCount,
+                    $absentCount,
+                    $sickLeave,
+                    $personalLeave,
+                    $annualLeave,
+                    $otherLeave,
+                    number_format($totalOtHours, 1),
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }
