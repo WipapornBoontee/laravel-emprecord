@@ -48,7 +48,7 @@ class LeaveApprovalController extends Controller
         }
 
         $leaveRequests = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
-        $departments = Department::orderBy('name')->get();
+        $departments = Department::where('is_active', true)->orderBy('name')->get();
 
         // สรุปสถิติภาพรวม
         $pendingCount = LeaveRequest::where('status', 'pending')->count();

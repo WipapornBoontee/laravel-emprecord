@@ -48,8 +48,8 @@ class EmployeeController extends Controller
         }
 
         $employees = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
-        $departments = Department::orderBy('name')->get();
-        $positions = Position::orderBy('name')->get();
+        $departments = Department::where('is_active', true)->orderBy('name')->get();
+        $positions = Position::where('is_active', true)->orderBy('name')->get();
 
         // สรุปสถิติเบื้องต้น
         $totalEmployees = User::count();

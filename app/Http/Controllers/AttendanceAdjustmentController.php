@@ -117,7 +117,7 @@ class AttendanceAdjustmentController extends Controller
         $approvedCount = AttendanceAdjustment::where('status', 'approved')->count();
         $rejectedCount = AttendanceAdjustment::where('status', 'rejected')->count();
 
-        $departments = Department::orderBy('name')->get();
+        $departments = Department::where('is_active', true)->orderBy('name')->get();
 
         return view('attendances.adjustments.index', compact(
             'adjustments',
