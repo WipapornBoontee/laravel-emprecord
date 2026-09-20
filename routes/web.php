@@ -115,6 +115,26 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/attendance/adjustments', [\App\Http\Controllers\AttendanceAdjustmentController::class, 'index'])->name('attendances.adjustments.index');
         Route::post('/attendance/adjustments/{adjustment}/approve', [\App\Http\Controllers\AttendanceAdjustmentController::class, 'approve'])->name('attendances.adjustments.approve');
         Route::post('/attendance/adjustments/{adjustment}/reject', [\App\Http\Controllers\AttendanceAdjustmentController::class, 'reject'])->name('attendances.adjustments.reject');
+        // เครื่องมือรันคำสั่ง Migrate & Seed สำหรับ Admin บน Production/Server
+        Route::get('/system/run-migrate', function () {
+            try {
+                \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+                $migrateOutput = \Illuminate\Support\Facades\Artisan::output();
+
+                // ถ้ามีการส่ง ?seed=1 ให้รัน seeder ด้วย
+                $seedOutput = '';
+                if (request()->has('seed')) {
+                    \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'SystemEnhancementSeeder', '--force' => true]);
+                    $seedOutput = "\n" . \Illuminate\Support\Facades\Artisan::output();
+                }
+
+                $totalOutput = trim($migrateOutput . $seedOutput) ?: "No migration output (Database might be already up to date).";
+
+                return response()->make("<div style='font-family: sans-serif; padding: 24px; background: #0f172a; color: #f8fafc; border-radius: 8px; margin: 20px auto; max-width: 800px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);'><h2 style='color: #38bdf8; margin-top: 0;'>🚀 Database Migration & Seed Result</h2><pre style='background: #1e293b; padding: 16px; border-radius: 6px; color: #a5f3fc; border: 1px solid #334155; white-space: pre-wrap; word-break: break-all;'>" . htmlspecialchars($totalOutput) . "</pre><div style='margin-top: 15px;'><a href='" . url('/system/run-migrate?seed=1') . "' style='display: inline-block; margin-right: 10px; padding: 8px 16px; background: #059669; color: #fff; text-decoration: none; border-radius: 6px; font-weight: 500;'>🌱 Run Seeder (วันหยุด + ตัวอย่างคำขอปรับเวลา)</a><a href='" . url('/') . "' style='display: inline-block; padding: 8px 16px; background: #2563eb; color: #fff; text-decoration: none; border-radius: 6px; font-weight: 500;'>← กลับหน้าหลัก</a></div></div>", 200, ['Content-Type' => 'text/html; charset=UTF-8']);
+            } catch (\Throwable $e) {
+                return response()->make("<div style='font-family: sans-serif; padding: 24px; background: #450a0a; color: #fecaca; border-radius: 8px; margin: 20px auto; max-width: 800px;'><h2 style='color: #f87171; margin-top: 0;'>❌ Migration Error</h2><pre style='background: #1c1917; padding: 16px; border-radius: 6px; color: #fca5a5; white-space: pre-wrap;'>" . htmlspecialchars($e->getMessage()) . "</pre></div>", 500, ['Content-Type' => 'text/html; charset=UTF-8']);
+            }
+        })->name('system.run-migrate');
     });
 
     // หน้ารายละเอียดโปรไฟล์พนักงาน (เข้าถึงได้ตามสิทธิ์ที่ Controller ตรวจสอบ)
