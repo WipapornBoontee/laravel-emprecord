@@ -77,7 +77,7 @@
                         <i class="bi bi-diagram-3-fill"></i>
                     </div>
                     <div>
-                        <h3 class="fw-bold mb-1 gradient-text">โครงสร้างองค์กร: แผนกและตำแหน่ง</h3>
+                        <h3 class="fw-bold mb-1 gradient-text">แผนกและตำแหน่ง</h3>
                         <p class="text-muted mb-0 small">จัดการรายชื่อแผนกงานและตำแหน่งสำหรับพนักงานในองค์กร</p>
                     </div>
                 </div>

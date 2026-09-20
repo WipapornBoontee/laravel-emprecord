@@ -77,7 +77,7 @@
                         <i class="bi bi-briefcase-fill"></i>
                     </div>
                     <div>
-                        <h3 class="fw-bold mb-1 gradient-text">โครงสร้างองค์กร: ตำแหน่งงาน</h3>
+                        <h3 class="fw-bold mb-1 gradient-text">ตำแหน่งงาน</h3>
                         <p class="text-muted mb-0 small">จัดการรายชื่อตำแหน่งงานสำหรับพนักงานในองค์กร</p>
                     </div>
                 </div>
