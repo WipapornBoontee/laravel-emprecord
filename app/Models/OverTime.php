@@ -14,14 +14,29 @@ class Overtime extends Model
         'id',
         'user_id',
         'date',
+        'start_time',
+        'end_time',
+        'break_minutes',
+        'ot_type',
         'hours',
         'description',
+        'early_checkout_reason',
+        'hr_reject_reason',
         'status',
         'hr_approved_at',
         'hr_id',
         'created_at',
         'updated_at',
     ];
+
+    public function getOtTypeLabelAttribute(): string
+    {
+        return match($this->ot_type) {
+            'holiday' => 'OT วันหยุด (2.0x)',
+            'holiday_ot' => 'OT วันหยุดล่วงเวลา (3.0x)',
+            default => 'OT วันทำงานปกติ (1.5x)',
+        };
+    }
 
     public function user()
     {

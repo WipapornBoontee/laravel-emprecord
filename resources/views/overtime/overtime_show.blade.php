@@ -98,19 +98,9 @@
                         <div class="ot-month-badge">
                             <i class="bi bi-calendar-event me-2"></i>เดือน {{ Carbon\Carbon::create()->month((int)$month)->translatedFormat('F') }} {{ $year }}
                         </div>
-                        @if(!$hasCheckedInToday)
-                            <button type="button" class="btn btn-light text-muted fw-bold rounded-pill px-4 shadow-sm" style="border: 2px solid rgba(255,255,255,0.5); opacity: 0.7;" disabled title="ต้องสแกนเข้างานก่อนถึงจะขอ OT ได้">
-                                <i class="bi bi-plus-circle-fill me-2"></i> ขอทำ OT
-                            </button>
-                        @elseif(isset($hasAnyOTToday) && $hasAnyOTToday)
-                            <button type="button" class="btn btn-light text-muted fw-bold rounded-pill px-4 shadow-sm" style="border: 2px solid rgba(255,255,255,0.5); opacity: 0.7;" disabled title="คุณได้ขอ OT สำหรับวันนี้ไปแล้ว">
-                                <i class="bi bi-check-circle-fill me-2"></i> ขอทำ OT ไปแล้ว
-                            </button>
-                        @else
-                            <a href="{{ route('overtime.create') }}" class="btn btn-light text-primary fw-bold rounded-pill px-4 shadow-sm" style="border: 2px solid rgba(255,255,255,0.5);">
-                                <i class="bi bi-plus-circle-fill me-2"></i> ขอทำ OT
-                            </a>
-                        @endif
+                        <a href="{{ route('overtime.create') }}" class="btn btn-light text-primary fw-bold rounded-pill px-4 shadow-sm" style="border: 2px solid rgba(255,255,255,0.5);">
+                            <i class="bi bi-plus-circle-fill me-2"></i> ขอทำ OT
+                        </a>
                     </div>
                 </div>
 
