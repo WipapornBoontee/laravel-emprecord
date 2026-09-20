@@ -33,29 +33,6 @@
         background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%);
         border-bottom: 1px solid var(--surface-border);
     }
-    .ot-table {
-        border-collapse: separate;
-        border-spacing: 0;
-        width: 100%;
-    }
-    .ot-table th {
-        background-color: var(--badge-bg);
-        color: var(--text-muted);
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.8rem;
-        padding: 12px 10px;
-        border-bottom: 2px solid var(--surface-border);
-        text-align: center;
-    }
-    .ot-table td {
-        padding: 12px 10px;
-        vertical-align: middle;
-        border-bottom: 1px solid var(--surface-border);
-        color: var(--text-main);
-        font-size: 0.9rem;
-        text-align: center;
-    }
     .ot-empty-state {
         padding: 40px 20px;
         text-align: center;
@@ -102,7 +79,7 @@
                                 </button>
                             </div>
                             <div class="table-responsive">
-                                <table class="ot-table">
+                                <table class="table table-custom mb-0">
                                     <thead>
                                         <tr>
                                             <th><input type="checkbox" id="selectAll" class="form-check-input"></th>
@@ -206,7 +183,7 @@
                 <div class="card-body p-4">
                     @if($handledRequests->count() > 0)
                         <div class="table-responsive">
-                            <table class="ot-table text-center">
+                            <table class="table table-custom mb-0">
                                 <thead>
                                     <tr>
                                         <th>วันที่ทำ OT</th>

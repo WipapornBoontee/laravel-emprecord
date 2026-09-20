@@ -361,6 +361,40 @@
             color: var(--text-main);
         }
 
+        /* Unified Table Styling (ตรงตามดีไซน์ Departments) */
+        .table-custom {
+            color: var(--text-main) !important;
+            vertical-align: middle !important;
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+        }
+        .table-custom thead th {
+            background-color: var(--badge-bg) !important;
+            color: var(--text-muted) !important;
+            font-size: 0.82rem !important;
+            font-weight: 600 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+            border-bottom: 1px solid var(--surface-border) !important;
+            padding: 14px 18px !important;
+            white-space: nowrap;
+        }
+        .table-custom tbody tr {
+            transition: background-color 0.2s ease;
+        }
+        .table-custom tbody tr:hover {
+            background-color: rgba(99, 102, 241, 0.04) !important;
+        }
+        .table-custom tbody td {
+            background-color: transparent !important;
+            color: var(--text-main) !important;
+            border-bottom: 1px solid var(--surface-border) !important;
+            padding: 14px 18px !important;
+            font-size: 0.92rem !important;
+            vertical-align: middle !important;
+        }
+
         /* Pagination Styling */
         .pagination {
             margin-bottom: 0;
