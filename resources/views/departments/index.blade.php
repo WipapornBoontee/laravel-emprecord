@@ -51,6 +51,18 @@
         background: var(--primary-gradient);
         color: white;
     }
+    .table-switch {
+        cursor: pointer;
+        width: 2.8rem !important;
+        height: 1.45rem !important;
+    }
+    .table-switch:focus {
+        box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .table-switch:checked {
+        background-color: #10b981;
+        border-color: #10b981;
+    }
 </style>
 @endpush
 
@@ -156,18 +168,19 @@
                                     </button>
                                 </td>
                                 <td class="text-center">
-                                    <form action="{{ route('departments.toggleStatus', $dept, false) }}" method="POST" class="d-inline">
+                                    <form action="{{ route('departments.toggleStatus', $dept, false) }}" method="POST" class="d-inline-flex align-items-center justify-content-center gap-2">
                                         @csrf
                                         @method('PATCH')
-                                        @if($dept->is_active ?? true)
-                                            <button type="submit" class="btn btn-sm btn-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0 fw-semibold" title="คลิกเพื่อปิดการใช้งาน">
-                                                <i class="bi bi-check-circle-fill me-1"></i>เปิดใช้งาน
-                                            </button>
-                                        @else
-                                            <button type="submit" class="btn btn-sm btn-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2 py-0 fw-semibold" title="คลิกเพื่อเปิดใช้งาน">
-                                                <i class="bi bi-pause-circle-fill me-1"></i>ปิดใช้งาน
-                                            </button>
-                                        @endif
+                                        <div class="form-check form-switch m-0 d-flex align-items-center gap-2">
+                                            <input class="form-check-input table-switch m-0" type="checkbox" role="switch" 
+                                                id="switch_dept_{{ $dept->id }}" 
+                                                onchange="this.form.submit()" 
+                                                {{ ($dept->is_active ?? true) ? 'checked' : '' }}
+                                                title="{{ ($dept->is_active ?? true) ? 'คลิกเพื่อปิดใช้งาน' : 'คลิกเพื่อเปิดใช้งาน' }}">
+                                            <label class="form-check-label small fw-semibold cursor-pointer {{ ($dept->is_active ?? true) ? 'text-success' : 'text-muted' }}" for="switch_dept_{{ $dept->id }}">
+                                                {{ ($dept->is_active ?? true) ? 'เปิด' : 'ปิด' }}
+                                            </label>
+                                        </div>
                                     </form>
                                 </td>
                                 <td class="text-end">
