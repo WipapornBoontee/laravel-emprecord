@@ -14,16 +14,24 @@
         padding: 1.5rem;
         height: 100%;
         display: flex;
-        flex-column;
+        flex-direction: column;
         justify-content: space-between;
     }
-    .circular-progress-wrap {
-        width: 100px;
-        height: 100px;
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .btn-apply-leave {
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 8px 20px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 14px -3px rgba(99, 102, 241, 0.5);
+        text-decoration: none;
+    }
+    .btn-apply-leave:hover {
+        transform: translateY(-2px);
+        color: white;
+        box-shadow: 0 8px 20px -4px rgba(99, 102, 241, 0.7);
     }
 </style>
 @endpush
@@ -43,13 +51,18 @@
                         <p class="text-muted mb-0 small">ตรวจสอบโควตาวันลาที่ได้รับ สิทธิ์ที่ใช้ไป และวันลาคงเหลือรายบุคคล</p>
                     </div>
                 </div>
-                <div class="d-flex align-items-center gap-2">
+                <div class="d-flex flex-wrap align-items-center gap-2">
                     <a href="{{ route('leaves.index', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2 text-decoration-none">
-                        <i class="bi bi-clock-history me-1"></i> ประวัติการลา
+                        <i class="bi bi-calendar2-check-fill me-1 text-primary"></i> ประวัติการลาของฉัน
                     </a>
-                    <a href="{{ route('leaves.create', [], false) }}" class="btn btn-primary rounded-3 px-4 py-2 text-decoration-none d-flex align-items-center gap-2"
-                        style="background: var(--primary-gradient); border: none; font-weight: 600;">
-                        <i class="bi bi-plus-lg"></i> ยื่นใบลา
+                    @if(auth()->user()->hasRole('Admin') || auth()->user()->hasRole('HR'))
+                        <a href="{{ route('leaves.approvals', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2 text-decoration-none">
+                            <i class="bi bi-check2-square me-1 text-success"></i> ศูนย์พิจารณาอนุมัติ
+                        </a>
+                    @endif
+                    <a href="{{ route('leaves.create', [], false) }}" class="btn btn-apply-leave d-inline-flex align-items-center gap-2">
+                        <i class="bi bi-plus-lg"></i>
+                        <span>ยื่นใบลาใหม่</span>
                     </a>
                 </div>
             </div>
@@ -107,10 +120,17 @@
 
     <!-- Approved Leaves Table this year -->
     <div class="col-12">
-        <div class="balance-card p-4">
-            <h5 class="fw-bold mb-3 text-theme d-flex align-items-center gap-2">
-                <i class="bi bi-check2-all text-success"></i> รายการลาที่ได้รับการอนุมัติและหักวันลาแล้ว (ปี {{ $currentYear }})
-            </h5>
+        <div class="balance-card overflow-hidden p-0">
+            <div class="p-3 px-4 border-bottom border-theme d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <div class="fw-bold text-theme">
+                    <i class="bi bi-check2-all me-1 text-success"></i> รายการลาที่ได้รับการอนุมัติและหักวันลาแล้ว (ปี {{ $currentYear }})
+                </div>
+                <div>
+                    <span class="badge bg-success-subtle text-success px-3 py-1 fw-bold">
+                        {{ $approvedLeaves->count() }} รายการ
+                    </span>
+                </div>
+            </div>
 
             <div class="table-responsive">
                 <table class="table table-custom mb-0">

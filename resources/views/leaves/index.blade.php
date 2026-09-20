@@ -26,21 +26,25 @@
         color: var(--text-main);
         outline: none;
     }
+    .filter-input option {
+        background: var(--dropdown-bg);
+        color: var(--text-main);
+    }
     .btn-apply-leave {
         background: var(--primary-gradient);
         color: white;
         border: none;
-        border-radius: 14px;
-        padding: 10px 22px;
+        border-radius: 12px;
+        padding: 8px 20px;
         font-weight: 600;
         transition: all 0.3s ease;
-        box-shadow: 0 8px 18px -6px rgba(99, 102, 241, 0.6);
+        box-shadow: 0 4px 14px -3px rgba(99, 102, 241, 0.5);
         text-decoration: none;
     }
     .btn-apply-leave:hover {
         transform: translateY(-2px);
         color: white;
-        box-shadow: 0 12px 22px -6px rgba(99, 102, 241, 0.8);
+        box-shadow: 0 8px 20px -4px rgba(99, 102, 241, 0.7);
     }
 </style>
 @endpush
@@ -60,11 +64,16 @@
                         <p class="text-muted mb-0 small">ติดตามสถานะคำขอลาหยุดงาน และตรวจสอบประวัติการอนุมัติ</p>
                     </div>
                 </div>
-                <div class="d-flex align-items-center gap-2">
+                <div class="d-flex flex-wrap align-items-center gap-2">
                     <a href="{{ route('leaves.balances', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2 text-decoration-none">
                         <i class="bi bi-pie-chart-fill me-1 text-primary"></i> สิทธิ์วันลาคงเหลือ
                     </a>
-                    <a href="{{ route('leaves.create', [], false) }}" class="btn btn-apply-leave d-flex align-items-center gap-2">
+                    @if(auth()->user()->hasRole('Admin') || auth()->user()->hasRole('HR'))
+                        <a href="{{ route('leaves.approvals', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2 text-decoration-none">
+                            <i class="bi bi-check2-square me-1 text-success"></i> ศูนย์พิจารณาอนุมัติ
+                        </a>
+                    @endif
+                    <a href="{{ route('leaves.create', [], false) }}" class="btn btn-apply-leave d-inline-flex align-items-center gap-2">
                         <i class="bi bi-plus-lg"></i>
                         <span>ยื่นใบลาใหม่</span>
                     </a>
@@ -112,6 +121,7 @@
     <div class="col-12">
         <div class="leave-card p-4">
             <form method="GET" action="{{ route('leaves.index', [], false) }}" class="row g-3">
+                <input type="hidden" name="per_page" value="{{ $perPage ?? 10 }}">
                 <div class="col-md-5">
                     <select name="status" class="form-select filter-input">
                         <option value="">-- ทุกสถานะ --</option>
@@ -144,6 +154,24 @@
     <!-- Leave Requests Table -->
     <div class="col-12">
         <div class="leave-card overflow-hidden">
+            <div class="p-3 px-4 border-bottom border-theme d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <div class="fw-bold text-theme">
+                    <i class="bi bi-table me-1 text-primary"></i> รายการประวัติการลา ({{ $leaveRequests->total() }} รายการ)
+                </div>
+                <!-- Rows Per Page Selector -->
+                <form action="{{ route('leaves.index', [], false) }}" method="GET" class="d-flex align-items-center gap-2 m-0">
+                    <input type="hidden" name="status" value="{{ $status ?? '' }}">
+                    <input type="hidden" name="year" value="{{ $year ?? date('Y') }}">
+                    <label for="per_page_select_history" class="small text-muted mb-0 text-nowrap">แสดงต่อหน้า:</label>
+                    <select name="per_page" id="per_page_select_history" class="form-select form-select-sm filter-input py-1" style="width: 85px;" onchange="this.form.submit()">
+                        <option value="5" {{ ($perPage ?? 10) == 5 ? 'selected' : '' }}>5</option>
+                        <option value="10" {{ ($perPage ?? 10) == 10 ? 'selected' : '' }}>10</option>
+                        <option value="25" {{ ($perPage ?? 10) == 25 ? 'selected' : '' }}>25</option>
+                        <option value="50" {{ ($perPage ?? 10) == 50 ? 'selected' : '' }}>50</option>
+                    </select>
+                </form>
+            </div>
+
             <div class="table-responsive">
                 <table class="table table-custom mb-0">
                     <thead>

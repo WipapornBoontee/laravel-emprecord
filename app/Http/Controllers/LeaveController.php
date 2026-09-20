@@ -31,7 +31,8 @@ class LeaveController extends Controller
             $query->whereYear('start_date', $year);
         }
 
-        $leaveRequests = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
+        $perPage = in_array((int) $request->input('per_page'), [5, 10, 25, 50]) ? (int) $request->input('per_page') : 10;
+        $leaveRequests = $query->orderBy('id', 'desc')->paginate($perPage)->withQueryString();
 
         // สรุปสถิติคำขอลาของตนเอง
         $pendingCount = LeaveRequest::where('user_id', $user->id)->where('status', 'pending')->count();
@@ -42,6 +43,7 @@ class LeaveController extends Controller
             'leaveRequests',
             'status',
             'year',
+            'perPage',
             'pendingCount',
             'approvedCount',
             'rejectedCount'

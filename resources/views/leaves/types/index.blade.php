@@ -57,9 +57,12 @@
                         <p class="text-muted mb-0 small">กำหนดประเภทวันลาและโควตาวันลาเริ่มต้นประจำปีสำหรับพนักงานใหม่</p>
                     </div>
                 </div>
-                <div>
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <a href="{{ route('leaves.index', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2 text-decoration-none">
+                        <i class="bi bi-calendar2-check-fill me-1 text-primary"></i> ประวัติการลาของฉัน
+                    </a>
                     <a href="{{ route('leaves.approvals', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2 text-decoration-none">
-                        <i class="bi bi-check2-square me-1"></i> หน้ารายการอนุมัติคำขอลา
+                        <i class="bi bi-check2-square me-1 text-success"></i> หน้ารายการอนุมัติคำขอลา
                     </a>
                 </div>
             </div>
@@ -128,8 +131,15 @@
     <!-- Leave Types List Table -->
     <div class="col-lg-8">
         <div class="type-card overflow-hidden">
-            <div class="p-4 border-bottom border-theme d-flex align-items-center justify-content-between">
-                <h5 class="fw-bold mb-0 text-theme">ประเภทการลาทั้งหมด ({{ $leaveTypes->count() }} ประเภท)</h5>
+            <div class="p-3 px-4 border-bottom border-theme d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <div class="fw-bold text-theme">
+                    <i class="bi bi-table me-1 text-primary"></i> ประเภทการลาทั้งหมด ({{ $leaveTypes->count() }} ประเภท)
+                </div>
+                <div>
+                    <span class="badge bg-primary-subtle text-primary px-3 py-1 fw-bold">
+                        {{ $leaveTypes->count() }} รายการ
+                    </span>
+                </div>
             </div>
 
             <div class="table-responsive">

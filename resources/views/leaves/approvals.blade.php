@@ -96,9 +96,12 @@
                         </p>
                     </div>
                 </div>
-                <div>
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <a href="{{ route('leaves.index', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2 text-decoration-none">
+                        <i class="bi bi-calendar2-check-fill me-1 text-primary"></i> ประวัติการลาของฉัน
+                    </a>
                     <a href="{{ route('leaves.types.index', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2 text-decoration-none">
-                        <i class="bi bi-gear-fill me-1"></i> ตั้งค่าประเภทวันลา
+                        <i class="bi bi-gear-fill me-1 text-secondary"></i> ตั้งค่าประเภทวันลา
                     </a>
                 </div>
             </div>
