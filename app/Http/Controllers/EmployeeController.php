@@ -217,7 +217,7 @@ class EmployeeController extends Controller
 
         // ประวัติการลาล่าสุด 5 รายการ
         $recentLeaves = $employee->leaveRequests()
-            ->with('leaveType')
+            ->with(['leaveType', 'approver'])
             ->orderBy('id', 'desc')
             ->limit(5)
             ->get();

@@ -201,36 +201,83 @@
         <div class="profile-card p-4 mb-4">
             <div class="d-flex align-items-center justify-content-between mb-3">
                 <h5 class="fw-bold mb-0 text-primary d-flex align-items-center gap-2">
-                    <i class="bi bi-calendar2-check"></i> ประวัติการลาล่าสุด
+                    <i class="bi bi-calendar2-check"></i> ประวัติการลาล่าสุด (Recent Leaves)
                 </h5>
+                @if(Auth::user()->isAdmin() || Auth::user()->isHr())
+                    <a href="{{ route('leaves.approvals', [], false) }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                        <i class="bi bi-arrow-right me-1"></i> ดูศูนย์อนุมัติคำขอลา
+                    </a>
+                @endif
             </div>
             
             @if($recentLeaves->count() > 0)
                 <div class="table-responsive">
-                    <table class="table table-sm table-custom mb-0">
+                    <table class="table table-sm table-custom mb-0 align-middle">
                         <thead>
                             <tr>
                                 <th>ประเภทการลา</th>
-                                <th>ช่วงวันที่</th>
-                                <th>จำนวนวัน</th>
-                                <th>สถานะ</th>
+                                <th>ช่วงวันที่ลา</th>
+                                <th class="text-center">จำนวนวัน</th>
+                                <th>เหตุผลการลา</th>
+                                <th class="text-center">สถานะ</th>
+                                <th>ผู้อนุมัติ / หมายเหตุ</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($recentLeaves as $leave)
                                 <tr>
-                                    <td class="fw-semibold">{{ $leave->leaveType->name ?? '-' }}</td>
-                                    <td class="text-muted small">
-                                        {{ \Carbon\Carbon::parse($leave->start_date)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($leave->end_date)->format('d/m/Y') }}
-                                    </td>
-                                    <td>{{ $leave->days_count }} วัน</td>
                                     <td>
+                                        <span class="fw-bold text-theme">{{ $leave->leaveType->name ?? '-' }}</span>
+                                    </td>
+                                    <td class="text-muted small">
+                                        <div class="font-monospace fw-semibold text-theme">
+                                            {{ \Carbon\Carbon::parse($leave->start_date)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($leave->end_date)->format('d/m/Y') }}
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-secondary-subtle text-secondary font-monospace px-2 py-1">
+                                            {{ $leave->days_count }} วัน
+                                        </span>
+                                    </td>
+                                    <td class="small text-muted" style="max-width: 180px;">
+                                        <span class="d-inline-block text-truncate" style="max-width: 170px;" title="{{ $leave->reason }}">
+                                            {{ $leave->reason ?? '-' }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
                                         @if($leave->status === 'approved')
-                                            <span class="badge bg-success-subtle text-success">อนุมัติแล้ว</span>
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1">
+                                                <i class="bi bi-check-circle-fill me-1"></i>อนุมัติแล้ว
+                                            </span>
                                         @elseif($leave->status === 'rejected')
-                                            <span class="badge bg-danger-subtle text-danger">ปฏิเสธ</span>
+                                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2 py-1">
+                                                <i class="bi bi-x-circle-fill me-1"></i>ปฏิเสธ
+                                            </span>
+                                        @elseif($leave->status === 'cancelled')
+                                            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2 py-1">
+                                                <i class="bi bi-slash-circle me-1"></i>ยกเลิกแล้ว
+                                            </span>
                                         @else
-                                            <span class="badge bg-warning-subtle text-warning">รออนุมัติ</span>
+                                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2 py-1">
+                                                <i class="bi bi-hourglass-split me-1"></i>รออนุมัติ
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="small">
+                                        @if($leave->status === 'approved' && $leave->approver)
+                                            <span class="text-success fw-semibold"><i class="bi bi-person-check me-1"></i>{{ $leave->approver->name }}</span>
+                                            @if($leave->remark)
+                                                <div class="text-muted" style="font-size: 0.75rem;">{{ $leave->remark }}</div>
+                                            @endif
+                                        @elseif($leave->status === 'rejected')
+                                            <span class="text-danger fw-semibold">{{ $leave->remark ?? 'ไม่ระบุเหตุผล' }}</span>
+                                            @if($leave->approver)
+                                                <div class="text-muted" style="font-size: 0.75rem;">โดย {{ $leave->approver->name }}</div>
+                                            @endif
+                                        @elseif($leave->status === 'cancelled')
+                                            <span class="text-muted">ยกเลิกโดยพนักงาน</span>
+                                        @else
+                                            <span class="text-muted">-</span>
                                         @endif
                                     </td>
                                 </tr>
@@ -239,7 +286,10 @@
                     </table>
                 </div>
             @else
-                <p class="text-muted small mb-0 py-3 text-center">ยังไม่มีประวัติการยื่นลา</p>
+                <div class="text-center py-4 text-muted">
+                    <i class="bi bi-calendar-x fs-2 d-block mb-1 opacity-50"></i>
+                    <p class="small mb-0">ยังไม่มีประวัติการยื่นลาในระบบ</p>
+                </div>
             @endif
         </div>
 
