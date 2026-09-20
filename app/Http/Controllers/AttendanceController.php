@@ -438,7 +438,6 @@ class AttendanceController extends Controller
                     ->whereMonth('date', $month)
                     ->where('status', 'approved')
                     ->sum('hours');
-
                 fputcsv($file, [
                     $index + 1,
                     $emp->emp_code,
@@ -454,6 +453,93 @@ class AttendanceController extends Controller
                     $annualLeave,
                     $otherLeave,
                     number_format($totalOtHours, 1),
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * ส่งออกไฟล์รายงานการลงเวลาตามตัวกรองที่เลือก (Filtered Attendance Daily Report CSV)
+     */
+    public function exportReportCsv(Request $request)
+    {
+        $data = $this->getReportData($request);
+        $date = $data['date'];
+        $reportType = $data['reportType'];
+        $reportData = $data['reportData'];
+
+        $fileName = "attendance_report_{$date}_{$reportType}.csv";
+
+        $headers = [
+            "Content-type"        => "text/csv; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename={$fileName}",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $callback = function () use ($reportData, $date) {
+            $file = fopen('php://output', 'w');
+            // ใส่ UTF-8 BOM เพื่อให้ Microsoft Excel เปิดภาษาไทยได้ถูกต้อง 100%
+            fputs($file, "\xEF\xBB\xBF");
+
+            // Header คอลัมน์รายงานการลงเวลา
+            fputcsv($file, [
+                'ลำดับ',
+                'รหัสพนักงาน',
+                'ชื่อ-นามสกุล',
+                'อีเมล',
+                'แผนก',
+                'ตำแหน่ง',
+                'วันที่',
+                'เวลาเข้างาน',
+                'เวลาเลิกงาน',
+                'ชั่วโมง OT (ชม.)',
+                'ช่วงเวลา OT',
+                'ประเภท OT',
+                'สถานะการลงเวลา',
+                'หมายเหตุ'
+            ]);
+
+            $index = 1;
+            foreach ($reportData as $row) {
+                $emp = $row['user'];
+                $ot = $row['overtime'] ?? null;
+                $rowStatus = $row['status'];
+
+                $statusText = match($rowStatus) {
+                    'on_time' => 'เข้างานตรงเวลา',
+                    'late' => 'มาสาย',
+                    'leave' => 'ลางาน',
+                    'absent' => 'ยังไม่ลงเวลา / ขาดงาน',
+                    default => $rowStatus
+                };
+
+                $otHours = $ot ? $ot->hours : 0;
+                $otRange = $ot && $ot->start_time && $ot->end_time 
+                    ? substr($ot->start_time, 0, 5) . ' - ' . substr($ot->end_time, 0, 5) 
+                    : '-';
+                $otTypeLabel = $ot ? ($ot->ot_type_label ?? $ot->ot_type) : '-';
+
+                fputcsv($file, [
+                    $index++,
+                    $emp->emp_code ?? '-',
+                    $emp->name,
+                    $emp->email ?? '-',
+                    $emp->department->name ?? '-',
+                    $emp->position->name ?? '-',
+                    $date,
+                    $row['check_in'] ? substr($row['check_in'], 0, 5) . ' น.' : '-',
+                    $row['check_out'] ? substr($row['check_out'], 0, 5) . ' น.' : '-',
+                    $otHours > 0 ? number_format($otHours, 1) : '-',
+                    $otRange,
+                    $otTypeLabel,
+                    $statusText,
+                    $row['notes'] ?? '-'
                 ]);
             }
 

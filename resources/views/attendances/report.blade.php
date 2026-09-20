@@ -225,9 +225,9 @@
                     <a href="{{ route('attendances.my-history', [], false) }}" class="btn btn-outline-secondary btn-sm rounded-3 px-3 py-2 text-decoration-none">
                         <i class="bi bi-clock-history me-1 text-indigo"></i> ประวัติของฉัน
                     </a>
-                    <a href="{{ route('attendances.report.export-monthly', ['month' => date('m', strtotime($date)), 'year' => date('Y', strtotime($date)), 'department_id' => $departmentId], false) }}" class="btn btn-outline-success btn-sm rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2" title="ดาวน์โหลดไฟล์ CSV สำหรับประมวลผลเงินเดือน">
+                    <a href="{{ route('attendances.report.export-csv', ['date' => $date, 'department_id' => $departmentId, 'status' => $status, 'report_type' => $reportType], false) }}" class="btn btn-outline-success btn-sm rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2" title="ดาวน์โหลดไฟล์ CSV ของรายงานที่กำลังดูอยู่">
                         <i class="bi bi-file-earmark-excel-fill"></i>
-                        <span>Export CSV (Payroll)</span>
+                        <span>Export รายงาน (CSV)</span>
                     </a>
                     <a href="{{ route('attendances.report.print', ['date' => $date, 'department_id' => $departmentId, 'status' => $status, 'report_type' => $reportType], false) }}" target="_blank" class="btn btn-primary btn-sm rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2 shadow-sm" style="background: var(--primary-gradient); border: none; font-weight: 600;">
                         <i class="bi bi-file-earmark-pdf-fill"></i>
@@ -282,21 +282,21 @@
 
             <a href="{{ route('attendances.report', array_filter(['date' => $date, 'department_id' => $departmentId, 'report_type' => 'overtime']), false) }}" 
                class="report-nav-pill {{ ($reportType ?? '') === 'overtime' ? 'active' : '' }}">
-                <i class="bi bi-lightning-charge-fill text-warning"></i>
+                <i class="bi bi-lightning-charge-fill"></i>
                 <span>การทำ OT</span>
                 <span class="pill-counter">{{ number_format($otCount) }}</span>
             </a>
 
             <a href="{{ route('attendances.report', array_filter(['date' => $date, 'department_id' => $departmentId, 'report_type' => 'leave']), false) }}" 
                class="report-nav-pill {{ ($reportType ?? '') === 'leave' ? 'active' : '' }}">
-                <i class="bi bi-sun-fill text-info"></i>
+                <i class="bi bi-sun-fill "></i>
                 <span>การลางาน</span>
                 <span class="pill-counter">{{ number_format($leaveCount) }}</span>
             </a>
 
             <a href="{{ route('attendances.report', array_filter(['date' => $date, 'department_id' => $departmentId, 'report_type' => 'late']), false) }}" 
                class="report-nav-pill {{ ($reportType ?? '') === 'late' ? 'active' : '' }}">
-                <i class="bi bi-exclamation-triangle-fill text-warning"></i>
+                <i class="bi bi-exclamation-triangle-fill "></i>
                 <span>มาสาย</span>
                 <span class="pill-counter">{{ number_format($lateCount) }}</span>
             </a>

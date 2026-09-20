@@ -37,6 +37,27 @@
         border-radius: 12px;
         padding: 0.75rem 1rem;
     }
+    .quick-hour-btn {
+        border-radius: 10px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 0.35rem 0.75rem;
+        transition: all 0.2s ease;
+        border: 1px solid var(--surface-border);
+        background: var(--badge-bg);
+        color: var(--text-main);
+    }
+    .quick-hour-btn:hover {
+        background: var(--primary-gradient);
+        color: #ffffff;
+        border-color: transparent;
+    }
+    .quick-hour-btn.active {
+        background: var(--primary-gradient);
+        color: #ffffff;
+        border-color: transparent;
+        box-shadow: 0 4px 10px var(--accent-glow);
+    }
 </style>
 @endpush
 
@@ -53,7 +74,7 @@
                         </div>
                         <div>
                             <h4 class="fw-bold mb-0 text-theme">ยื่นคำขอทำงานล่วงเวลา (OT)</h4>
-                            <small class="text-muted">กรอกรายละเอียดช่วงเวลาทำงานล่วงเวลาเพื่อขออนุมัติ</small>
+                            <small class="text-muted">กรอกรายละเอียดช่วงเวลาทำงานล่วงเวลา ระบบจะคำนวณและสรุปชั่วโมงสุทธิให้อัตโนมัติ</small>
                         </div>
                     </div>
                     <a href="{{ route('overtime.show') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
@@ -82,7 +103,7 @@
                     
                     <!-- 1. วันที่ปฏิบัติงาน OT -->
                     <div class="mb-4">
-                        <label for="date" class="form-label fw-bold text-theme small d-flex align-items-center justify-content-between">
+                        <label for="ot_date" class="form-label fw-bold text-theme small d-flex align-items-center justify-content-between">
                             <span><i class="bi bi-calendar-event text-primary me-1"></i> วันที่ปฏิบัติงาน OT <span class="text-danger">*</span></span>
                             <span class="text-muted fw-normal" style="font-size: 0.8rem;">(ยื่นย้อนหลังได้ 7 วัน / ล่วงหน้า 7 วัน)</span>
                         </label>
@@ -140,47 +161,90 @@
                         </div>
                     </div>
 
-                    <!-- 3. ช่วงเวลาทำงาน & เวลาพัก -->
-                    <div class="row g-3 mb-4">
-                        <div class="col-sm-4">
-                            <label for="start_time" class="form-label fw-bold text-theme small">
-                                <i class="bi bi-clock me-1 text-primary"></i> เวลาเริ่มต้น <span class="text-danger">*</span>
+                    <!-- 3. ช่วงเวลาทำงาน & ปุ่มลัดคำนวณชั่วโมงด่วน (Quick Hour Presets) -->
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <label class="form-label fw-bold text-theme small mb-0">
+                                <i class="bi bi-clock me-1 text-primary"></i> ช่วงเวลาทำงาน & การคำนวณชั่วโมง
                             </label>
-                            <input type="time" name="start_time" id="start_time" class="form-control form-control-custom" 
-                                value="{{ old('start_time', '17:30') }}" required>
+                            <span class="text-muted small">เลือกเวลาเริ่มต้นและเลิกงาน หรือกดปุ่มชั่วโมงด่วน</span>
                         </div>
-                        <div class="col-sm-4">
-                            <label for="end_time" class="form-label fw-bold text-theme small">
-                                <i class="bi bi-clock-history me-1 text-primary"></i> เวลาสิ้นสุด <span class="text-danger">*</span>
-                            </label>
-                            <input type="time" name="end_time" id="end_time" class="form-control form-control-custom" 
-                                value="{{ old('end_time', '20:30') }}" required>
+
+                        <!-- Quick Presets -->
+                        <div class="d-flex flex-wrap gap-2 mb-3">
+                            <span class="small text-muted align-self-center me-1">เลือกชั่วโมงด่วน:</span>
+                            <button type="button" class="btn quick-hour-btn" onclick="setQuickHours(1)">1.0 ชม.</button>
+                            <button type="button" class="btn quick-hour-btn" onclick="setQuickHours(1.5)">1.5 ชม.</button>
+                            <button type="button" class="btn quick-hour-btn" onclick="setQuickHours(2)">2.0 ชม.</button>
+                            <button type="button" class="btn quick-hour-btn" onclick="setQuickHours(2.5)">2.5 ชม.</button>
+                            <button type="button" class="btn quick-hour-btn active" onclick="setQuickHours(3)">3.0 ชม.</button>
+                            <button type="button" class="btn quick-hour-btn" onclick="setQuickHours(4)">4.0 ชม.</button>
                         </div>
-                        <div class="col-sm-4">
-                            <label for="break_minutes" class="form-label fw-bold text-theme small">
-                                <i class="bi bi-cup-hot me-1 text-primary"></i> เวลาพัก (หักออก)
-                            </label>
-                            <select name="break_minutes" id="break_minutes" class="form-select form-control-custom">
-                                <option value="0" {{ old('break_minutes', '0') == '0' ? 'selected' : '' }}>ไม่มีเวลาพัก</option>
-                                <option value="30" {{ old('break_minutes') == '30' ? 'selected' : '' }}>พัก 30 นาที</option>
-                                <option value="60" {{ old('break_minutes') == '60' ? 'selected' : '' }}>พัก 1 ชั่วโมง</option>
-                            </select>
+
+                        <div class="row g-3">
+                            <div class="col-sm-4">
+                                <label for="start_time" class="form-label fw-semibold text-theme small">
+                                    เวลาเริ่มต้น <span class="text-danger">*</span>
+                                </label>
+                                <input type="time" name="start_time" id="start_time" class="form-control form-control-custom" 
+                                    value="{{ old('start_time', '17:30') }}" required>
+                            </div>
+                            <div class="col-sm-4">
+                                <label for="end_time" class="form-label fw-semibold text-theme small">
+                                    เวลาสิ้นสุด <span class="text-danger">*</span>
+                                </label>
+                                <input type="time" name="end_time" id="end_time" class="form-control form-control-custom" 
+                                    value="{{ old('end_time', '20:30') }}" required>
+                            </div>
+                            <div class="col-sm-4">
+                                <label for="break_minutes" class="form-label fw-semibold text-theme small">
+                                    เวลาพัก (หักออก)
+                                </label>
+                                <select name="break_minutes" id="break_minutes" class="form-select form-control-custom">
+                                    <option value="0" {{ old('break_minutes', '0') == '0' ? 'selected' : '' }}>ไม่มีเวลาพัก</option>
+                                    <option value="30" {{ old('break_minutes') == '30' ? 'selected' : '' }}>พัก 30 นาที</option>
+                                    <option value="60" {{ old('break_minutes') == '60' ? 'selected' : '' }}>พัก 1 ชั่วโมง</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- 4. สรุปชั่วโมงคำนวณอัตโนมัติ -->
+                    <!-- 4. สรุปชั่วโมงคำนวณอัตโนมัติ (Sum & Overtime Cap Breakdown) -->
                     <div class="calculation-box mb-4">
-                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 pb-2 border-bottom border-theme">
                             <div>
-                                <span class="text-muted small d-block mb-1">รวมชั่วโมงทำงานล่วงเวลาสุทธิ:</span>
+                                <span class="text-muted small d-block mb-1">รวมชั่วโมงทำงานล่วงเวลาสุทธิ (Auto Sum):</span>
                                 <h3 class="fw-bold text-primary mb-0" id="calculatedHoursDisplay">3.0 ชั่วโมง</h3>
                             </div>
                             <div class="text-end">
                                 <span class="badge bg-primary-subtle text-primary px-3 py-2 fw-bold" id="calculatedTimeRange">
                                     17:30 - 20:30 น.
                                 </span>
-                                <div class="text-muted small mt-1" style="font-size: 0.8rem;">(คำนวณอัตโนมัติตามเวลาที่เลือก)</div>
+                                <div class="text-muted small mt-1" id="calculationFormulaText">คำนวณจาก 3 ชม. 0 นาที - พัก 0 นาที</div>
                             </div>
+                        </div>
+
+                        <!-- Weekly Cap Indicator -->
+                        <div class="mt-3">
+                            <div class="d-flex justify-content-between align-items-center small mb-1">
+                                <span class="text-muted">
+                                    <i class="bi bi-speedometer2 me-1"></i> OT สะสมสัปดาห์นี้: 
+                                    <strong id="weeklyApprovedText">{{ number_format($weeklyApprovedHours ?? 0, 1) }}</strong> / 36.0 ชม.
+                                </span>
+                                <span class="fw-bold" id="weeklyTotalText">
+                                    รวมคำขอนี้: {{ number_format(($weeklyApprovedHours ?? 0) + 3.0, 1) }} ชม.
+                                </span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                @php
+                                    $currentWeekly = (float) ($weeklyApprovedHours ?? 0);
+                                    $initialPercent = min(100, (($currentWeekly + 3.0) / 36.0) * 100);
+                                @endphp
+                                <div class="progress-bar" id="weeklyProgressBar" role="progressbar" style="width: {{ $initialPercent }}%;"></div>
+                            </div>
+                            <small class="text-muted d-block mt-1" id="capWarningText" style="font-size: 0.75rem;">
+                                กฎหมายแรงงานกำหนดชั่วโมง OT รวมไม่เกิน 36 ชม./สัปดาห์
+                            </small>
                         </div>
                     </div>
 
@@ -195,7 +259,7 @@
 
                     <!-- Actions -->
                     <div class="d-flex align-items-center gap-2">
-                        <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 fw-bold flex-grow-1" style="background: var(--primary-gradient); border: none;">
+                        <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 fw-bold flex-grow-1" id="submitBtn" style="background: var(--primary-gradient); border: none;">
                             <i class="bi bi-send-fill me-2"></i> ส่งคำขอทำงานล่วงเวลา
                         </button>
                         <a href="{{ route('overtime.show') }}" class="btn btn-outline-secondary rounded-pill px-4 py-2">
@@ -212,6 +276,7 @@
 <script>
     // ข้อมูลการลงเวลาย้อนหลังของพนักงานส่งมาจาก Backend
     const attendancesData = @json($recentAttendances);
+    const baseWeeklyHours = {{ (float) ($weeklyApprovedHours ?? 0) }};
 
     function updateAttendanceInfo() {
         const dateInput = document.getElementById('ot_date');
@@ -234,6 +299,11 @@
         const breakMinutes = parseInt(document.getElementById('break_minutes').value || '0', 10);
         const hoursDisplay = document.getElementById('calculatedHoursDisplay');
         const rangeDisplay = document.getElementById('calculatedTimeRange');
+        const formulaText = document.getElementById('calculationFormulaText');
+        const weeklyTotalText = document.getElementById('weeklyTotalText');
+        const progressBar = document.getElementById('weeklyProgressBar');
+        const capWarningText = document.getElementById('capWarningText');
+        const submitBtn = document.getElementById('submitBtn');
 
         if (!startTimeInput || !endTimeInput) {
             hoursDisplay.innerText = '0.0 ชั่วโมง';
@@ -252,11 +322,62 @@
         }
 
         let totalMinutes = endMinutes - startMinutes;
+        let grossH = Math.floor(totalMinutes / 60);
+        let grossM = totalMinutes % 60;
+
         let netMinutes = Math.max(0, totalMinutes - breakMinutes);
         let calculatedHours = (netMinutes / 60).toFixed(1);
 
         hoursDisplay.innerText = `${calculatedHours} ชั่วโมง`;
         rangeDisplay.innerText = `${startTimeInput} - ${endTimeInput} น.`;
+        formulaText.innerText = `คำนวณจาก ${grossH} ชม. ${grossM} นาที - หักพัก ${breakMinutes} นาที`;
+
+        // Update Weekly Cap
+        let numHours = parseFloat(calculatedHours) || 0;
+        let totalWeekHours = baseWeeklyHours + numHours;
+        weeklyTotalText.innerText = `รวมคำขอนี้: ${totalWeekHours.toFixed(1)} ชม.`;
+
+        let percent = Math.min(100, (totalWeekHours / 36.0) * 100);
+        progressBar.style.width = `${percent}%`;
+
+        if (totalWeekHours > 36.0) {
+            progressBar.className = 'progress-bar bg-danger';
+            capWarningText.innerHTML = `<span class="text-danger fw-bold"><i class="bi bi-exclamation-triangle-fill me-1"></i> เกินขีดจำกัดกฎหมาย 36 ชม./สัปดาห์ (ปัจจุบันรวมได้ ${totalWeekHours.toFixed(1)} ชม.)</span>`;
+        } else if (totalWeekHours >= 30.0) {
+            progressBar.className = 'progress-bar bg-warning';
+            capWarningText.innerHTML = `<span class="text-warning fw-semibold"><i class="bi bi-info-circle me-1"></i> ใกล้ถึงขีดจำกัด 36 ชม./สัปดาห์</span>`;
+        } else {
+            progressBar.className = 'progress-bar bg-primary';
+            capWarningText.innerText = 'กฎหมายแรงงานกำหนดชั่วโมง OT รวมไม่เกิน 36 ชม./สัปดาห์';
+        }
+    }
+
+    function setQuickHours(desiredHours) {
+        // Highlight active button
+        document.querySelectorAll('.quick-hour-btn').forEach(btn => {
+            if (parseFloat(btn.innerText) === desiredHours) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        const startTimeInput = document.getElementById('start_time').value || '17:30';
+        const breakMinutes = parseInt(document.getElementById('break_minutes').value || '0', 10);
+        const [startH, startM] = startTimeInput.split(':').map(Number);
+
+        let totalTargetMinutes = Math.round(desiredHours * 60) + breakMinutes;
+        let startMinutes = startH * 60 + startM;
+        let endMinutes = (startMinutes + totalTargetMinutes) % (24 * 60);
+
+        let endH = Math.floor(endMinutes / 60);
+        let endM = endMinutes % 60;
+
+        let endHStr = endH.toString().padStart(2, '0');
+        let endMStr = endM.toString().padStart(2, '0');
+
+        document.getElementById('end_time').value = `${endHStr}:${endMStr}`;
+        calculateOtHours();
     }
 
     document.getElementById('ot_date').addEventListener('change', updateAttendanceInfo);

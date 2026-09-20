@@ -71,12 +71,20 @@ class OverTimeController extends Controller
 
         $selectedDate = $request->input('date', $todayDateStr);
 
+        $startOfWeek = \Carbon\Carbon::parse($selectedDate)->startOfWeek()->format('Y-m-d');
+        $endOfWeek = \Carbon\Carbon::parse($selectedDate)->endOfWeek()->format('Y-m-d');
+        $weeklyApprovedHours = (float) \App\Models\Overtime::where('user_id', $user->id)
+            ->whereBetween('date', [$startOfWeek, $endOfWeek])
+            ->where('status', '!=', 'rejected')
+            ->sum('hours');
+
         return view('overtime.overtime_create', compact(
             'recentAttendances',
             'companyHolidays',
             'selectedDate',
             'minDateStr',
-            'maxDateStr'
+            'maxDateStr',
+            'weeklyApprovedHours'
         ));
     }
 
