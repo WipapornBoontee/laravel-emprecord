@@ -140,7 +140,7 @@
                             <div class="d-flex flex-column align-items-center justify-content-center">
                                 <div class="salary-header-gradient">
                     <div class="avatar-wrapper">
-                        <i class="bi bi-person-fill" style="font-size: 2rem; color: var(--text-main);"></i>
+                        <i class="bi bi-person-fill text-center" style="font-size: 2rem; color: var(--text-main);"></i>
                     </div>
                     <h4 class="fw-bold mb-1">{{ Auth::user()->name }}</h4>
                     <p class="mb-0 opacity-75 small"><i class="bi bi-person-badge me-1"></i>รหัสพนักงาน: {{ Auth::user()->emp_code ?? '-' }}</p>
