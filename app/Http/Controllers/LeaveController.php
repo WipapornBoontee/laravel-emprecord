@@ -39,6 +39,7 @@ class LeaveController extends Controller
         $pendingCount = LeaveRequest::where('user_id', $user->id)->where('status', 'pending')->count();
         $approvedCount = LeaveRequest::where('user_id', $user->id)->where('status', 'approved')->count();
         $rejectedCount = LeaveRequest::where('user_id', $user->id)->where('status', 'rejected')->count();
+        $cancelledCount = LeaveRequest::where('user_id', $user->id)->where('status', 'cancelled')->count();
 
         return view('leaves.index', compact(
             'leaveRequests',
@@ -47,7 +48,8 @@ class LeaveController extends Controller
             'perPage',
             'pendingCount',
             'approvedCount',
-            'rejectedCount'
+            'rejectedCount',
+            'cancelledCount'
         ));
     }
 
@@ -220,12 +222,15 @@ class LeaveController extends Controller
 
         // ยกเลิกได้เฉพาะคำขอที่ยัง pending เท่านั้น
         if ($leaveRequest->status !== 'pending') {
-            return redirect()->to(route('leaves.index', [], false))->with('error', 'ไม่สามารถยกเลิกคำขอนี้ได้เนื่องจากได้รับการพิจารณาไปแล้ว');
+            return redirect()->to(route('leaves.index', [], false))->with('error', 'ไม่สามารถยกเลิกคำขอนี้ได้เนื่องจากได้รับการพิจารณาหรือยกเลิกไปแล้ว');
         }
 
-        $leaveRequest->delete();
+        $leaveRequest->update([
+            'status' => 'cancelled',
+            'remark' => 'ผู้ยื่นคำขอยกเลิกเอง',
+        ]);
 
-        return redirect()->to(route('leaves.index', [], false))->with('success', 'ยกเลิกคำขอลาเรียบร้อยแล้ว');
+        return redirect()->to(route('leaves.index', [], false))->with('success', 'ยกเลิกคำขอลาเรียบร้อยแล้ว (สถานะเปลี่ยนเป็นยกเลิกแล้ว)');
     }
 
     /**

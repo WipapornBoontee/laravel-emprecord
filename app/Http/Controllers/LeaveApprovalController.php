@@ -54,6 +54,7 @@ class LeaveApprovalController extends Controller
         $pendingCount = LeaveRequest::where('status', 'pending')->count();
         $approvedCount = LeaveRequest::where('status', 'approved')->count();
         $rejectedCount = LeaveRequest::where('status', 'rejected')->count();
+        $cancelledCount = LeaveRequest::where('status', 'cancelled')->count();
 
         return view('leaves.approvals', compact(
             'leaveRequests',
@@ -64,6 +65,7 @@ class LeaveApprovalController extends Controller
             'pendingCount',
             'approvedCount',
             'rejectedCount',
+            'cancelledCount',
             'perPage'
         ));
     }
@@ -78,6 +80,10 @@ class LeaveApprovalController extends Controller
         // ป้องกันไม่ให้พนักงานหรือ HR อนุมัติคำขอลาของตนเอง (Self-Approval)
         if ($leaveRequest->user_id === Auth::id()) {
             return back()->with('error', 'คุณไม่สามารถอนุมัติคำขอลาของตนเองได้ ต้องให้ผู้ดูแลระบบ (Admin) เป็นผู้อนุมัติ');
+        }
+
+        if ($leaveRequest->status === 'cancelled') {
+            return back()->with('error', 'คำขอนี้ถูกยกเลิกโดยพนักงานแล้ว ไม่สามารถอนุมัติได้');
         }
 
         $request->validate([
@@ -154,6 +160,10 @@ class LeaveApprovalController extends Controller
         // ป้องกันไม่ให้พนักงานหรือ HR ปฏิเสธคำขอลาของตนเอง (ต้องให้ Admin ดำเนินการ)
         if ($leaveRequest->user_id === Auth::id()) {
             return back()->with('error', 'คุณไม่สามารถปฏิเสธคำขอลาของตนเองได้ ต้องให้ผู้ดูแลระบบ (Admin) เป็นผู้ดำเนินการ');
+        }
+
+        if ($leaveRequest->status === 'cancelled') {
+            return back()->with('error', 'คำขอนี้ถูกยกเลิกโดยพนักงานแล้ว ไม่สามารถปฏิเสธได้');
         }
 
         $request->validate([
