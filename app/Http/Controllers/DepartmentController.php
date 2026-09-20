@@ -60,6 +60,11 @@ class DepartmentController extends Controller
          $validated['is_active'] = $request->has('is_active') ? true : false;
          $department->update($validated);
 
+         // หากปิดการใช้งานแผนก ให้ปิดการใช้งานตำแหน่งงานทั้งหมดในแผนกนี้ด้วย
+         if (!$department->is_active) {
+             Position::where('department_id', $department->id)->update(['is_active' => false]);
+         }
+
          return redirect()->to(route('departments.index', [], false))->with('success', "แก้ไขข้อมูลแผนก {$department->name} เรียบร้อยแล้ว");
      }
 
@@ -71,8 +76,14 @@ class DepartmentController extends Controller
          $department->is_active = !$department->is_active;
          $department->save();
 
+         // หากปิดการใช้งานแผนก ให้ปิดการใช้งานตำแหน่งงานทั้งหมดในแผนกนี้โดยอัตโนมัติ
+         if (!$department->is_active) {
+             Position::where('department_id', $department->id)->update(['is_active' => false]);
+         }
+
          $statusText = $department->is_active ? 'เปิดใช้งาน' : 'ปิดการใช้งาน';
-         return redirect()->to(route('departments.index', [], false))->with('success', "เปลี่ยนสถานะแผนก {$department->name} เป็น {$statusText} เรียบร้อยแล้ว");
+         $extraMsg = !$department->is_active ? ' และปิดการใช้งานตำแหน่งงานทั้งหมดในแผนกนี้แล้ว' : '';
+         return redirect()->to(route('departments.index', [], false))->with('success', "เปลี่ยนสถานะแผนก {$department->name} เป็น {$statusText} เรียบร้อยแล้ว{$extraMsg}");
      }
 
     /**
@@ -152,6 +163,11 @@ class DepartmentController extends Controller
      */
     public function togglePositionStatus(Position $position)
     {
+        // หากต้องการเปิดใช้งานตำแหน่ง แต่แผนกต้นสังกัดปิดใช้งานอยู่ จะไม่อนุญาตให้เปิด
+        if (!$position->is_active && $position->department && !$position->department->is_active) {
+            return redirect()->to(route('departments.positions', [], false))->with('error', "ไม่สามารถเปิดใช้งานตำแหน่ง {$position->name} ได้ เนื่องจากแผนก {$position->department->name} ถูกปิดการใช้งานอยู่ กรุณาเปิดใช้งานแผนกก่อน");
+        }
+
         $position->is_active = !$position->is_active;
         $position->save();
 

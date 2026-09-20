@@ -205,17 +205,20 @@
                                     </button>
                                 </td>
                                 <td class="text-center">
+                                    @php
+                                        $parentDeptInactive = $pos->department && !$pos->department->is_active;
+                                    @endphp
                                     <form action="{{ route('departments.positions.toggleStatus', $pos, false) }}" method="POST" class="d-inline-flex align-items-center justify-content-center gap-2">
                                         @csrf
                                         @method('PATCH')
-                                        <div class="form-check form-switch m-0 d-flex align-items-center gap-2">
+                                        <div class="form-check form-switch m-0 d-flex align-items-center gap-2" title="{{ $parentDeptInactive ? 'ไม่สามารถเปิดได้เนื่องจากแผนกต้นสังกัดถูกปิดใช้งานอยู่' : (($pos->is_active ?? true) ? 'คลิกเพื่อปิดใช้งาน' : 'คลิกเพื่อเปิดใช้งาน') }}">
                                             <input class="form-check-input table-switch m-0" type="checkbox" role="switch" 
                                                 id="switch_pos_{{ $pos->id }}" 
                                                 onchange="this.form.submit()" 
-                                                {{ ($pos->is_active ?? true) ? 'checked' : '' }}
-                                                title="{{ ($pos->is_active ?? true) ? 'คลิกเพื่อปิดใช้งาน' : 'คลิกเพื่อเปิดใช้งาน' }}">
-                                            <label class="form-check-label small fw-semibold cursor-pointer {{ ($pos->is_active ?? true) ? 'text-success' : 'text-muted' }}" for="switch_pos_{{ $pos->id }}">
-                                                {{ ($pos->is_active ?? true) ? 'เปิด' : 'ปิด' }}
+                                                {{ ($pos->is_active && !$parentDeptInactive) ? 'checked' : '' }}
+                                                {{ $parentDeptInactive ? 'disabled' : '' }}>
+                                            <label class="form-check-label small fw-semibold {{ $parentDeptInactive ? 'text-muted opacity-50' : (($pos->is_active ?? true) ? 'text-success cursor-pointer' : 'text-muted cursor-pointer') }}" for="switch_pos_{{ $pos->id }}">
+                                                {{ ($pos->is_active && !$parentDeptInactive) ? 'เปิด' : 'ปิด' }}
                                             </label>
                                         </div>
                                     </form>
