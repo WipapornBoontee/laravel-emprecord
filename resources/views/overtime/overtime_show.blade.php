@@ -167,7 +167,7 @@
                             <div class="d-flex flex-column align-items-center justify-content-center">
                                 <div class="salary-header-gradient">
                     <div class="avatar-wrapper">
-                        <i class="bi bi-person-fill" style="font-size: 2rem; color: white;"></i>
+                        <i class="bi bi-person-fill" style="font-size: 2rem; color: var(--text-main);"></i>
                     </div>
                     <h4 class="fw-bold mb-1">{{ Auth::user()->name }}</h4>
                     <p class="mb-0 opacity-75 small"><i class="bi bi-person-badge me-1"></i>รหัสพนักงาน: {{ Auth::user()->emp_code ?? '-' }}</p>
@@ -212,7 +212,7 @@
                                                 <td><span class="badge bg-danger">ไม่อนุมัติ</span></td>
                                                 <td class="text-danger">{{ $detail['hr_reject_reason'] }}</td>
                                             @else
-                                                <td class="text-muted">17:00 น. - <span class="badge {{ $detail['check_out'] ? 'bg-danger-subtle text-danger' : 'bg-secondary' }} px-2 py-1">{{ $detail['check_out'] ? $detail['check_out'].' น.' : 'ยังไม่สแกนออก' }}</span></td>
+                                                <td class="text-muted">เริ่ม 17:00 น. - <span class="badge {{ $detail['check_out'] ? 'bg-secondary-subtle text-secondary' : 'bg-secondary' }} px-2 py-1">{{ $detail['check_out'] ? $detail['check_out'].' น.' : 'ยังไม่สแกนออก' }}</span></td>
                                                 <td>
                                                     @if($detail['check_out'])
                                                         <div class="fw-bold text-primary">{{ $detail['ot_hours'] }} ชม.</div>
