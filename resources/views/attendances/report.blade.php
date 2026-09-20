@@ -135,13 +135,9 @@
                     <a href="{{ route('attendances.my-history', [], false) }}" class="btn btn-outline-secondary rounded-3 px-3 py-2 text-decoration-none">
                         <i class="bi bi-clock-history me-1 text-indigo"></i> ประวัติของฉัน
                     </a>
-                    <a href="{{ route('attendances.report.export-daily', ['date' => $date, 'department_id' => $departmentId, 'status' => $status], false) }}" class="btn btn-outline-success rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2" title="ดาวน์โหลดไฟล์ CSV รายการลงเวลาแต่ละรายการของวันนี้">
-                        <i class="bi bi-file-earmark-spreadsheet-fill"></i>
-                        <span>ออกรายงานประจำวัน (CSV)</span>
-                    </a>
-                    <a href="{{ route('attendances.report.export-monthly', ['month' => date('m', strtotime($date)), 'year' => date('Y', strtotime($date)), 'department_id' => $departmentId], false) }}" class="btn btn-outline-info rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2" title="ดาวน์โหลดไฟล์ CSV/Excel สรุปเวลาทำงานส่งฝ่ายบัญชี">
+                    <a href="{{ route('attendances.report.export-monthly', ['month' => date('m', strtotime($date)), 'year' => date('Y', strtotime($date)), 'department_id' => $departmentId], false) }}" class="btn btn-outline-success rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2" title="ดาวน์โหลดไฟล์ CSV/Excel สรุปเวลาทำงานส่งฝ่ายบัญชี">
                         <i class="bi bi-file-earmark-excel-fill"></i>
-                        <span>สรุปส่งบัญชี (CSV รายเดือน)</span>
+                        <span>Export สรุปส่งบัญชี (CSV)</span>
                     </a>
                     <a href="{{ route('attendances.report.print', ['date' => $date, 'department_id' => $departmentId, 'status' => $status], false) }}" target="_blank" class="btn btn-primary rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2 shadow-sm" title="เปิดหน้าพิมพ์รายงาน PDF รูปแบบมาตรฐานบริษัท" style="background: var(--primary-gradient); border: none; font-weight: 600;">
                         <i class="bi bi-file-earmark-pdf-fill"></i>
@@ -266,33 +262,13 @@
     <div class="col-12">
         <div class="report-card overflow-hidden">
             <div class="p-3 px-4 border-bottom border-theme d-flex flex-wrap align-items-center justify-content-between gap-3">
-                <div>
-                    <h5 class="fw-bold text-theme mb-1 d-flex align-items-center gap-2">
-                        <i class="bi bi-calendar2-check-fill text-primary"></i> 
-                        <span>รายการลงเวลาประจำวันที่ {{ \Carbon\Carbon::parse($date)->format('d F Y') }}</span>
-                    </h5>
-                    <span class="text-muted small">
-                        ออกรายงานและตรวจสอบการลงเวลาแต่ละรายการ (แสดงข้อมูล {{ count($reportData) }} คน)
-                    </span>
+                <div class="fw-bold text-theme">
+                    <i class="bi bi-table me-1 text-primary"></i> รายการลงเวลาประจำวันที่ {{ \Carbon\Carbon::parse($date)->format('d F Y') }}
                 </div>
-                <div class="d-flex flex-wrap align-items-center gap-2 screen-only">
-                    <span class="badge bg-primary-subtle text-primary px-3 py-2 fw-bold">
-                        <i class="bi bi-people-fill me-1"></i> {{ count($reportData) }} รายการ
+                <div>
+                    <span class="badge bg-primary-subtle text-primary px-3 py-1 fw-bold">
+                        แสดงข้อมูล {{ count($reportData) }} คน
                     </span>
-                    <a href="{{ route('attendances.report.export-daily', ['date' => $date, 'department_id' => $departmentId, 'status' => $status], false) }}" 
-                        class="btn btn-outline-success btn-sm rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2" 
-                        title="ดาวน์โหลดไฟล์ CSV รายการลงเวลาแต่ละรายการของวันนี้">
-                        <i class="bi bi-file-earmark-spreadsheet-fill"></i>
-                        <span>ออกรายงาน CSV ประจำวัน</span>
-                    </a>
-                    <a href="{{ route('attendances.report.print', ['date' => $date, 'department_id' => $departmentId, 'status' => $status], false) }}" 
-                        target="_blank" 
-                        class="btn btn-primary btn-sm rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2" 
-                        title="เปิดหน้าพิมพ์รายงาน PDF ประจำวัน"
-                        style="background: var(--primary-gradient); border: none; font-weight: 600;">
-                        <i class="bi bi-printer-fill"></i>
-                        <span>พิมพ์รายงาน PDF</span>
-                    </a>
                 </div>
             </div>
 
